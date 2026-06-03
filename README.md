@@ -1,2 +1,3 @@
-# SocialMediaApp
-Social Media App developed in Springboot and react
+# Job Portal application
+
+Microservices application!!
