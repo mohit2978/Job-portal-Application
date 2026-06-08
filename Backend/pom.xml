@@ -44,7 +44,7 @@
 
             <!-- Common Lib -->
             <dependency>
-                <groupId>com.zosh.job</groupId>
+                <groupId>com.mohit.job</groupId>
                 <artifactId>job-portal-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
