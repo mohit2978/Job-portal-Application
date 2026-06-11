@@ -1,6 +1,7 @@
 package com.mohit.job.controller;
 
 import com.mohit.job.PayLoad.AuthResponse;
+import com.mohit.job.PayLoad.LoginRequest;
 import com.mohit.job.PayLoad.SignUpRequest;
 import com.mohit.job.service.AuthService;
 import jakarta.validation.Valid;
@@ -20,5 +21,14 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@RequestBody @Valid SignUpRequest req) throws Exception{
 
+        return ResponseEntity.ok(authService.signup(req));
     }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest req) throws Exception{
+
+        return ResponseEntity.ok(authService.login(req));
+    }
+
 }
