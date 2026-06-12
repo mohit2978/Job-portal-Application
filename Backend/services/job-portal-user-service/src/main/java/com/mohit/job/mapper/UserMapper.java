@@ -3,6 +3,9 @@ package com.mohit.job.mapper;
 import com.mohit.job.dto.response.UserResponse;
 import com.mohit.job.modal.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class UserMapper {
 
     public static UserResponse toDTO(User user){
@@ -17,5 +20,9 @@ public class UserMapper {
         userResponse.setLastLogin(user.getLastLogin());
         userResponse.setCreatedAt(user.getCreatedAt());
         return userResponse;
+    }
+
+    public static List<UserResponse> toDTO(List<User> users){
+        return users.stream().map(UserMapper::toDTO).collect(Collectors.toList());
     }
 }
