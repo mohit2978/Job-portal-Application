@@ -12,7 +12,7 @@
 
     <artifactId>job-portal-company-service</artifactId>
     <name>job-portal-company-service</name>
-    <description>Company Service</description>
+    <description>Company Service for making comapny profile and documents</description>
 
     <dependencies>
         <!-- Common Library -->

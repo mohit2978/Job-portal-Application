@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 5002
 
 spring:
   application:
@@ -7,7 +7,7 @@ spring:
   config:
     import: optional:configserver:http://localhost:8888
   datasource:
-    url: jdbc:postgresql://localhost:5432/job_portal_user_db
+    url: jdbc:postgresql://localhost:5432/job_portal_company_db
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
