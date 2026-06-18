@@ -2,13 +2,17 @@ package com.mohit.job.dto.request;
 
 import com.mohit.job.domain.ApplicationStatus;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UpdateApplicationStatusRequest {
 
-    @NotNull(message = "Status is required")
+    @NotNull(message = "New status is required")
     private ApplicationStatus status;
 
-    private String notes;
+    private String note;
 }

@@ -1,28 +1,49 @@
 package com.mohit.job.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mohit.job.domain.ApplicationSource;
 import com.mohit.job.domain.ApplicationStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicationResponse {
+
     private Long id;
-    private Long candidateId;
-    private Long jobId;
-    private Long companyId;
-    private Long resumeId;
+    private UserResponse candidate;
+    private Long employerId;
+
+    private JobSummaryResponse job;
+    private CompanySummaryResponse company;
+
     private ApplicationStatus status;
+
+    private Long resumeId;
     private String coverLetter;
-    private String notes;
+
+    private BigDecimal expectedSalary;
+    private LocalDate availableFrom;
+
+    private Boolean isRead;
+    private Boolean isStarred;
+
+    private List<ApplicationStatusHistoryResponse> statusHistory;
+    private List<InterviewResponse> interviews;
+    private List<ApplicationNoteResponse> notes;
+
+    private LocalDateTime withdrawnAt;
+    private String withdrawnReason;
+
     private LocalDateTime appliedAt;
-    private LocalDateTime reviewedAt;
-    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private ApplicationScreeningResponse screening;
 }
