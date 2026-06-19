@@ -23,6 +23,8 @@ spring:
 
 eureka:
   client:
+    register-with-eureka: true # default true, explicit for clarity
+    fetch-registry: true # default true, explicit for clarity
     service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
