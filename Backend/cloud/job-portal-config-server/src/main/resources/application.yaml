@@ -7,11 +7,15 @@ spring:
       server:
         git:
           uri: "https://github.com/mohit2978/job-portal-config"
+          username: mohit2978
+          password: '{cipher}c09c567b7af82208e77c57cf5928bb5f2cce748fd7f1ce06c2a941d01bba7690f986e741f5b4ed5618dc757ab2a8a510f55c21991ddc00389d46e1e37f2f53bc7a7cf5a92dc9835e3e5594421ca6d4e30e27c4f6623142e5333ae854086afb35afcd4713340241cf6b4fa3d7005e9711'
           clone-on-start: true
-          default-label: master
+          default-label: main
 server:
   port: 8888
 
+encrypt:
+  key: ${ENCRYPT_KEY}
 
 eureka:
   client:
@@ -19,3 +23,12 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, refresh
+  endpoint:
+    health:
+      show-details: always

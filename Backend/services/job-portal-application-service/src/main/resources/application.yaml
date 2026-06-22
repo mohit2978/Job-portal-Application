@@ -1,31 +1,5 @@
-server:
-  port: 5005
-
 spring:
   application:
     name: job-portal-application-service
   config:
-    import: optional:configserver:http://localhost:8888
-  datasource:
-    url: jdbc:mysql://localhost:3306/job_portal_application_db
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    open-in-view: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-
-eureka:
-  client:
-    register-with-eureka: true # default true, explicit for clarity
-    fetch-registry: true # default true, explicit for clarity
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
+    import: configserver:http://localhost:8888
