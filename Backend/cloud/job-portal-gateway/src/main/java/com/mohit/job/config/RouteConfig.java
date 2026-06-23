@@ -3,6 +3,7 @@ package com.mohit.job.config;
 import com.mohit.job.jwt.JwtConstant;
 import com.mohit.job.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions;
 import org.springframework.cloud.gateway.server.mvc.filter.LoadBalancerFilterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
@@ -14,6 +15,8 @@ import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
+
+import java.net.URI;
 
 @Configuration
 @RequiredArgsConstructor
@@ -34,6 +37,8 @@ public class RouteConfig {
         return GatewayRouterFunctions.route("admin-routes")
                 .route(RequestPredicates.path("/api/admin/**"), HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-user-service"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                        URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .before(request -> requireRole(request, "ROLE_ADMIN"))
                 .build();
@@ -44,6 +49,8 @@ public class RouteConfig {
         return GatewayRouterFunctions.route("user-service-routes")
                 .route(RequestPredicates.path("/api/users/**"), HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-user-service"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                        URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .build();
     }
@@ -53,6 +60,8 @@ public class RouteConfig {
         return GatewayRouterFunctions.route("company-service-routes")
                 .route(RequestPredicates.path("/api/companies/**"), HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-company-service"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                        URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .build();
     }
@@ -66,6 +75,8 @@ public class RouteConfig {
                         .or(RequestPredicates.path("/api/job-tags/**")),
                         HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-job-service"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                        URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .build();
     }
@@ -75,6 +86,8 @@ public class RouteConfig {
         return GatewayRouterFunctions.route("application-service-routes")
                 .route(RequestPredicates.path("/api/applications/**"), HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-application-service"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                        URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .build();
     }
@@ -84,6 +97,8 @@ public class RouteConfig {
         return GatewayRouterFunctions.route("resume-service-routes")
                 .route(RequestPredicates.path("/api/resumes/**"), HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-resume-service"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                        URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .build();
     }
@@ -93,6 +108,8 @@ public class RouteConfig {
         return GatewayRouterFunctions.route("preference-service-routes")
                 .route(RequestPredicates.path("/api/preferences/**"), HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-preference-service"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                        URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .build();
     }
