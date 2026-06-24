@@ -46,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(req.getPassword()))
                 .role(req.getRole())
                 .phone(req.getPhone())
+                .profileImage("")
                 .userStatus(UserStatus.ACTIVE)
                 .lastLogin(LocalDateTime.now())
                 .build();
