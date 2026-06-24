@@ -1,5 +1,9 @@
 package com.mohit.job.service.impl;
 
+import com.mohit.job.client.CompanyClient;
+import com.mohit.job.client.JobClient;
+import com.mohit.job.client.ResumeClient;
+import com.mohit.job.client.UserClient;
 import com.mohit.job.domain.ApplicationStatus;
 import com.mohit.job.dto.request.CompanyApplicationFilterRequest;
 import com.mohit.job.dto.request.CreateApplicationRequest;
@@ -7,7 +11,9 @@ import com.mohit.job.dto.request.UpdateApplicationStatusRequest;
 import com.mohit.job.dto.request.WithdrawApplicationRequest;
 import com.mohit.job.dto.response.ApplicationResponse;
 import com.mohit.job.dto.response.CompanySummaryResponse;
+import com.mohit.job.dto.response.JobResponse;
 import com.mohit.job.dto.response.JobSummaryResponse;
+import com.mohit.job.dto.response.ResumeResponse;
 import com.mohit.job.dto.response.UserResponse;
 import com.mohit.job.mapper.ApplicationMapper;
 import com.mohit.job.modal.ApplicationNote;
@@ -37,6 +43,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationScreeningRepository screeningRepository;
     private final ApplicationStatusHistoryRepository historyRepository;
     private final ApplicationNoteRepository noteRepository;
+    private final JobClient jobClient;
+    private final ResumeClient resumeClient;
+    private final CompanyClient companyClient;
+    private final UserClient userClient;
 
     @Override
     public ApplicationResponse createApplication(Long candidateId, CreateApplicationRequest req) throws Exception {
@@ -44,9 +54,15 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new Exception("You have already applied for this job");
         }
 
-        // TODO: call FeignClient JobClient - jobClient.getJobById(req.getJobId()) to get companyId and employerId
-        // TODO: call FeignClient ResumeClient - resumeClient.getResumeById(req.getResumeId(), candidateId) to validate resume ownership
-        JobApplication application = ApplicationMapper.toEntity(req, candidateId, 0L, 0L);
+        JobResponse job = jobClient.getJobById(req.getJobId());
+
+        ResumeResponse resume = resumeClient.getResumeById(req.getResumeId(), candidateId);
+        if (!resume.getCandidateId().equals(candidateId)) {
+            throw new Exception("Resume does not belong to you");
+        }
+
+        JobApplication application = ApplicationMapper.toEntity(req, candidateId,
+                job.getCompanyId(), job.getEmployerId());
         application = applicationRepository.save(application);
 
         historyRepository.save(ApplicationStatusHistory.builder()
@@ -79,8 +95,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public List<ApplicationResponse> getApplicationsForCompany(Long userId, CompanyApplicationFilterRequest filter) {
-        // TODO: call FeignClient CompanyClient - companyClient.getMyCompany(userId).getId()
-        Long companyId = 1L;
+        Long companyId = companyClient.getMyCompany(userId).getId();
 
         LocalDateTime from = filter.getAppliedFrom() != null ? filter.getAppliedFrom().atStartOfDay() : null;
         LocalDateTime to = filter.getAppliedTo() != null ? filter.getAppliedTo().atTime(LocalTime.MAX) : null;
@@ -226,15 +241,9 @@ public class ApplicationServiceImpl implements ApplicationService {
         List<ApplicationNote> notes =
                 noteRepository.findByApplicationIdOrderByCreatedAtDesc(application.getId());
 
-        // TODO: call FeignClient JobClient - jobClient.getJobSummaryById(application.getJobId())
-        JobSummaryResponse job = new JobSummaryResponse();
-        job.setId(1L);
-        // TODO: call FeignClient CompanyClient - companyClient.getCompanySummaryById(application.getCompanyId())
-        CompanySummaryResponse company = new CompanySummaryResponse();
-        company.setId(1L);
-        // TODO: call FeignClient UserClient - userClient.getUserById(application.getCandidateId())
-        UserResponse candidate = new UserResponse();
-        candidate.setId(1L);
+        JobSummaryResponse job = jobClient.getJobSummaryById(application.getJobId());
+        CompanySummaryResponse company = companyClient.getCompanySummaryById(application.getCompanyId());
+        UserResponse candidate = userClient.getUserById(application.getCandidateId());
 
         ApplicationScreening screening =
                 screeningRepository.findByApplicationId(application.getId()).orElse(null);

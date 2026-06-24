@@ -22,6 +22,7 @@ import java.util.List;
 @Table(name="companies")
 public class Company {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true,nullable = false)
@@ -57,6 +58,7 @@ public class Company {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private CompanyStatus status = CompanyStatus.PENDING_VERIFICATION;
 
     /** Official registration / CIN number for verification. */

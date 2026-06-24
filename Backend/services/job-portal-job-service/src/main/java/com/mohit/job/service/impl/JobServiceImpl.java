@@ -1,8 +1,10 @@
 package com.mohit.job.service.impl;
 
+import com.mohit.job.client.CompanyClient;
 import com.mohit.job.domain.JobStatus;
 import com.mohit.job.dto.request.JobRequest;
 import com.mohit.job.dto.request.JobSearchRequest;
+import com.mohit.job.dto.response.CompanyResponse;
 import com.mohit.job.dto.response.JobResponse;
 import com.mohit.job.dto.response.JobSummaryResponse;
 import com.mohit.job.mapper.JobMapper;
@@ -36,9 +38,12 @@ public class JobServiceImpl implements JobService {
     private final JobCategoryService categoryService;
     private final JobSkillService skillService;
     private final JobTagService tagService;
+    private final CompanyClient companyClient;
 
     @Override
     public JobResponse createJob(Long employerId, JobRequest req) throws Exception {
+        CompanyResponse company = companyClient.getMyCompany(employerId);
+
         JobCategory category = categoryService.getCategoryEntityById(req.getCategoryId());
 
         Set<JobSkill> skills = req.getSkillIds() != null
@@ -52,7 +57,7 @@ public class JobServiceImpl implements JobService {
                 .requirements(req.getRequirements())
                 .responsibilities(req.getResponsibilities())
                 .benefits(req.getBenefits())
-                .companyId(req.getCompanyId())
+                .companyId(company.getId())
                 .employerId(employerId)
                 .category(category)
                 .skills(skills)
