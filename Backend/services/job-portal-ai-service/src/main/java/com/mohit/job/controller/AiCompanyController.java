@@ -3,6 +3,7 @@ package com.mohit.job.controller;
 import com.mohit.job.dto.request.CompanyDescriptionRequest;
 import com.mohit.job.dto.request.CompanyTaglineRequest;
 import com.mohit.job.dto.response.AiTextResponse;
+import com.mohit.job.dto.response.ApiResponse;
 import com.mohit.job.dto.response.CompanyTaglineResponse;
 import com.mohit.job.service.CompanyAiService;
 import jakarta.validation.Valid;
@@ -18,14 +19,16 @@ public class AiCompanyController {
     private final CompanyAiService companyAiService;
 
     @PostMapping("/describe")
-    public ResponseEntity<AiTextResponse> generateCompanyDescription(
+    public ResponseEntity<ApiResponse<AiTextResponse>> generateCompanyDescription(
             @Valid @RequestBody CompanyDescriptionRequest request) {
-        return ResponseEntity.ok(companyAiService.generateCompanyDescription(request));
+        return ResponseEntity.ok(ApiResponse.success("Company description generated",
+                companyAiService.generateCompanyDescription(request)));
     }
 
     @PostMapping("/taglines")
-    public ResponseEntity<CompanyTaglineResponse> generateTaglines(
+    public ResponseEntity<ApiResponse<CompanyTaglineResponse>> generateTaglines(
             @Valid @RequestBody CompanyTaglineRequest request) {
-        return ResponseEntity.ok(companyAiService.generateCompanyTaglines(request));
+        return ResponseEntity.ok(ApiResponse.success("Taglines generated",
+                companyAiService.generateCompanyTaglines(request)));
     }
 }

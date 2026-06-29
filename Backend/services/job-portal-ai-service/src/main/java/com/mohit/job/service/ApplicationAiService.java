@@ -4,10 +4,12 @@ import com.mohit.job.client.GeminiClient;
 import com.mohit.job.dto.request.BulkScreeningRequest;
 import com.mohit.job.dto.request.CandidateScreeningInput;
 import com.mohit.job.dto.request.CoverLetterRequest;
+import com.mohit.job.dto.request.InterviewQuestionsRequest;
 import com.mohit.job.dto.request.ScreeningScoreRequest;
 import com.mohit.job.dto.request.SkillsGapRequest;
 import com.mohit.job.dto.response.AiTextResponse;
 import com.mohit.job.dto.response.BulkScreeningResponse;
+import com.mohit.job.dto.response.InterviewQuestionsResponse;
 import com.mohit.job.dto.response.ScreeningScoreResponse;
 import com.mohit.job.dto.response.SkillsGapResponse;
 import lombok.RequiredArgsConstructor;
@@ -151,6 +153,36 @@ public class ApplicationAiService {
                 """.formatted(req.getJobTitle(), candidateSkills, requiredSkills);
 
         return geminiClient.generateJson(SYSTEM, prompt, SkillsGapResponse.class);
+    }
+
+    public InterviewQuestionsResponse generateInterviewQuestions(InterviewQuestionsRequest req) {
+        String prompt = """
+                Generate interview questions for this job role.
+
+                Job Title: %s
+                Experience Level: %s
+                Interview Type: %s
+                Job Description: %s
+
+                Generate 8-10 questions and respond with ONLY this JSON:
+                {
+                  "questions": [
+                    { "question": "question text", "category": "Technical | Behavioral | Situational | HR", "difficulty": "Easy | Medium | Hard" }
+                  ]
+                }
+
+                Rules:
+                - Mix of technical, behavioral, and situational questions
+                - Difficulty should vary across Easy, Medium, Hard
+                - Questions must be specific to the job title and experience level
+                """.formatted(
+                req.getJobTitle(),
+                req.getExperienceLevel() != null ? req.getExperienceLevel() : "MID",
+                req.getInterviewType() != null ? req.getInterviewType() : "General",
+                req.getJobDescription() != null ? req.getJobDescription() : "Not provided"
+        );
+
+        return geminiClient.generateJson(SYSTEM, prompt, InterviewQuestionsResponse.class);
     }
 
     public AiTextResponse summarizeApplicationNotes(List<String> notes) {

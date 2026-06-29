@@ -4,6 +4,7 @@ import com.mohit.job.dto.request.HiringInsightsRequest;
 import com.mohit.job.dto.request.JobDescriptionRequest;
 import com.mohit.job.dto.request.SalaryRangeRequest;
 import com.mohit.job.dto.response.AiTextResponse;
+import com.mohit.job.dto.response.ApiResponse;
 import com.mohit.job.dto.response.HiringInsightsResponse;
 import com.mohit.job.dto.response.SalaryRangeResponse;
 import com.mohit.job.service.JobAiService;
@@ -20,50 +21,57 @@ public class AiJobController {
     private final JobAiService jobAiService;
 
     @PostMapping("/describe")
-    public ResponseEntity<AiTextResponse> generateJobDescription(
+    public ResponseEntity<ApiResponse<AiTextResponse>> generateJobDescription(
             @Valid @RequestBody JobDescriptionRequest request) {
-        return ResponseEntity.ok(jobAiService.generateJobDescription(request));
+        return ResponseEntity.ok(ApiResponse.success("Job description generated",
+                jobAiService.generateJobDescription(request)));
     }
 
     @GetMapping("/requirements")
-    public ResponseEntity<AiTextResponse> generateJobRequirements(
+    public ResponseEntity<ApiResponse<AiTextResponse>> generateJobRequirements(
             @RequestParam String title,
             @RequestParam(required = false) String category) {
-        return ResponseEntity.ok(jobAiService.generateJobRequirements(title, category));
+        return ResponseEntity.ok(ApiResponse.success("Requirements generated",
+                jobAiService.generateJobRequirements(title, category)));
     }
 
     @PostMapping("/salary-suggestion")
-    public ResponseEntity<SalaryRangeResponse> suggestSalary(
+    public ResponseEntity<ApiResponse<SalaryRangeResponse>> suggestSalary(
             @Valid @RequestBody SalaryRangeRequest request) {
-        return ResponseEntity.ok(jobAiService.suggestSalaryRange(request));
+        return ResponseEntity.ok(ApiResponse.success("Salary range suggested",
+                jobAiService.suggestSalaryRange(request)));
     }
 
     @GetMapping("/skills-recommendation")
-    public ResponseEntity<AiTextResponse> recommendSkills(
+    public ResponseEntity<ApiResponse<AiTextResponse>> recommendSkills(
             @RequestParam String title,
             @RequestParam(required = false) String description) {
-        return ResponseEntity.ok(jobAiService.recommendSkillsForJob(title, description));
+        return ResponseEntity.ok(ApiResponse.success("Skills recommended",
+                jobAiService.recommendSkillsForJob(title, description)));
     }
 
     @GetMapping("/responsibilities")
-    public ResponseEntity<AiTextResponse> generateResponsibilities(
+    public ResponseEntity<ApiResponse<AiTextResponse>> generateResponsibilities(
             @RequestParam String title,
             @RequestParam(required = false) String category) {
-        return ResponseEntity.ok(jobAiService.generateJobResponsibilities(title, category));
+        return ResponseEntity.ok(ApiResponse.success("Responsibilities generated",
+                jobAiService.generateJobResponsibilities(title, category)));
     }
 
     @GetMapping("/benefits")
-    public ResponseEntity<AiTextResponse> generateBenefits(
+    public ResponseEntity<ApiResponse<AiTextResponse>> generateBenefits(
             @RequestParam String title,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String jobType) {
-        return ResponseEntity.ok(jobAiService.generateJobBenefits(title, category, jobType));
+        return ResponseEntity.ok(ApiResponse.success("Benefits generated",
+                jobAiService.generateJobBenefits(title, category, jobType)));
     }
 
     @GetMapping("/tags-recommendation")
-    public ResponseEntity<AiTextResponse> recommendTags(
+    public ResponseEntity<ApiResponse<AiTextResponse>> recommendTags(
             @RequestParam String title,
             @RequestParam(required = false) String description) {
-        return ResponseEntity.ok(jobAiService.recommendTagsForJob(title, description));
+        return ResponseEntity.ok(ApiResponse.success("Tags recommended",
+                jobAiService.recommendTagsForJob(title, description)));
     }
 }

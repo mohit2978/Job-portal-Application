@@ -6,6 +6,7 @@ import com.mohit.job.dto.request.ResumeParseRequest;
 import com.mohit.job.dto.request.ResumeSummaryRequest;
 import com.mohit.job.dto.request.WorkExperienceBulletRequest;
 import com.mohit.job.dto.response.AiTextResponse;
+import com.mohit.job.dto.response.ApiResponse;
 import com.mohit.job.dto.response.CareerFeedbackResponse;
 import com.mohit.job.dto.response.ResumeImprovementResponse;
 import com.mohit.job.dto.response.ResumeParseResponse;
@@ -24,32 +25,37 @@ public class AiResumeController {
     private final ResumeAiService resumeAiService;
 
     @PostMapping("/summary")
-    public ResponseEntity<AiTextResponse> generateSummary(
+    public ResponseEntity<ApiResponse<AiTextResponse>> generateSummary(
             @RequestBody ResumeSummaryRequest request) {
-        return ResponseEntity.ok(resumeAiService.generateProfessionalSummary(request));
+        return ResponseEntity.ok(ApiResponse.success("Professional summary generated",
+                resumeAiService.generateProfessionalSummary(request)));
     }
 
     @PostMapping("/experience-bullets")
-    public ResponseEntity<WorkExperienceBulletsResponse> generateBullets(
+    public ResponseEntity<ApiResponse<WorkExperienceBulletsResponse>> generateBullets(
             @Valid @RequestBody WorkExperienceBulletRequest request) {
-        return ResponseEntity.ok(resumeAiService.generateWorkExperienceBullets(request));
+        return ResponseEntity.ok(ApiResponse.success("Bullet points generated",
+                resumeAiService.generateWorkExperienceBullets(request)));
     }
 
     @PostMapping("/parse")
-    public ResponseEntity<ResumeParseResponse> parseResume(
+    public ResponseEntity<ApiResponse<ResumeParseResponse>> parseResume(
             @Valid @RequestBody ResumeParseRequest request) {
-        return ResponseEntity.ok(resumeAiService.parseResume(request));
+        return ResponseEntity.ok(ApiResponse.success("Resume parsed successfully",
+                resumeAiService.parseResume(request)));
     }
 
     @PostMapping("/improvements")
-    public ResponseEntity<ResumeImprovementResponse> getImprovements(
+    public ResponseEntity<ApiResponse<ResumeImprovementResponse>> getImprovements(
             @Valid @RequestBody ResumeImprovementRequest request) {
-        return ResponseEntity.ok(resumeAiService.getResumeImprovementTips(request));
+        return ResponseEntity.ok(ApiResponse.success("Resume improvements analyzed",
+                resumeAiService.getResumeImprovementTips(request)));
     }
 
     @PostMapping("/career-feedback")
-    public ResponseEntity<CareerFeedbackResponse> getCareerFeedback(
+    public ResponseEntity<ApiResponse<CareerFeedbackResponse>> getCareerFeedback(
             @Valid @RequestBody CareerFeedbackRequest request) {
-        return ResponseEntity.ok(resumeAiService.getCareerFeedback(request));
+        return ResponseEntity.ok(ApiResponse.success("Career feedback generated",
+                resumeAiService.getCareerFeedback(request)));
     }
 }
