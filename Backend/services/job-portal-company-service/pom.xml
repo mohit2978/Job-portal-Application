@@ -110,6 +110,15 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <to>
+                        <image>mohitk004/job-portal-company-service:1.0.0</image>
+                    </to>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
