@@ -23,6 +23,7 @@
         <module>job-portal-resume-service</module>
         <module>job-portal-preference-service</module>
         <module>job-portal-ai-service</module>
+        <module>job-portal-notification-service</module>
     </modules>
 
 </project>

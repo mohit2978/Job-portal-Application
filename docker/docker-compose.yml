@@ -1,0 +1,366 @@
+
+
+networks:
+  job-portal-net:
+    driver: bridge
+
+volumes:
+  userdb_data:
+  companydb_data:
+  jobdb_data:
+  applicationdb_data:
+  resumedb_data:
+  preferencedb_data:
+
+services:
+
+  # ============================================================
+  # DATABASES  (one container per service)
+  # ============================================================
+
+  userdb:
+    image: mysql:8.0
+    container_name: job-portal-userdb
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: job_portal_user_db
+    volumes:
+      - userdb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - job-portal-net
+
+  companydb:
+    image: mysql:8.0
+    container_name: job-portal-companydb
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: job_portal_company_db
+    volumes:
+      - companydb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - job-portal-net
+
+  jobdb:
+    image: mysql:8.0
+    container_name: job-portal-jobdb
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: job_portal_job_db
+    volumes:
+      - jobdb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - job-portal-net
+
+  applicationdb:
+    image: mysql:8.0
+    container_name: job-portal-applicationdb
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: job_portal_application_db
+    volumes:
+      - applicationdb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - job-portal-net
+
+  resumedb:
+    image: mysql:8.0
+    container_name: job-portal-resumedb
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "3311:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: job_portal_resume_db
+    volumes:
+      - resumedb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - job-portal-net
+
+  preferencedb:
+    image: mysql:8.0
+    container_name: job-portal-preferencedb
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "3312:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: job_portal_preference_db
+    volumes:
+      - preferencedb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - job-portal-net
+
+  # ============================================================
+  # SPRING CLOUD
+  # ============================================================
+
+  discovery:
+    image: mohitk004/job-portal-discovery:1.0.0
+    container_name: job-portal-discovery
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+    networks:
+      - job-portal-net
+
+  config-server:
+    image: mohitk004/job-portal-config-server:1.0.0
+    container_name: job-portal-config-server
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "8888:8888"
+    depends_on:
+      discovery:
+        condition: service_healthy
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      ENCRYPT_KEY: ${ENCRYPT_KEY}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8888/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    networks:
+      - job-portal-net
+
+  gateway:
+    image: mohitk004/job-portal-gateway:1.0.0
+    container_name: job-portal-gateway
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5000:5000"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5000
+    networks:
+      - job-portal-net
+
+  # ============================================================
+  # APPLICATION SERVICES
+  # ============================================================
+
+  user-service:
+    image: mohitk004/job-portal-user-service:1.0.0
+    container_name: job-portal-user-service
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5001:5001"
+    depends_on:
+      userdb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:mysql://userdb:3306/job_portal_user_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5001
+    networks:
+      - job-portal-net
+
+  company-service:
+    image: mohitk004/job-portal-company-service:1.0.0
+    container_name: job-portal-company-service
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5002:5002"
+    depends_on:
+      companydb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:mysql://companydb:3306/job_portal_company_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5002
+    networks:
+      - job-portal-net
+
+  job-service:
+    image: mohitk004/job-portal-job-service:1.0.0
+    container_name: job-portal-job-service
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5003:5003"
+    depends_on:
+      jobdb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:mysql://jobdb:3306/job_portal_job_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5003
+    networks:
+      - job-portal-net
+
+  resume-service:
+    image: mohitk004/job-portal-resume-service:1.0.0
+    container_name: job-portal-resume-service
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5004:5004"
+    depends_on:
+      resumedb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:mysql://resumedb:3306/job_portal_resume_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5004
+    networks:
+      - job-portal-net
+
+  application-service:
+    image: mohitk004/job-portal-application-service:1.0.0
+    container_name: job-portal-application-service
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5005:5005"
+    depends_on:
+      applicationdb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:mysql://applicationdb:3306/job_portal_application_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5005
+    networks:
+      - job-portal-net
+
+  preference-service:
+    image: mohitk004/job-portal-preference-service:1.0.0
+    container_name: job-portal-preference-service
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5006:5006"
+    depends_on:
+      preferencedb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_DATASOURCE_URL: jdbc:mysql://preferencedb:3306/job_portal_preference_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5006
+    networks:
+      - job-portal-net
+
+  ai-service:
+    image: mohitk004/job-portal-ai-service:1.0.0
+    container_name: job-portal-ai-service
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    ports:
+      - "5007:5007"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka/
+      SERVER_PORT: 5007
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    networks:
+      - job-portal-net
