@@ -2,6 +2,7 @@ package com.mohit.job.service.impl;
 
 import com.mohit.job.dto.request.AddApplicationNoteRequest;
 import com.mohit.job.dto.response.ApplicationNoteResponse;
+import com.mohit.job.event.ApplicationEventPublisher;
 import com.mohit.job.mapper.ApplicationMapper;
 import com.mohit.job.modal.ApplicationNote;
 import com.mohit.job.modal.JobApplication;
@@ -20,6 +21,7 @@ public class ApplicationNoteServiceImpl implements ApplicationNoteService {
 
     private final ApplicationNoteRepository noteRepository;
     private final ApplicationService applicationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public ApplicationNoteResponse addNote(Long applicationId, Long employerId, AddApplicationNoteRequest req) throws Exception {
@@ -32,7 +34,9 @@ public class ApplicationNoteServiceImpl implements ApplicationNoteService {
                 .content(req.getContent())
                 .build();
 
-        return ApplicationMapper.toNoteResponse(noteRepository.save(note));
+        ApplicationNoteResponse response = ApplicationMapper.toNoteResponse(noteRepository.save(note));
+        eventPublisher.publishNoteAdded(application);
+        return response;
     }
 
     @Override

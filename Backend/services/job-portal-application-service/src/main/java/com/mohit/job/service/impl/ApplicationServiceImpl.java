@@ -5,6 +5,7 @@ import com.mohit.job.client.JobClient;
 import com.mohit.job.client.ResumeClient;
 import com.mohit.job.client.UserClient;
 import com.mohit.job.domain.ApplicationStatus;
+import com.mohit.job.event.ApplicationEventPublisher;
 import com.mohit.job.dto.request.CompanyApplicationFilterRequest;
 import com.mohit.job.dto.request.CreateApplicationRequest;
 import com.mohit.job.dto.request.UpdateApplicationStatusRequest;
@@ -47,6 +48,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ResumeClient resumeClient;
     private final CompanyClient companyClient;
     private final UserClient userClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public ApplicationResponse createApplication(Long candidateId, CreateApplicationRequest req) throws Exception {
@@ -143,6 +145,8 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .note(req.getNote())
                 .build());
 
+        eventPublisher.publishStatusChanged(application, oldStatus, req.getNote());
+
         return buildFullResponse(application);
     }
 
@@ -171,6 +175,8 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .changedByUserId(candidateId)
                 .note(req.getReason())
                 .build());
+
+        eventPublisher.publishStatusChanged(application, oldStatus, req.getReason());
 
         return buildFullResponse(application);
     }
