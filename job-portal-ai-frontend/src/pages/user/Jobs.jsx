@@ -8,76 +8,13 @@ import {
 } from "@/components/ui/select"
 import {
   Briefcase, TrendingUp, X, ChevronLeft, ChevronRight,
-  Wand2, SlidersHorizontal, Search, MapPin, Clock, Users,
+  Wand2, SlidersHorizontal, Search,
 } from "lucide-react"
-
-const MOCK_JOBS = [
-  {
-    id: 1, title: "Senior React Developer", companyName: "TechCorp",
-    city: "Bangalore", state: "Karnataka", jobType: "FULL_TIME",
-    workMode: "REMOTE", experienceLevel: "SENIOR",
-    minSalary: 1500000, maxSalary: 2500000,
-    applicationCount: 34, openings: 2,
-    applicationDeadline: "2026-08-15",
-    skills: [{ name: "React" }, { name: "TypeScript" }, { name: "Redux" }],
-    createdAt: "2026-07-01T10:00:00",
-  },
-  {
-    id: 2, title: "Backend Java Engineer", companyName: "Infosys",
-    city: "Pune", state: "Maharashtra", jobType: "FULL_TIME",
-    workMode: "HYBRID", experienceLevel: "MID",
-    minSalary: 800000, maxSalary: 1400000,
-    applicationCount: 12, openings: 5,
-    applicationDeadline: "2026-08-20",
-    skills: [{ name: "Java" }, { name: "Spring Boot" }, { name: "Kafka" }],
-    createdAt: "2026-07-03T10:00:00",
-  },
-  {
-    id: 3, title: "Frontend Developer Intern", companyName: "Startup XYZ",
-    city: "Mumbai", state: "Maharashtra", jobType: "INTERNSHIP",
-    workMode: "ON_SITE", experienceLevel: "ENTRY",
-    minSalary: 200000, maxSalary: 400000,
-    applicationCount: 78, openings: 1,
-    applicationDeadline: "2026-07-30",
-    skills: [{ name: "React" }, { name: "CSS" }],
-    createdAt: "2026-07-05T10:00:00",
-  },
-  {
-    id: 4, title: "DevOps Engineer", companyName: "CloudBase",
-    city: "Hyderabad", state: "Telangana", jobType: "FULL_TIME",
-    workMode: "REMOTE", experienceLevel: "SENIOR",
-    minSalary: 1800000, maxSalary: 2800000,
-    applicationCount: 9, openings: 3,
-    applicationDeadline: "2026-09-01",
-    skills: [{ name: "Docker" }, { name: "Kubernetes" }, { name: "AWS" }],
-    createdAt: "2026-07-06T10:00:00",
-  },
-  {
-    id: 5, title: "Data Analyst", companyName: "Analytics Co",
-    city: "Chennai", state: "Tamil Nadu", jobType: "CONTRACT",
-    workMode: "HYBRID", experienceLevel: "MID",
-    minSalary: 700000, maxSalary: 1100000,
-    applicationCount: 21, openings: 2,
-    applicationDeadline: "2026-08-10",
-    skills: [{ name: "Python" }, { name: "SQL" }, { name: "Power BI" }],
-    createdAt: "2026-07-07T10:00:00",
-  },
-  {
-    id: 6, title: "Full Stack Developer", companyName: "WebWorks",
-    city: "Delhi", state: "Delhi", jobType: "FULL_TIME",
-    workMode: "ON_SITE", experienceLevel: "MID",
-    minSalary: 900000, maxSalary: 1600000,
-    applicationCount: 45, openings: 4,
-    applicationDeadline: "2026-08-25",
-    skills: [{ name: "Node.js" }, { name: "React" }, { name: "MongoDB" }],
-    createdAt: "2026-07-08T10:00:00",
-  },
-]
+import JobCard from "@/components/user/jobs/JobCard"
+import JobFilters from "@/components/user/jobs/JobFilters"
+import { MOCK_JOBS } from "@/data/mockJobs"
 
 const JOBS_PER_PAGE = 4
-const JOB_TYPES  = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"]
-const WORK_MODES = ["REMOTE", "HYBRID", "ON_SITE"]
-const EXP_LEVELS = ["ENTRY", "MID", "SENIOR"]
 
 const SORT_OPTIONS = [
   { value: "newest",       label: "Newest first" },
@@ -89,17 +26,6 @@ const SORT_OPTIONS = [
 const DEFAULT_FILTERS = {
   jobTypes: [], workModes: [], expLevels: [],
   minSalary: 0, maxSalary: 9999999,
-}
-
-function label(v) {
-  return v.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-}
-
-function fmtSalary(val) {
-  if (!val) return null
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency", currency: "INR", maximumFractionDigits: 0,
-  }).format(val)
 }
 
 function sortJobs(jobs, sortBy) {
@@ -125,123 +51,6 @@ function JobCardSkeleton() {
               <Skeleton className="h-5 w-20 rounded-full" />
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function JobCard({ job }) {
-  return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer border-slate-200">
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex gap-4 flex-1">
-            <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-              <Briefcase className="h-6 w-6 text-slate-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-slate-900 truncate">{job.title}</h3>
-              <p className="text-sm text-slate-500 mb-2">{job.companyName}</p>
-
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                <Badge variant="secondary" className="text-xs">{label(job.jobType)}</Badge>
-                <Badge variant="outline"   className="text-xs">{label(job.workMode)}</Badge>
-                <Badge variant="outline"   className="text-xs">{label(job.experienceLevel)}</Badge>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {job.city}, {job.state}
-                </span>
-                {job.minSalary && (
-                  <span className="flex items-center gap-1 text-green-600 font-medium">
-                    {fmtSalary(job.minSalary)} – {fmtSalary(job.maxSalary)}
-                  </span>
-                )}
-                <span className="flex items-center gap-1">
-                  <Users className="h-3 w-3" />
-                  {job.applicationCount} applied
-                </span>
-                {job.applicationDeadline && (
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    Deadline: {job.applicationDeadline}
-                  </span>
-                )}
-              </div>
-
-              {job.skills?.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {job.skills.slice(0, 4).map(s => (
-                    <span key={s.name} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
-                      {s.name}
-                    </span>
-                  ))}
-                  {job.skills.length > 4 && (
-                    <span className="text-xs text-slate-400">+{job.skills.length - 4} more</span>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-          <Button size="sm" className="shrink-0">Apply</Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function JobFilters({ filters, setFilters, onReset }) {
-  function toggle(key, value) {
-    setFilters(prev => ({
-      ...prev,
-      [key]: prev[key].includes(value)
-        ? prev[key].filter(v => v !== value)
-        : [...prev[key], value],
-    }))
-  }
-
-  return (
-    <Card className="sticky top-4">
-      <CardContent className="p-4 space-y-5">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-slate-800 text-sm">Filters</h3>
-          <button onClick={onReset} className="text-xs text-blue-500 hover:underline">Reset</button>
-        </div>
-
-        <div>
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Job Type</p>
-          {JOB_TYPES.map(v => (
-            <label key={v} className="flex items-center gap-2 py-1 cursor-pointer">
-              <input type="checkbox" checked={filters.jobTypes.includes(v)}
-                onChange={() => toggle("jobTypes", v)} className="rounded" />
-              <span className="text-sm text-slate-700">{label(v)}</span>
-            </label>
-          ))}
-        </div>
-
-        <div>
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Work Mode</p>
-          {WORK_MODES.map(v => (
-            <label key={v} className="flex items-center gap-2 py-1 cursor-pointer">
-              <input type="checkbox" checked={filters.workModes.includes(v)}
-                onChange={() => toggle("workModes", v)} className="rounded" />
-              <span className="text-sm text-slate-700">{label(v)}</span>
-            </label>
-          ))}
-        </div>
-
-        <div>
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Experience</p>
-          {EXP_LEVELS.map(v => (
-            <label key={v} className="flex items-center gap-2 py-1 cursor-pointer">
-              <input type="checkbox" checked={filters.expLevels.includes(v)}
-                onChange={() => toggle("expLevels", v)} className="rounded" />
-              <span className="text-sm text-slate-700">{label(v)}</span>
-            </label>
-          ))}
         </div>
       </CardContent>
     </Card>
