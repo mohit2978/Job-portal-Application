@@ -1,20 +1,31 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Briefcase, MapPin, Clock, Users } from "lucide-react"
+import { Briefcase, MapPin, Clock } from "lucide-react"
 
 function label(v) {
+  if (!v) return ""
   return v.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
 }
 
-function fmtSalary(val) {
-  if (!val) return null
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency", currency: "INR", maximumFractionDigits: 0,
+function salaryLabel(job) {
+  if (job?.salaryDisclosed === false) return "Salary negotiable"
+  if (!job?.minSalary) return null
+
+  const fmt = val => new Intl.NumberFormat("en-US", {
+    style: "currency", currency: job?.currency ?? "USD", maximumFractionDigits: 0,
   }).format(val)
+
+  const range = `${fmt(job.minSalary)} – ${fmt(job.maxSalary)}`
+  return job?.salaryPeriod === "HOURLY" ? `${range}/hr` : range
 }
 
-export default function JobCard({ job }) {
+export default function JobCard({ job, filters = {} }) {
+  const { jobTypes = [], workModes = [], expLevels = [] } = filters
+
+  const location = [job?.city, job?.state, job?.country].filter(Boolean).join(", ")
+  const salary   = salaryLabel(job)
+
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer border-slate-200">
       <CardContent className="p-5">
@@ -23,31 +34,45 @@ export default function JobCard({ job }) {
             <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
               <Briefcase className="h-6 w-6 text-slate-400" />
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-slate-900 truncate">{job.title}</h3>
-              <p className="text-sm text-slate-500 mb-2">{job.companyName}</p>
 
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-slate-900 truncate">{job?.title}</h3>
+
+              {/* Location row */}
+              {location && (
+                <p className="text-sm text-slate-500 mb-2 flex items-center gap-1">
+                  <MapPin className="h-3 w-3 shrink-0" />{location}
+                </p>
+              )}
+
+              {/* Type / mode / level badges */}
               <div className="flex flex-wrap gap-1.5 mb-3">
-                <Badge variant="secondary" className="text-xs">{label(job.jobType)}</Badge>
-                <Badge variant="outline"   className="text-xs">{label(job.workMode)}</Badge>
-                <Badge variant="outline"   className="text-xs">{label(job.experienceLevel)}</Badge>
+                {job?.jobType && (
+                  <Badge className={`text-xs ${jobTypes.includes(job.jobType) ? "bg-green-100 text-green-700 border-green-200" : "bg-secondary text-secondary-foreground"}`}>
+                    {label(job.jobType)}
+                  </Badge>
+                )}
+                {job?.workMode && (
+                  <Badge className={`text-xs ${workModes.includes(job.workMode) ? "bg-green-100 text-green-700 border-green-200" : "bg-transparent border border-input text-foreground"}`}>
+                    {label(job.workMode)}
+                  </Badge>
+                )}
+                {job?.experienceLevel && (
+                  <Badge className={`text-xs ${expLevels.includes(job.experienceLevel) ? "bg-green-100 text-green-700 border-green-200" : "bg-transparent border border-input text-foreground"}`}>
+                    {label(job.experienceLevel)}
+                  </Badge>
+                )}
               </div>
 
+              {/* Salary + openings + deadline */}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {job.city}, {job.state}
-                </span>
-                {job.minSalary && (
-                  <span className="flex items-center gap-1 text-green-600 font-medium">
-                    {fmtSalary(job.minSalary)} – {fmtSalary(job.maxSalary)}
-                  </span>
+                {salary && (
+                  <span className="text-green-600 font-medium">{salary}</span>
                 )}
-                <span className="flex items-center gap-1">
-                  <Users className="h-3 w-3" />
-                  {job.applicationCount} applied
-                </span>
-                {job.applicationDeadline && (
+                {job?.openings && (
+                  <span>{job.openings} opening{job.openings > 1 ? "s" : ""}</span>
+                )}
+                {job?.applicationDeadline && (
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     Deadline: {job.applicationDeadline}
@@ -55,7 +80,8 @@ export default function JobCard({ job }) {
                 )}
               </div>
 
-              {job.skills?.length > 0 && (
+              {/* Skill tags */}
+              {job?.skills?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {job.skills.slice(0, 4).map(s => (
                     <span key={s.name} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
@@ -69,6 +95,7 @@ export default function JobCard({ job }) {
               )}
             </div>
           </div>
+
           <Button size="sm" className="shrink-0">Apply</Button>
         </div>
       </CardContent>

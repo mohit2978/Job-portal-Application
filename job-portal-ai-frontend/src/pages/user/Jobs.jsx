@@ -8,32 +8,40 @@ import {
 } from "@/components/ui/select"
 import {
   Briefcase, TrendingUp, X, ChevronLeft, ChevronRight,
-  Wand2, SlidersHorizontal, Search,
+  Wand2, SlidersHorizontal, Search, Sparkles,
 } from "lucide-react"
 import JobCard from "@/components/user/jobs/JobCard"
 import JobFilters from "@/components/user/jobs/JobFilters"
-import { MOCK_JOBS } from "@/data/mockJobs"
+import rawJobs from "@/data/jobs.json"
+import SKILLS from "@/data/jobSkills.json"
+
+// Add id (1-based) and resolve skillIds → skill objects to match backend shape
+const JOBS = rawJobs.map((job, i) => ({
+  ...job,
+  id: i + 1,
+  skills: (job.skillIds ?? []).map(id => SKILLS[id - 1]).filter(Boolean),
+}))
 
 const JOBS_PER_PAGE = 4
 
 const SORT_OPTIONS = [
-  { value: "newest",       label: "Newest first" },
-  { value: "salary-high",  label: "Salary: high → low" },
-  { value: "salary-low",   label: "Salary: low → high" },
-  { value: "most-applied", label: "Most applied" },
+  { value: "newest",      label: "Newest first" },
+  { value: "salary-high", label: "Salary: high → low" },
+  { value: "salary-low",  label: "Salary: low → high" },
+  { value: "openings",    label: "Most openings" },
 ]
 
 const DEFAULT_FILTERS = {
   jobTypes: [], workModes: [], expLevels: [],
-  minSalary: 0, maxSalary: 9999999,
+  minSalary: 0, maxSalary: 200000,
 }
 
 function sortJobs(jobs, sortBy) {
   const arr = [...jobs]
-  if (sortBy === "salary-high")  return arr.sort((a, b) => (b.maxSalary ?? 0) - (a.maxSalary ?? 0))
-  if (sortBy === "salary-low")   return arr.sort((a, b) => (a.minSalary ?? 0) - (b.minSalary ?? 0))
-  if (sortBy === "most-applied") return arr.sort((a, b) => (b.applicationCount ?? 0) - (a.applicationCount ?? 0))
-  return arr.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  if (sortBy === "salary-high") return arr.sort((a, b) => (b.maxSalary ?? 0) - (a.maxSalary ?? 0))
+  if (sortBy === "salary-low")  return arr.sort((a, b) => (a.minSalary ?? 0) - (b.minSalary ?? 0))
+  if (sortBy === "openings")    return arr.sort((a, b) => (b.openings ?? 0) - (a.openings ?? 0))
+  return arr.sort((a, b) => new Date(b.applicationDeadline) - new Date(a.applicationDeadline))
 }
 
 function JobCardSkeleton() {
@@ -58,7 +66,7 @@ function JobCardSkeleton() {
 }
 
 export default function Jobs() {
-  const jobs      = MOCK_JOBS
+  const jobs      = JOBS
   const isLoading = false
   const error     = null
 
@@ -75,8 +83,9 @@ export default function Jobs() {
       if (filters.workModes.length > 0 && !filters.workModes.includes(job.workMode))         return false
       if (filters.expLevels.length > 0 && !filters.expLevels.includes(job.experienceLevel)) return false
       if (filters.minSalary > 0 && job.maxSalary != null && job.maxSalary < filters.minSalary) return false
+      if (filters.maxSalary < 200000 && job.minSalary != null && job.minSalary > filters.maxSalary) return false
       if (keyword && !job.title.toLowerCase().includes(keyword.toLowerCase()) &&
-          !job.companyName.toLowerCase().includes(keyword.toLowerCase())) return false
+          ![job.city, job.state, job.country].filter(Boolean).join(" ").toLowerCase().includes(keyword.toLowerCase())) return false
       return true
     })
     return sortJobs(result, sortBy)
@@ -100,6 +109,10 @@ export default function Jobs() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 py-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white text-sm px-3 py-1.5 rounded-full mb-4">
+            <Sparkles className="h-4 w-4" />
+            AI-Powered Job Search
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
             Find Your Next Opportunity
           </h1>
@@ -128,11 +141,13 @@ export default function Jobs() {
         </div>
       </div>
 
-      {/* Content */}
+      {/* ── Content ─────────────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* Controls row */}
+        {/* ── Controls row: job count + search input + sort dropdown + mobile filter button ── */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+
+          {/* Left: job count + active filter badge */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -142,6 +157,7 @@ export default function Jobs() {
                 {isLoading ? "Loading..." : `${filteredSorted.length} jobs found`}
               </p>
             </div>
+            {/* Active filter count badge — click to reset all */}
             {activeFilterCount > 0 && (
               <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer" onClick={handleReset}>
                 <X className="h-3 w-3 mr-1" />
@@ -150,7 +166,10 @@ export default function Jobs() {
             )}
           </div>
 
+          {/* Right: keyword search + sort dropdown + mobile filters toggle */}
           <div className="flex items-center gap-2">
+
+            {/* Keyword search input */}
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400 pointer-events-none" />
               <input
@@ -161,6 +180,8 @@ export default function Jobs() {
                 className="pl-8 pr-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 w-48"
               />
             </div>
+
+            {/* Sort dropdown */}
             <div className="flex items-center gap-1.5">
               <TrendingUp className="h-4 w-4 text-slate-400" />
               <Select value={sortBy} onValueChange={v => { setSortBy(v); setPage(1) }}>
@@ -174,6 +195,8 @@ export default function Jobs() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Mobile: show/hide filters button (hidden on lg+) */}
             <Button variant="outline" size="sm" className="lg:hidden"
               onClick={() => setShowFilters(!showFilters)}>
               <SlidersHorizontal className="h-4 w-4 mr-1.5" />
@@ -187,9 +210,10 @@ export default function Jobs() {
           </div>
         </div>
 
-        {/* Grid */}
+        {/* ── Main grid: sidebar filters (col 1) + job list (col 2-4) ─────── */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
+          {/* Sidebar filters — hidden on mobile unless showFilters=true */}
           <div className={`${showFilters ? "block" : "hidden"} lg:block`}>
             <JobFilters
               filters={filters}
@@ -198,8 +222,10 @@ export default function Jobs() {
             />
           </div>
 
+          {/* Job list column */}
           <div className="lg:col-span-3 space-y-3">
 
+            {/* Error state */}
             {error && (
               <Card className="border-red-200 bg-red-50">
                 <CardContent className="p-6 text-center">
@@ -209,8 +235,10 @@ export default function Jobs() {
               </Card>
             )}
 
+            {/* Loading state — skeleton cards */}
             {isLoading && Array.from({ length: 4 }).map((_, i) => <JobCardSkeleton key={i} />)}
 
+            {/* Empty state — no jobs match filters */}
             {!isLoading && !error && filteredSorted.length === 0 && (
               <Card>
                 <CardContent className="p-14 text-center">
@@ -227,24 +255,32 @@ export default function Jobs() {
               </Card>
             )}
 
-            {!isLoading && paginatedJobs.map(job => <JobCard key={job.id} job={job} />)}
+            {/* Job cards — current page slice */}
+            {!isLoading && paginatedJobs.map(job => <JobCard key={job.id} job={job} filters={filters} />)}
 
+            {/* Pagination */}
             {!isLoading && filteredSorted.length > JOBS_PER_PAGE && (
               <div className="flex items-center justify-center gap-1 pt-4">
+                {/* Prev button */}
                 <Button variant="outline" size="sm" disabled={page === 1}
                   onClick={() => setPage(p => p - 1)} className="h-8 w-8 p-0">
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
+
+                {/* Page number buttons */}
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                   <Button key={p} variant={page === p ? "default" : "outline"}
                     size="sm" onClick={() => setPage(p)} className="h-8 w-8 p-0">
                     {p}
                   </Button>
                 ))}
+
+                {/* Next button */}
                 <Button variant="outline" size="sm" disabled={page === totalPages}
                   onClick={() => setPage(p => p + 1)} className="h-8 w-8 p-0">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
+
                 <span className="text-xs text-slate-400 ml-2">Page {page} of {totalPages}</span>
               </div>
             )}
