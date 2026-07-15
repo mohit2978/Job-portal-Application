@@ -5,6 +5,7 @@ import LandingPage from "./pages/LandingPage"
 import UserLayout from "./components/user/layout/UserLayout"
 import JobsPage from "./pages/user/Jobs"
 import JobDetails from "./pages/user/JobDetails"
+import ApplyJob from "./pages/user/ApplyJob"
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route element={<UserLayout />}>
           <Route path="/jobs" element={<JobsPage />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
+          <Route path="/jobs/:id/apply" element={<ApplyJob />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

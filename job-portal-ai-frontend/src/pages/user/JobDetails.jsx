@@ -333,7 +333,7 @@ export default function JobDetails() {
   const reqList  = toList(job.requirements)
   const benList  = toList(job.benefits)
 
-  const handleApply = () => navigate(`/apply/${id}`)
+  const handleApply = () => navigate(`/jobs/${id}/apply`)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
