@@ -13,6 +13,11 @@ const TEMPLATE_COLORS = {
   CREATIVE:     "bg-violet-600 text-white",
 }
 
+/**
+ * SelectResume Component
+ * Allows candidates to select one of their saved resumes to submit with their application.
+ * Links to the resume creator if no resumes exist, and provides a preview option.
+ */
 export default function SelectResume({ selectedResume, setSelectedResume, resumes }) {
   const navigate = useNavigate()
 

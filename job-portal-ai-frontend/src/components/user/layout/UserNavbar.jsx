@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,10 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Search, Bell, User, Briefcase, FileText, Sparkles, Settings, LogOut, ScrollText, Bookmark, Target } from "lucide-react"
+import { logout } from "@/store/user/userAuth"
 
+/**
+ * UserNavbar Component
+ * Renders the top navigation bar for the candidate dashboard, including the search input field,
+ * quick links to features (Jobs, AI Tools, AI Match, Resumes, Applications), saved jobs counter,
+ * and profile dropdown menu (with profile update, settings, and logout triggers).
+ */
 export default function UserNavbar() {
   const navigate = useNavigate()
   const location = useLocation()
+  const dispatch = useDispatch()
+  const { user } = useSelector((s) => s.auth)
+  const { savedJobs } = useSelector((s) => s.savedJob)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [searchLocation, setSearchLocation] = useState("")
@@ -26,6 +37,7 @@ export default function UserNavbar() {
   }
 
   const handleLogout = () => {
+    dispatch(logout())
     navigate("/login")
   }
 
@@ -153,8 +165,8 @@ export default function UserNavbar() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">User</p>
-                    <p className="text-xs text-slate-500">user@example.com</p>
+                    <p className="text-sm font-medium">{user?.name ?? user?.username ?? "User"}</p>
+                    <p className="text-xs text-slate-500">{user?.email ?? ""}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />

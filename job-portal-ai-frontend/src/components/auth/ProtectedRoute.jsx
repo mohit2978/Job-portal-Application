@@ -1,6 +1,11 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useSelector } from "react-redux"
 
+/**
+ * ProtectedRoute Component
+ * Router guard component that restricts access to authenticated users.
+ * Redirects unauthenticated users back to the `/login` route and stores their intended landing location.
+ */
 export default function ProtectedRoute() {
   const location = useLocation()
   const { isAuthenticated, authStatus } = useSelector((state) => state.auth)

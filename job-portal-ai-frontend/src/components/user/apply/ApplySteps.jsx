@@ -7,6 +7,11 @@ const steps = [
   { id: 4, name: "Review", description: "Review and submit" },
 ]
 
+/**
+ * ApplySteps Component
+ * Renders a step-by-step progress indicator for the job application wizard
+ * (Resume -> Cover Letter -> Details -> Review).
+ */
 export default function ApplySteps({ currentStep }) {
   return (
     <div className="w-full py-6">

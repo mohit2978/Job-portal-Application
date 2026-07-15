@@ -1,5 +1,9 @@
 const FOOTER_LINKS = ["About", "Contact", "Privacy Policy", "Terms"]
 
+/**
+ * Footer Component
+ * Renders the global site footer displaying copyright info and links to generic pages (About, Contact, Privacy Policy, Terms).
+ */
 export default function Footer() {
   return (
     <footer className="border-t border-slate-200 bg-white">

@@ -9,6 +9,11 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
+/**
+ * AdditionalDetails Component (QuestionForm.jsx)
+ * Renders form fields to collect supplementary application details from the applicant,
+ * specifically their expected salary (INR) and the date they are available to start.
+ */
 export default function AdditionalDetails({
   expectedSalary,
   setExpectedSalary,

@@ -1,6 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
+/**
+ * ApplyJobSkeleton Component
+ * Renders a placeholder skeleton screen to represent loading state during the job application process.
+ */
 export default function ApplyJobSkeleton() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">

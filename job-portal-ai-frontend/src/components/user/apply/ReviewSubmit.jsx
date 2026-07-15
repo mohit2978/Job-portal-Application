@@ -1,6 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin } from "lucide-react"
 
+/**
+ * ReviewSubmit Component
+ * Displays a compilation of all inputs gathered in previous steps of the application wizard,
+ * allowing the candidate to verify their selected resume, cover letter, and additional details before final submission.
+ */
 export default function ReviewSubmit({ resume, resumes, coverLetter, expectedSalary, availableFrom, job }) {
   const selectedResumeTitle = resumes.find((r) => r.id.toString() === resume)?.title ?? `Resume #${resume}`
   const location = [job?.city, job?.state, job?.country].filter(Boolean).join(", ")

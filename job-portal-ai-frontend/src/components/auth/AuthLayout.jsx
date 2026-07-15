@@ -20,6 +20,12 @@ const FLOATING_CARDS = [
   { icon: Users,     label: "500+ views", sub: "Your profile this week",    color: "bg-violet-500" },
 ]
 
+/**
+ * AuthLayout Component
+ * Shared layout component used for authentication pages (Login, Register, Forgot Password, Reset Password).
+ * Displays a premium left panel featuring platform features and highlights,
+ * and a right panel hosting the auth form card.
+ */
 export default function AuthLayout({ title, description, children, footerText, footerLink, footerLinkText }) {
   return (
     <div className="min-h-screen flex">

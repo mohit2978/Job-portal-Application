@@ -2,6 +2,11 @@ import { useRef } from "react"
 import { Camera, ImagePlus, Loader2 } from "lucide-react"
 import { getInitials } from "./profileUtils"
 
+/**
+ * AvatarUpload Component
+ * Renders a specialized circular avatar box with click-to-trigger file uploading features,
+ * showing a loading spinner during updates, initials if no image exists, and an image overlay on hover.
+ */
 export default function AvatarUpload({ currentImage, userName, uploading, onFileSelect }) {
   const fileRef = useRef(null)
 

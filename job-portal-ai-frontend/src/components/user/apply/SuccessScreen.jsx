@@ -9,6 +9,11 @@ const NEXT_STEPS = [
   "Track your application status in your dashboard",
 ]
 
+/**
+ * SuccessScreen Component
+ * Renders a success confirmation view once an application has been successfully submitted,
+ * offering information on next steps and buttons to view applications or browse more jobs.
+ */
 export default function SuccessScreen({ job }) {
   const navigate = useNavigate()
 

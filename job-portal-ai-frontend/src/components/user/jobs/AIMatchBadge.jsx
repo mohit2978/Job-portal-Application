@@ -1,6 +1,11 @@
 import { Badge } from "@/components/ui/badge"
 import { Sparkles } from "lucide-react"
 
+/**
+ * AIMatchBadge Component
+ * Renders a stylized badge displaying the percentage score of how well a candidate's resume/profile
+ * matches the job description, using conditional color thresholds (green, blue, yellow, slate).
+ */
 export default function AIMatchBadge({ score }) {
   if (!score) return null
 

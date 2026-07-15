@@ -21,6 +21,11 @@ function salaryLabel(job) {
   return job?.salaryPeriod === "HOURLY" ? `${range}/hr` : range
 }
 
+/**
+ * JobCard Component
+ * Displays a summarized card for a single job listing, including the title, location,
+ * classification tags (job type, work mode, experience level), salary details, application deadline, and key skills required.
+ */
 export default function JobCard({ job, filters = {} }) {
   const { jobTypes = [], workModes = [], expLevels = [] } = filters
 

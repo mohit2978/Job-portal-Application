@@ -8,6 +8,11 @@ const LINKS = [
   { to: "/applications", icon: User,     label: "My Applications", sub: "Track application statuses" },
 ]
 
+/**
+ * QuickLinksCard Component
+ * Displays a panel containing shortcut buttons pointing users to key dashboard pages
+ * ("My Resumes" and "My Applications").
+ */
 export default function QuickLinksCard() {
   return (
     <Card className="border-slate-200 shadow-sm">

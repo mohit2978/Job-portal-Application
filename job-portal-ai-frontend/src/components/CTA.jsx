@@ -2,6 +2,10 @@ import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 
+/**
+ * CTA (Call to Action) Component
+ * Renders the bottom landing page section encouraging users to register an account or search for jobs.
+ */
 export default function CTA() {
   return (
     <section className="py-20">

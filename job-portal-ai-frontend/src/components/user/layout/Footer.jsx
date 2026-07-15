@@ -2,6 +2,11 @@ import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from "@radix-ui/rea
 import { Link } from "react-router-dom"
 import { Briefcase } from "lucide-react"
 
+/**
+ * Footer Component
+ * Renders the candidate dashboard footer, providing category links tailored to candidates
+ * (Browse Jobs, My Applications, Profile, AI Tools) and employers (Post a Job, pricing, etc.).
+ */
 export default function Footer() {
   return (
     <footer className="border-t bg-slate-50">

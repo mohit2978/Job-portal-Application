@@ -2,6 +2,11 @@ import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Sparkles } from "lucide-react"
 
+/**
+ * Hero Component
+ * Renders the top landing page showcase section, highlighting the main platform value prop (AI-Powered Job Matching)
+ * and providing buttons to get started or browse jobs.
+ */
 export default function Hero() {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28">

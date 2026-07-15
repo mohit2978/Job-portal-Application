@@ -18,6 +18,11 @@ function fmtSalary(n) {
   return `$${n}`
 }
 
+/**
+ * JobFilters Component
+ * Renders a sticky filter sidebar that permits applicants to filter job listings by job type,
+ * work mode, experience level, and a dynamic salary range slider. Supports batch-resetting.
+ */
 export default function JobFilters({ filters, setFilters, onReset }) {
   const { jobTypes, workModes, expLevels, minSalary, maxSalary } = filters
 

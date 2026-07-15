@@ -9,6 +9,11 @@ const FEATURES = [
   { icon: Users,     title: "Recruiter Insights",   desc: "Understand what recruiters are looking for with AI-powered industry insights." },
 ]
 
+/**
+ * Features Component
+ * Displays a grid of key platform features (e.g. AI Resume Builder, Smart Job Matching, One-Click Apply)
+ * to highlight the system's value proposition to visitors.
+ */
 export default function Features() {
   return (
     <section id="features" className="py-20">

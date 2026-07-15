@@ -4,6 +4,10 @@ const STATS = [
   { value: "2x",      label: "Faster Hiring" },
 ]
 
+/**
+ * Stats Component
+ * Displays a statistics section highlighting platform metrics (e.g. Active Jobs, Registered Candidates).
+ */
 export default function Stats() {
   return (
     <section className="bg-slate-50 py-16">

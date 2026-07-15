@@ -2,6 +2,12 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchCurrentUser } from "@/store/user/userThunk"
 
+/**
+ * AppBootstrap Component
+ * Initializer component that boots up the application. It checks for a local accessToken,
+ * fetches the profile of the current authenticated user if a token exists, and delays
+ * application rendering until user authentication status is resolved.
+ */
 export default function AppBootstrap({ children }) {
   const dispatch = useDispatch()
   const { authStatus } = useSelector((state) => state.auth)

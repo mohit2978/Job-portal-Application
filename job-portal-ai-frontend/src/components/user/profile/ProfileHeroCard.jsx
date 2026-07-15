@@ -5,6 +5,11 @@ import { Badge } from "@/components/ui/badge"
 import AvatarUpload from "./AvatarUpload"
 import { completion, completionColor, completionBarColor, ROLE_LABELS, STATUS_CONFIG } from "./profileUtils"
 
+/**
+ * ProfileHeroCard Component
+ * Displays a premium header/banner card with the user's name, email, avatar image, status badges,
+ * edit/save control buttons, and a completion score bar highlighting missing items.
+ */
 export default function ProfileHeroCard({
   user, editing, uploading, profileSaving,
   onFileSelect, onEdit, onSave, onCancel,

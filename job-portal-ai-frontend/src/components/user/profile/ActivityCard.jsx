@@ -2,6 +2,10 @@ import { Clock, CalendarDays } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fmtDate, fmtDateTime } from "./profileUtils"
 
+/**
+ * ActivityCard Component
+ * Displays user activity data including the registration date ("Member Since") and the time of the last login.
+ */
 export default function ActivityCard({ user }) {
   return (
     <Card className="border-slate-200 shadow-sm">

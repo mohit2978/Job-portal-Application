@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Navbar Component
+ * Renders the top navigation bar for the landing page with branding and navigation anchors/links.
+ */
 export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur">

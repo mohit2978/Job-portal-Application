@@ -5,6 +5,12 @@ import { Badge } from "@/components/ui/badge"
 import { Sparkles, Copy, RotateCcw } from "lucide-react"
 import { toast } from "sonner"
 
+/**
+ * CoverLetterEditor Component
+ * Provides an editor block for the user's cover letter, featuring an option to generate
+ * a tailored cover letter using AI, an input textarea, copy-to-clipboard functionality,
+ * and standard writing tips.
+ */
 export default function CoverLetterEditor({ coverLetter, setCoverLetter }) {
   const handleCopy = () => {
     navigator.clipboard.writeText(coverLetter)

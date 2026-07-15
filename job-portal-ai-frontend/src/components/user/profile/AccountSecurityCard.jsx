@@ -3,6 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ROLE_LABELS, STATUS_CONFIG } from "./profileUtils"
 
+/**
+ * AccountSecurityCard Component
+ * Displays candidate account details and security settings (Role, Account Status, Sign-in Method, and Verification Status).
+ */
 export default function AccountSecurityCard({ user }) {
   const statusCfg = STATUS_CONFIG[user?.status] ?? STATUS_CONFIG.ACTIVE
 

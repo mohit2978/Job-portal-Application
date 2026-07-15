@@ -4,6 +4,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 
+/**
+ * PersonalInfoCard Component
+ * Displays the candidate's personal data (Full Name, Email Address, Phone Number).
+ * Supports standard visual view-only display as well as inline editing fields.
+ */
 export default function PersonalInfoCard({ user, editing, form, onFormChange }) {
   return (
     <Card className="border-slate-200 shadow-sm">

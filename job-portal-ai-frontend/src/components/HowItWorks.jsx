@@ -7,6 +7,10 @@ const STEPS = [
   { icon: Send,       title: "Apply & track applications", desc: "Apply with one click and track all your applications in one place." },
 ]
 
+/**
+ * HowItWorks Component
+ * Outlines the main steps for candidates using the platform (Create profile, Discover jobs, Apply & track).
+ */
 export default function HowItWorks() {
   return (
     <section id="how-it-works" className="bg-slate-50 py-20">

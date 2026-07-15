@@ -1,6 +1,11 @@
 import { Building2, MapPin } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 
+/**
+ * JobInfoCard Component
+ * Displays a simple card summarizing key job detail information (title and location) 
+ * at the top of the job application wizard.
+ */
 export default function JobInfoCard({ job }) {
   const location = [job?.city, job?.state, job?.country].filter(Boolean).join(", ")
 
