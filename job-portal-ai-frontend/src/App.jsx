@@ -5,6 +5,8 @@ import AppBootstrap from "./components/auth/AppBootstrap"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import LandingPage from "./pages/LandingPage"
 import Login from "./pages/auth/Login"
+import Register from "./pages/auth/Register"
+import ForgotPassword from "./pages/auth/ForgotPassword"
 import UserLayout from "./components/user/layout/UserLayout"
 import JobsPage from "./pages/user/Jobs"
 import JobDetails from "./pages/user/JobDetails"
@@ -19,6 +21,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<UserLayout />}>
