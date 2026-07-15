@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -27,6 +28,7 @@ export default function JobCard({ job, filters = {} }) {
   const salary   = salaryLabel(job)
 
   return (
+    <Link to={`/jobs/${job?.id}`} className="block group">
     <Card className="hover:shadow-md transition-shadow cursor-pointer border-slate-200">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
@@ -96,9 +98,10 @@ export default function JobCard({ job, filters = {} }) {
             </div>
           </div>
 
-          <Button size="sm" className="shrink-0">Apply</Button>
+          <Button size="sm" className="shrink-0" onClick={e => e.preventDefault()}>Apply</Button>
         </div>
       </CardContent>
     </Card>
+    </Link>
   )
 }
