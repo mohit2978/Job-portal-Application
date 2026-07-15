@@ -22,6 +22,15 @@ import Settings from "./pages/user/Settings"
 import AIMatch from "./pages/user/AIMatch"
 import AITools from "./pages/user/AITools"
 
+import DashboardLayout from "./components/employer/layout/DashboardLayout"
+import EmployerDashboard from "./pages/employer/Dashboard"
+import EmployerJobs from "./pages/employer/Jobs"
+import CreateJob from "./pages/employer/CreateJob"
+import EditJob from "./pages/employer/EditJob"
+import EmployerApplications from "./pages/employer/Applications"
+import CompanyProfile from "./pages/employer/CompanyProfile"
+import EmployerSettings from "./pages/employer/Settings"
+
 function App() {
   return (
     <Router>
@@ -48,6 +57,18 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/ai-match" element={<AIMatch />} />
               <Route path="/ai-tools" element={<AITools />} />
+            </Route>
+          </Route>
+
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/employer/dashboard"    element={<EmployerDashboard />} />
+              <Route path="/employer/jobs"         element={<EmployerJobs />} />
+              <Route path="/employer/jobs/create"  element={<CreateJob />} />
+              <Route path="/employer/jobs/:id/edit" element={<EditJob />} />
+              <Route path="/employer/applications" element={<EmployerApplications />} />
+              <Route path="/employer/company"      element={<CompanyProfile />} />
+              <Route path="/employer/settings"     element={<EmployerSettings />} />
             </Route>
           </Route>
 
