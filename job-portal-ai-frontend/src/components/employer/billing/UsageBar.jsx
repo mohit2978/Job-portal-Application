@@ -1,11 +1,17 @@
-import { Progress } from "@/components/ui/progress"
+﻿import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { Info } from "lucide-react"
 
-export default function UsageBar({ label, current, limit, unit = "", tooltip }) {
-  const percentage   = (current / limit) * 100
-  const isNearLimit  = percentage >= 80
-  const isAtLimit    = percentage >= 100
+export default function UsageBar({ label, current, limit, unit = "", tooltip, variant = "default" }) {
+  const percentage = (current / limit) * 100
+  const isNearLimit = percentage >= 80
+  const isAtLimit = percentage >= 100
+
+  const getProgressColor = () => {
+    if (isAtLimit) return "bg-red-600"
+    if (isNearLimit) return "bg-amber-600"
+    return "bg-brand"
+  }
 
   return (
     <div className="space-y-2">
@@ -28,7 +34,19 @@ export default function UsageBar({ label, current, limit, unit = "", tooltip }) 
           {current} / {limit} {unit}
         </span>
       </div>
-      <Progress value={Math.min(percentage, 100)} className="h-2" />
+      <div className="relative">
+        <Progress
+          value={Math.min(percentage, 100)}
+          className="h-2"
+        />
+        <style>{`
+          .${getProgressColor().replace('bg-', '')} {
+            background-color: ${
+              isAtLimit ? '#dc2626' : isNearLimit ? '#d97706' : '#2563eb'
+            };
+          }
+        `}</style>
+      </div>
       {isAtLimit && (
         <p className="text-xs text-red-600">
           Limit reached. Upgrade your plan to continue.

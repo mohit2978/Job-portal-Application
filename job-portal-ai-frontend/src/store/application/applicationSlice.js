@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+﻿import { createSlice } from "@reduxjs/toolkit"
 import {
   fetchCompanyApplications, fetchJobApplications, fetchApplicationById,
   fetchMyApplications, submitApplication, withdrawApplication,
@@ -6,6 +6,8 @@ import {
   addNote, deleteNote,
   scheduleInterview, updateInterview, cancelInterview,
 } from "./applicationThunk"
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function replaceInList(list, updated) {
   const idx = list.findIndex(a => a.id === updated.id)
@@ -19,12 +21,14 @@ function replaceInterview(state, updated) {
   )
 }
 
+// ── Slice ─────────────────────────────────────────────────────────────────────
+
 const applicationSlice = createSlice({
   name: "application",
   initialState: {
-    applications: [],
-    myApplications: [],
-    currentApplication: null,
+    applications: [],           // ApplicationSummaryResponse[] (employer view)
+    myApplications: [],         // ApplicationSummaryResponse[] (candidate view)
+    currentApplication: null,   // ApplicationResponse (full)
     isLoading: false,
     isActionLoading: false,
     error: null,
@@ -35,21 +39,26 @@ const applicationSlice = createSlice({
     clearErrors(state) { state.error = null; state.actionError = null },
   },
   extraReducers: builder => {
+
+    // ── fetchCompanyApplications ───────────────────────────────────────────────
     builder
       .addCase(fetchCompanyApplications.pending,   s => { s.isLoading = true; s.error = null })
       .addCase(fetchCompanyApplications.fulfilled, (s, { payload }) => { s.isLoading = false; s.applications = payload })
       .addCase(fetchCompanyApplications.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
 
+    // ── fetchJobApplications ──────────────────────────────────────────────────
     builder
       .addCase(fetchJobApplications.pending,   s => { s.isLoading = true; s.error = null })
       .addCase(fetchJobApplications.fulfilled, (s, { payload }) => { s.isLoading = false; s.applications = payload })
       .addCase(fetchJobApplications.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
 
+    // ── fetchApplicationById ──────────────────────────────────────────────────
     builder
       .addCase(fetchApplicationById.pending,   s => { s.isLoading = true; s.error = null })
       .addCase(fetchApplicationById.fulfilled, (s, { payload }) => { s.isLoading = false; s.currentApplication = payload })
       .addCase(fetchApplicationById.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
 
+    // ── updateApplicationStatus ───────────────────────────────────────────────
     builder
       .addCase(updateApplicationStatus.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(updateApplicationStatus.fulfilled, (s, { payload }) => {
@@ -59,6 +68,7 @@ const applicationSlice = createSlice({
       })
       .addCase(updateApplicationStatus.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── markAsRead ────────────────────────────────────────────────────────────
     builder
       .addCase(markAsRead.pending,   s => { s.isActionLoading = true })
       .addCase(markAsRead.fulfilled, (s, { payload }) => {
@@ -68,6 +78,7 @@ const applicationSlice = createSlice({
       })
       .addCase(markAsRead.rejected,  s => { s.isActionLoading = false })
 
+    // ── toggleStar ────────────────────────────────────────────────────────────
     builder
       .addCase(toggleStar.pending,   s => { s.isActionLoading = true })
       .addCase(toggleStar.fulfilled, (s, { payload }) => {
@@ -77,6 +88,7 @@ const applicationSlice = createSlice({
       })
       .addCase(toggleStar.rejected,  s => { s.isActionLoading = false })
 
+    // ── addNote ───────────────────────────────────────────────────────────────
     builder
       .addCase(addNote.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(addNote.fulfilled, (s, { payload }) => {
@@ -87,6 +99,7 @@ const applicationSlice = createSlice({
       })
       .addCase(addNote.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── deleteNote ────────────────────────────────────────────────────────────
     builder
       .addCase(deleteNote.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(deleteNote.fulfilled, (s, { payload: noteId }) => {
@@ -97,6 +110,7 @@ const applicationSlice = createSlice({
       })
       .addCase(deleteNote.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── scheduleInterview ─────────────────────────────────────────────────────
     builder
       .addCase(scheduleInterview.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(scheduleInterview.fulfilled, (s, { payload }) => {
@@ -107,11 +121,13 @@ const applicationSlice = createSlice({
       })
       .addCase(scheduleInterview.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── updateInterview ───────────────────────────────────────────────────────
     builder
       .addCase(updateInterview.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(updateInterview.fulfilled, (s, { payload }) => { s.isActionLoading = false; replaceInterview(s, payload) })
       .addCase(updateInterview.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── cancelInterview ───────────────────────────────────────────────────────
     builder
       .addCase(cancelInterview.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(cancelInterview.fulfilled, (s, { payload: ivId }) => {
@@ -124,11 +140,13 @@ const applicationSlice = createSlice({
       })
       .addCase(cancelInterview.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── fetchMyApplications (candidate) ──────────────────────────────────────
     builder
       .addCase(fetchMyApplications.pending,   s => { s.isLoading = true; s.error = null })
       .addCase(fetchMyApplications.fulfilled, (s, { payload }) => { s.isLoading = false; s.myApplications = payload })
       .addCase(fetchMyApplications.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
 
+    // ── submitApplication ─────────────────────────────────────────────────────
     builder
       .addCase(submitApplication.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(submitApplication.fulfilled, (s, { payload }) => {
@@ -137,6 +155,7 @@ const applicationSlice = createSlice({
       })
       .addCase(submitApplication.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── withdrawApplication ───────────────────────────────────────────────────
     builder
       .addCase(withdrawApplication.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(withdrawApplication.fulfilled, (s, { payload }) => {

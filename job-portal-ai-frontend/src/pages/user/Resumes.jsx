@@ -20,10 +20,10 @@ export default function Resumes() {
   const dispatch = useDispatch()
   const { resumes, isLoading, isActionLoading, error } = useSelector((s) => s.resume)
 
-  const [showCreate, setShowCreate]         = useState(false)
-  const [deleteTarget, setDeleteTarget]     = useState(null)
-  const [feedbackResume, setFeedbackResume] = useState(null)
-  const [showFeedback, setShowFeedback]     = useState(false)
+  const [showCreate, setShowCreate]           = useState(false)
+  const [deleteTarget, setDeleteTarget]       = useState(null)
+  const [feedbackResume, setFeedbackResume]   = useState(null)
+  const [showFeedback, setShowFeedback]       = useState(false)
 
   useEffect(() => { dispatch(fetchMyResumes()) }, [dispatch])
   useEffect(() => { if (error) toast.error(error) }, [error])
@@ -44,6 +44,7 @@ export default function Resumes() {
   }
 
   const handleFeedback = (resumeSummary) => {
+    // Fetch full resume data (with sections) so the AI has complete content
     dispatch(fetchResumeById(resumeSummary.id)).then((action) => {
       if (action.meta.requestStatus === "fulfilled") {
         setFeedbackResume(action.payload.data ?? action.payload)
@@ -68,6 +69,7 @@ export default function Resumes() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -84,6 +86,7 @@ export default function Resumes() {
           </Button>
         </div>
 
+        {/* Default resume callout */}
         {defaultResume && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 flex items-center gap-3">
             <Star className="h-5 w-5 text-yellow-500 fill-current shrink-0" />
@@ -96,6 +99,14 @@ export default function Resumes() {
           </div>
         )}
 
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {/* Loading skeleton */}
         {isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -115,6 +126,7 @@ export default function Resumes() {
           </div>
         )}
 
+        {/* Empty state */}
         {!isLoading && resumes.length === 0 && (
           <div className="text-center py-20">
             <div className="h-16 w-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
@@ -131,6 +143,7 @@ export default function Resumes() {
           </div>
         )}
 
+        {/* Resume Grid */}
         {!isLoading && resumes.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {resumes.map((resume) => (
@@ -143,6 +156,8 @@ export default function Resumes() {
                 isActionLoading={isActionLoading}
               />
             ))}
+
+            {/* Add new card */}
             <button
               onClick={() => setShowCreate(true)}
               className="border-2 border-dashed border-slate-300 rounded-xl h-[260px] flex flex-col items-center justify-center gap-3 text-slate-400 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition-all"
@@ -158,6 +173,7 @@ export default function Resumes() {
           </div>
         )}
 
+        {/* Template info section */}
         {!isLoading && (
           <div className="mt-12">
             <h2 className="text-lg font-semibold text-slate-800 mb-4">About Our Templates</h2>
@@ -182,12 +198,14 @@ export default function Resumes() {
         )}
       </div>
 
+      {/* Career Feedback Dialog */}
       <CareerFeedbackDialog
         open={showFeedback}
         onClose={() => setShowFeedback(false)}
         resume={feedbackResume}
       />
 
+      {/* Dialogs */}
       <CreateResumeDialog
         open={showCreate}
         onClose={() => setShowCreate(false)}

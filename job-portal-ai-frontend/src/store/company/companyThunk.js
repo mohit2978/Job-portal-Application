@@ -1,5 +1,7 @@
-import { createAsyncThunk } from "@reduxjs/toolkit"
+﻿import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
+
+// ── Employer: fetch own company ─────────────────────────────────────────────
 
 export const fetchMyCompany = createAsyncThunk(
   "company/fetchMy",
@@ -8,11 +10,14 @@ export const fetchMyCompany = createAsyncThunk(
       const { data } = await api.get("/api/companies/my")
       return data
     } catch (err) {
+      // 404 means company doesn't exist yet — not a real error
       if (err.response?.status === 404) return null
       return rejectWithValue(err.response?.data?.message || "Failed to fetch company")
     }
   }
 )
+
+// ── Employer: create company ────────────────────────────────────────────────
 
 export const createCompany = createAsyncThunk(
   "company/create",
@@ -26,6 +31,8 @@ export const createCompany = createAsyncThunk(
   }
 )
 
+// ── Employer: update company ────────────────────────────────────────────────
+
 export const updateCompany = createAsyncThunk(
   "company/update",
   async ({ id, ...payload }, { rejectWithValue }) => {
@@ -37,6 +44,8 @@ export const updateCompany = createAsyncThunk(
     }
   }
 )
+
+// ── Employer: location management ──────────────────────────────────────────
 
 export const addLocation = createAsyncThunk(
   "company/addLocation",
@@ -86,21 +95,27 @@ export const setHeadquarter = createAsyncThunk(
   }
 )
 
+// ── Fetch all companies (admin: with optional filters) ─────────────────────
+
 export const fetchAllCompanies = createAsyncThunk(
   "company/fetchAll",
   async (filters = {}, { rejectWithValue }) => {
     try {
       const params = {}
-      if (filters.companyType)  params.companyType  = filters.companyType
+      if (filters.companyType) params.companyType = filters.companyType
       if (filters.industryType) params.industryType = filters.industryType
-      if (filters.status)       params.status       = filters.status
+      if (filters.status) params.status = filters.status
       const { data } = await api.get("/api/companies", { params })
       return data
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to fetch companies")
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch companies"
+      )
     }
   }
 )
+
+// ── Fetch single company ────────────────────────────────────────────────────
 
 export const fetchCompanyById = createAsyncThunk(
   "company/fetchById",
@@ -109,10 +124,14 @@ export const fetchCompanyById = createAsyncThunk(
       const { data } = await api.get(`/api/companies/${id}`)
       return data
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to fetch company")
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch company"
+      )
     }
   }
 )
+
+// ── Admin: verify company ───────────────────────────────────────────────────
 
 export const verifyCompany = createAsyncThunk(
   "company/verify",
@@ -121,10 +140,14 @@ export const verifyCompany = createAsyncThunk(
       const { data } = await api.patch(`/api/companies/${id}/verify`)
       return data
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to verify company")
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to verify company"
+      )
     }
   }
 )
+
+// ── Admin: deactivate / suspend company ────────────────────────────────────
 
 export const deactivateCompany = createAsyncThunk(
   "company/deactivate",
@@ -133,10 +156,14 @@ export const deactivateCompany = createAsyncThunk(
       const { data } = await api.patch(`/api/companies/${id}/deactivate`)
       return data
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to deactivate company")
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to deactivate company"
+      )
     }
   }
 )
+
+// ── Admin: delete company ───────────────────────────────────────────────────
 
 export const deleteCompany = createAsyncThunk(
   "company/delete",
@@ -145,7 +172,9 @@ export const deleteCompany = createAsyncThunk(
       await api.delete(`/api/companies/${id}`)
       return id
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to delete company")
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to delete company"
+      )
     }
   }
 )

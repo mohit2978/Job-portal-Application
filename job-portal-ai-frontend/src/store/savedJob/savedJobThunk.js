@@ -1,5 +1,7 @@
-import { createAsyncThunk } from "@reduxjs/toolkit"
+﻿import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
+
+// ── Fetch current user's saved jobs ──────────────────────────────────────────
 
 export const fetchMySavedJobs = createAsyncThunk(
   "savedJob/fetchMy",
@@ -13,6 +15,9 @@ export const fetchMySavedJobs = createAsyncThunk(
   }
 )
 
+// ── Save a job ────────────────────────────────────────────────────────────────
+// Payload: { jobId, companyId, notes? }
+
 export const saveJob = createAsyncThunk(
   "savedJob/save",
   async ({ jobId, companyId, notes }, { rejectWithValue }) => {
@@ -24,6 +29,8 @@ export const saveJob = createAsyncThunk(
     }
   }
 )
+
+// ── Unsave a job by savedJobId ────────────────────────────────────────────────
 
 export const unsaveJob = createAsyncThunk(
   "savedJob/unsave",

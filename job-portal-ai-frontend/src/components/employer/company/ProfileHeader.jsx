@@ -1,4 +1,4 @@
-import { Building2, ShieldCheck, Clock, Ban } from "lucide-react"
+﻿import { Building2, ShieldCheck, Clock, Ban } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
@@ -21,6 +21,7 @@ export default function ProfileHeader({ company }) {
 
   return (
     <div className="rounded-xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+      {/* Cover image */}
       <div
         className={cn(
           "h-36 w-full",
@@ -29,8 +30,10 @@ export default function ProfileHeader({ company }) {
         style={company.coverImageUrl ? { backgroundImage: `url(${company.coverImageUrl})` } : {}}
       />
 
+      {/* Logo + info row */}
       <div className="px-6 pb-5">
         <div className="flex items-end gap-4 -mt-8 mb-4">
+          {/* Logo */}
           {company.logoUrl ? (
             <img
               src={company.logoUrl}
@@ -43,6 +46,7 @@ export default function ProfileHeader({ company }) {
             </div>
           )}
 
+          {/* Badges */}
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <Badge variant="outline" className={cn("gap-1 text-xs font-semibold border", cfg.className)}>
               {statusIcon[company.status]}

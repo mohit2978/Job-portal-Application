@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+﻿import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -54,6 +54,7 @@ export default function AITools() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <div className="h-10 w-10 rounded-lg bg-brand flex items-center justify-center">
@@ -67,21 +68,23 @@ export default function AITools() {
       </div>
 
       {!selectedTool ? (
+        /* Tool Selection Grid */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {aiTools.map((tool) => (
             <ToolCard key={tool.id} tool={tool} onSelect={() => setSelectedTool(tool.id)} />
           ))}
         </div>
       ) : (
+        /* Selected Tool Interface */
         <div>
           <Button variant="ghost" onClick={() => setSelectedTool(null)} className="mb-6">
             ← Back to Tools
           </Button>
-          {selectedTool === "resume-analyzer"  && <ResumeAnalyzer />}
-          {selectedTool === "cover-letter"     && <CoverLetterBuilder />}
-          {selectedTool === "skill-gap"        && <SkillGapAnalyzer />}
-          {selectedTool === "job-match"        && <JobMatchRecommendations />}
-          {selectedTool === "career-feedback"  && <CareerFeedbackTool />}
+          {selectedTool === "resume-analyzer" && <ResumeAnalyzer />}
+          {selectedTool === "cover-letter" && <CoverLetterBuilder />}
+          {selectedTool === "skill-gap" && <SkillGapAnalyzer />}
+          {selectedTool === "job-match" && <JobMatchRecommendations />}
+          {selectedTool === "career-feedback" && <CareerFeedbackTool />}
         </div>
       )}
     </div>
@@ -97,6 +100,7 @@ function ToolCard({ tool, onSelect }) {
     orange: "bg-orange-100 text-orange-600",
     violet: "bg-violet-100 text-violet-600",
   }
+
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onSelect}>
       <CardContent className="p-6">
@@ -154,11 +158,14 @@ function ResumeAnalyzer() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 mb-2">Resume Analyzer</h2>
-              <p className="text-slate-700">Upload your resume and get instant AI-powered feedback to improve your job prospects</p>
+              <p className="text-slate-700 mb-4">
+                Upload your resume and get instant AI-powered feedback to improve your job prospects
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
+
       <Card>
         <CardContent className="p-6">
           <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center">
@@ -171,41 +178,53 @@ function ResumeAnalyzer() {
           </div>
         </CardContent>
       </Card>
+
       {analysis && (
         <Card>
-          <CardHeader><CardTitle>Analysis Results</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Analysis Results</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-6">
             <div className="text-center p-6 bg-blue-50 rounded-lg">
               <div className="text-4xl font-bold text-brand mb-2">{analysis.score}/100</div>
               <p className="text-slate-700">Resume Score</p>
             </div>
+
             <div>
               <h4 className="font-semibold text-green-900 mb-3">Strengths</h4>
               <ul className="space-y-2">
-                {analysis.strengths.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
-                    <span className="text-green-600">✓</span>{item}
+                {analysis.strengths.map((item, index) => (
+                  <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                    <span className="text-green-600">✓</span>
+                    {item}
                   </li>
                 ))}
               </ul>
             </div>
+
             <Separator />
+
             <div>
               <h4 className="font-semibold text-orange-900 mb-3">Suggested Improvements</h4>
               <ul className="space-y-2">
-                {analysis.improvements.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
-                    <span className="text-orange-600">→</span>{item}
+                {analysis.improvements.map((item, index) => (
+                  <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                    <span className="text-orange-600">→</span>
+                    {item}
                   </li>
                 ))}
               </ul>
             </div>
+
             <Separator />
+
             <div>
               <h4 className="font-semibold text-slate-900 mb-3">Key Skills Detected</h4>
               <div className="flex flex-wrap gap-2">
-                {analysis.keywords.map((kw) => (
-                  <Badge key={kw} variant="secondary">{kw}</Badge>
+                {analysis.keywords.map((keyword) => (
+                  <Badge key={keyword} variant="secondary">
+                    {keyword}
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -223,10 +242,25 @@ function CoverLetterBuilder() {
   const [isGenerating, setIsGenerating] = useState(false)
 
   const handleGenerate = () => {
-    if (!jobTitle || !company) { toast.error("Please fill in all fields"); return }
+    if (!jobTitle || !company) {
+      toast.error("Please fill in all fields")
+      return
+    }
+
     setIsGenerating(true)
     setTimeout(() => {
-      setGeneratedLetter(`Dear Hiring Manager,\n\nI am writing to express my strong interest in the ${jobTitle} position at ${company}. With my extensive experience and passion for technology, I am confident I would be a valuable addition to your team.\n\nThroughout my career, I have demonstrated expertise in modern web development and a commitment to delivering high-quality solutions. I am particularly excited about this opportunity at ${company} because of your innovative approach and commitment to excellence.\n\nI would welcome the opportunity to discuss how my skills and experience align with your needs.\n\nThank you for considering my application.\n\nBest regards,\n[Your Name]`)
+      setGeneratedLetter(`Dear Hiring Manager,
+
+I am writing to express my strong interest in the ${jobTitle} position at ${company}. With my extensive experience and passion for technology, I am confident I would be a valuable addition to your team.
+
+Throughout my career, I have demonstrated expertise in modern web development and a commitment to delivering high-quality solutions. I am particularly excited about this opportunity at ${company} because of your innovative approach and commitment to excellence.
+
+I would welcome the opportunity to discuss how my skills and experience align with your needs.
+
+Thank you for considering my application.
+
+Best regards,
+[Your Name]`)
       setIsGenerating(false)
       toast.success("Cover letter generated!")
     }, 2000)
@@ -242,21 +276,38 @@ function CoverLetterBuilder() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 mb-2">Cover Letter Builder</h2>
-              <p className="text-slate-700">Generate a professional cover letter tailored to the specific job you're applying for</p>
+              <p className="text-slate-700 mb-4">
+                Generate a professional cover letter tailored to the specific job you're applying for
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
+
       <Card>
-        <CardHeader><CardTitle>Job Details</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Job Details</CardTitle>
+        </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Job Title</label>
-            <input type="text" className="w-full px-3 py-2 border rounded-lg" placeholder="e.g. Senior React Developer" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} />
+            <input
+              type="text"
+              className="w-full px-3 py-2 border rounded-lg"
+              placeholder="e.g. Senior React Developer"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Company Name</label>
-            <input type="text" className="w-full px-3 py-2 border rounded-lg" placeholder="e.g. TechCorp Inc." value={company} onChange={(e) => setCompany(e.target.value)} />
+            <input
+              type="text"
+              className="w-full px-3 py-2 border rounded-lg"
+              placeholder="e.g. TechCorp Inc."
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+            />
           </div>
           <Button onClick={handleGenerate} disabled={isGenerating} className="w-full">
             <Sparkles className="h-4 w-4 mr-2" />
@@ -264,18 +315,31 @@ function CoverLetterBuilder() {
           </Button>
         </CardContent>
       </Card>
+
       {generatedLetter && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Your Cover Letter</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(generatedLetter); toast.success("Copied to clipboard!") }}>
-                <Copy className="h-4 w-4 mr-2" />Copy
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(generatedLetter)
+                  toast.success("Copied to clipboard!")
+                }}
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <Textarea value={generatedLetter} onChange={(e) => setGeneratedLetter(e.target.value)} className="min-h-[400px] font-mono text-sm" />
+            <Textarea
+              value={generatedLetter}
+              onChange={(e) => setGeneratedLetter(e.target.value)}
+              className="min-h-[400px] font-mono text-sm"
+            />
           </CardContent>
         </Card>
       )}
@@ -313,7 +377,9 @@ function CareerFeedbackTool() {
   const [feedbackResume, setFeedbackResume] = useState(null)
   const [showFeedback, setShowFeedback] = useState(false)
 
-  useEffect(() => { dispatch(fetchMyResumes()) }, [dispatch])
+  useEffect(() => {
+    dispatch(fetchMyResumes())
+  }, [dispatch])
 
   const handleSelect = (resumeSummary) => {
     dispatch(fetchResumeById(resumeSummary.id)).then((action) => {
@@ -326,6 +392,7 @@ function CareerFeedbackTool() {
 
   return (
     <>
+      {/* Header card */}
       <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 mb-6">
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
@@ -342,19 +409,28 @@ function CareerFeedbackTool() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Resume list */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Choose a Resume to Analyze</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-base">Choose a Resume to Analyze</CardTitle>
+        </CardHeader>
         <CardContent className="space-y-3">
-          {isLoading && [1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-3 p-4 rounded-lg border border-slate-200">
-              <Skeleton className="h-10 w-10 rounded-lg" />
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-3 w-1/4" />
-              </div>
-              <Skeleton className="h-8 w-24" />
-            </div>
-          ))}
+          {isLoading && (
+            <>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-4 rounded-lg border border-slate-200">
+                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-3 w-1/4" />
+                  </div>
+                  <Skeleton className="h-8 w-24" />
+                </div>
+              ))}
+            </>
+          )}
+
           {!isLoading && resumes.length === 0 && (
             <div className="text-center py-10 text-slate-500">
               <FileText className="h-10 w-10 mx-auto mb-3 text-slate-300" />
@@ -362,8 +438,12 @@ function CareerFeedbackTool() {
               <p className="text-xs mt-1">Create a resume first from the Resumes page.</p>
             </div>
           )}
+
           {!isLoading && resumes.map((resume) => (
-            <div key={resume.id} className="flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-violet-300 hover:bg-violet-50/50 transition-colors">
+            <div
+              key={resume.id}
+              className="flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-violet-300 hover:bg-violet-50/50 transition-colors"
+            >
               <div className="h-10 w-10 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
                 <FileText className="h-5 w-5 text-violet-600" />
               </div>
@@ -371,7 +451,11 @@ function CareerFeedbackTool() {
                 <p className="text-sm font-semibold text-slate-900 truncate">{resume.title}</p>
                 <p className="text-xs text-slate-500">{resume.completionScore ?? 0}% complete · {resume.template}</p>
               </div>
-              <Button size="sm" className="bg-violet-600 hover:bg-violet-700 shrink-0" onClick={() => handleSelect(resume)}>
+              <Button
+                size="sm"
+                className="bg-violet-600 hover:bg-violet-700 shrink-0"
+                onClick={() => handleSelect(resume)}
+              >
                 <Sparkles className="h-3.5 w-3.5 mr-1.5" />
                 Analyze
                 <ChevronRight className="h-3.5 w-3.5 ml-1" />
@@ -380,7 +464,12 @@ function CareerFeedbackTool() {
           ))}
         </CardContent>
       </Card>
-      <CareerFeedbackDialog open={showFeedback} onClose={() => setShowFeedback(false)} resume={feedbackResume} />
+
+      <CareerFeedbackDialog
+        open={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        resume={feedbackResume}
+      />
     </>
   )
 }

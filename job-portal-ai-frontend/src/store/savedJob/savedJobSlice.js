@@ -1,11 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit"
+﻿import { createSlice } from "@reduxjs/toolkit"
 import { fetchMySavedJobs, saveJob, unsaveJob } from "./savedJobThunk"
+
+// savedJobMap: { [jobId]: savedJobId } — lets JobCard/JobDetails do O(1) lookups
 
 const savedJobSlice = createSlice({
   name: "savedJob",
   initialState: {
-    savedJobs: [],
-    savedJobMap: {},
+    savedJobs: [],          // SavedJobResponse[]
+    savedJobMap: {},        // jobId -> savedJobId (for quick isSaved checks)
     isLoading: false,
     isActionLoading: false,
     error: null,
@@ -15,6 +17,8 @@ const savedJobSlice = createSlice({
     clearErrors(state) { state.error = null; state.actionError = null },
   },
   extraReducers: builder => {
+
+    // ── fetchMySavedJobs ──────────────────────────────────────────────────────
     builder
       .addCase(fetchMySavedJobs.pending,   s => { s.isLoading = true; s.error = null })
       .addCase(fetchMySavedJobs.fulfilled, (s, { payload }) => {
@@ -27,6 +31,7 @@ const savedJobSlice = createSlice({
       })
       .addCase(fetchMySavedJobs.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
 
+    // ── saveJob ───────────────────────────────────────────────────────────────
     builder
       .addCase(saveJob.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(saveJob.fulfilled, (s, { payload }) => {
@@ -36,6 +41,7 @@ const savedJobSlice = createSlice({
       })
       .addCase(saveJob.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── unsaveJob ─────────────────────────────────────────────────────────────
     builder
       .addCase(unsaveJob.pending,   s => { s.isActionLoading = true; s.actionError = null })
       .addCase(unsaveJob.fulfilled, (s, { payload: deletedId }) => {

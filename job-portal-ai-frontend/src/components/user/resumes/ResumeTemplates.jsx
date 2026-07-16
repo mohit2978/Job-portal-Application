@@ -1,8 +1,5 @@
-/**
- * ResumeTemplates File
- * Defines and exports the various layout template components (Professional, Classic, Modern, Minimal, Creative)
- * and helper components (FakeLines, SectionBlock) used to render miniature resume previews and printable sheets.
- */
+// ── Shared mini helpers ───────────────────────────────────────────────────────
+
 export function FakeLines({ count = 2, light = false }) {
   return (
     <div className="space-y-0.5 mt-0.5">
@@ -52,6 +49,8 @@ function CreativeSection({ title }) {
     </div>
   )
 }
+
+// ── Template Previews ─────────────────────────────────────────────────────────
 
 export function TemplateProfessional() {
   return (
@@ -109,6 +108,7 @@ export function TemplateClassic() {
 export function TemplateModern() {
   return (
     <div className="w-full h-full flex text-[6px] leading-tight select-none font-sans">
+      {/* Sidebar */}
       <div className="bg-[#1e40af] text-white w-[38%] p-2 flex flex-col gap-1.5">
         <div className="h-8 w-8 rounded-full bg-blue-300 mx-auto mb-0.5" />
         <div className="font-bold text-[8px] text-center leading-tight">John Doe</div>
@@ -129,6 +129,7 @@ export function TemplateModern() {
           ))}
         </div>
       </div>
+      {/* Main */}
       <div className="flex-1 p-2">
         <ModernSection title="EXPERIENCE" />
         <div className="mb-1.5">
@@ -182,7 +183,7 @@ export function TemplateMinimal() {
 export function TemplateCreative() {
   return (
     <div className="w-full h-full bg-[#f5f3ff] font-sans text-[6px] leading-tight select-none overflow-hidden">
-      <div className="bg-gradient-to-br from-[#7c3aed] to-[#4f46e5] text-white px-2.5 py-2 relative">
+      <div className="bg-linear-to-br from-[#7c3aed] to-[#4f46e5] text-white px-2.5 py-2 relative">
         <div className="absolute -top-2 -right-2 h-12 w-12 rounded-full bg-white opacity-10" />
         <div className="font-bold text-[10px]">John Doe</div>
         <div className="text-purple-200 text-[7px] mt-0.5">Creative Designer & Developer</div>
@@ -210,6 +211,8 @@ export function TemplateCreative() {
     </div>
   )
 }
+
+// ── Template registry ─────────────────────────────────────────────────────────
 
 export const TEMPLATES = [
   {

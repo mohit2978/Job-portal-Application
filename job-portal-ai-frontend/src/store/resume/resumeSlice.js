@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+﻿import { createSlice } from "@reduxjs/toolkit"
 import {
   fetchMyResumes, fetchResumeById,
   createResume, updateResume, setDefaultResume, updateResumeSummary, deleteResume,
@@ -12,6 +12,7 @@ import {
   addLanguage,       updateLanguage,       deleteLanguage,
 } from "./resumeThunk"
 
+// ── Helper: register add / update / delete cases for one section array ────────
 function registerSection(builder, { add, update, del }, key) {
   builder
     .addCase(add.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
@@ -41,6 +42,8 @@ function registerSection(builder, { add, update, del }, key) {
     .addCase(del.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 }
 
+// ── Slice ─────────────────────────────────────────────────────────────────────
+
 const resumeSlice = createSlice({
   name: "resume",
   initialState: {
@@ -56,16 +59,20 @@ const resumeSlice = createSlice({
     clearErrors(s) { s.error = null; s.actionError = null },
   },
   extraReducers: (builder) => {
+
+    // fetchMyResumes
     builder
       .addCase(fetchMyResumes.pending,   (s) => { s.isLoading = true; s.error = null })
       .addCase(fetchMyResumes.fulfilled, (s, { payload }) => { s.isLoading = false; s.resumes = payload })
       .addCase(fetchMyResumes.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
 
+    // fetchResumeById — loads full resume with all sections
     builder
       .addCase(fetchResumeById.pending,   (s) => { s.isLoading = true; s.error = null })
       .addCase(fetchResumeById.fulfilled, (s, { payload }) => { s.isLoading = false; s.currentResume = payload })
       .addCase(fetchResumeById.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
 
+    // createResume
     builder
       .addCase(createResume.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
       .addCase(createResume.fulfilled, (s, { payload }) => {
@@ -75,6 +82,7 @@ const resumeSlice = createSlice({
       })
       .addCase(createResume.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // setDefaultResume
     builder
       .addCase(setDefaultResume.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
       .addCase(setDefaultResume.fulfilled, (s, { payload }) => {
@@ -83,6 +91,7 @@ const resumeSlice = createSlice({
       })
       .addCase(setDefaultResume.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // updateResumeSummary — returns full ResumeResponse
     builder
       .addCase(updateResumeSummary.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
       .addCase(updateResumeSummary.fulfilled, (s, { payload }) => {
@@ -93,6 +102,7 @@ const resumeSlice = createSlice({
       })
       .addCase(updateResumeSummary.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // deleteResume
     builder
       .addCase(deleteResume.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
       .addCase(deleteResume.fulfilled, (s, { payload: id }) => {
@@ -102,6 +112,7 @@ const resumeSlice = createSlice({
       })
       .addCase(deleteResume.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // updateResume — title / template / visibility
     builder
       .addCase(updateResume.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
       .addCase(updateResume.fulfilled, (s, { payload }) => {
@@ -112,6 +123,7 @@ const resumeSlice = createSlice({
       })
       .addCase(updateResume.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // updatePersonalInfo — returns full ResumeResponse
     builder
       .addCase(updatePersonalInfo.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
       .addCase(updatePersonalInfo.fulfilled, (s, { payload }) => {
@@ -122,6 +134,7 @@ const resumeSlice = createSlice({
       })
       .addCase(updatePersonalInfo.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
 
+    // ── Section CRUD via helper ────────────────────────────────────────────────
     registerSection(builder, { add: addWorkExperience, update: updateWorkExperience, del: deleteWorkExperience }, "workExperiences")
     registerSection(builder, { add: addEducation,      update: updateEducation,      del: deleteEducation      }, "educations")
     registerSection(builder, { add: addSkill,          update: updateSkill,          del: deleteSkill          }, "skills")

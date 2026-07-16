@@ -1,8 +1,16 @@
-// TODO: Replace with your actual Cloudinary values from dashboard
-const CLOUD_NAME = "your_cloud_name"
-const UPLOAD_PRESET = "your_upload_preset"
+const CLOUD_NAME = "dcpesbd8q"
+const UPLOAD_PRESET = "job-portal"
 
+/**
+ * Uploads a file to Cloudinary using an unsigned upload preset.
+ * @param {File} file - The image file to upload
+ * @returns {Promise<string>} The secure URL of the uploaded image
+ */
 export async function uploadToCloudinary(file) {
+  if (!CLOUD_NAME || !UPLOAD_PRESET) {
+    throw new Error("Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in your .env file.")
+  }
+
   const formData = new FormData()
   formData.append("file", file)
   formData.append("upload_preset", UPLOAD_PRESET)

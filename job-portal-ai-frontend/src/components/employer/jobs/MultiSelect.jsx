@@ -1,10 +1,20 @@
-import { useState, useMemo } from "react"
+﻿import { useState, useMemo } from "react"
 import { Check, ChevronsUpDown, X, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
+/**
+ * Multi-select component with search.
+ *
+ * Props:
+ *   options      — array of { id: number, name: string }
+ *   selectedIds  — array of selected ids (numbers)
+ *   onChange     — (newIds: number[]) => void
+ *   placeholder  — string shown when nothing selected
+ *   maxBadges    — max badges shown in trigger before "+N more" (default 3)
+ */
 export default function MultiSelect({
   options = [],
   selectedIds = [],
@@ -84,6 +94,7 @@ export default function MultiSelect({
       </PopoverTrigger>
 
       <PopoverContent className="w-72 p-0" align="start">
+        {/* Search */}
         <div className="flex items-center border-b border-slate-100 px-3 py-2 gap-2">
           <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
           <input
@@ -100,6 +111,7 @@ export default function MultiSelect({
           )}
         </div>
 
+        {/* Options list */}
         <div className="max-h-52 overflow-y-auto py-1">
           {filtered.length === 0 ? (
             <div className="py-6 text-center text-sm text-slate-400">No results</div>
@@ -131,6 +143,7 @@ export default function MultiSelect({
           )}
         </div>
 
+        {/* Footer */}
         {selectedIds.length > 0 && (
           <div className="border-t border-slate-100 px-3 py-2 flex items-center justify-between">
             <span className="text-xs text-slate-500">{selectedIds.length} selected</span>

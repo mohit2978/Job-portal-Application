@@ -1,10 +1,15 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom"
+﻿import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useSelector } from "react-redux"
 
-export default function RoleBasedRoute({ allowedRoles }) {
+/**
+ * RoleBasedRoute - Guards routes based on user role
+ * Redirects to appropriate dashboard if role doesn't match
+ */
+export default function RoleBasedRoute({  allowedRoles }) {
   const location = useLocation()
   const { user, isAuthenticated, authStatus } = useSelector((state) => state.auth)
 
+  // Show loading state while checking authentication
   if (authStatus === "loading" || authStatus === "idle") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -16,18 +21,24 @@ export default function RoleBasedRoute({ allowedRoles }) {
     )
   }
 
+  // Redirect to login if not authenticated
   if (!isAuthenticated || authStatus === "unauthenticated" || !user) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
+  // Check if user has required role
   const userRole = user.role
   if (!allowedRoles.includes(userRole)) {
+    // Redirect to appropriate dashboard based on role
     return <Navigate to={getRoleBasedRedirect(userRole)} replace />
   }
 
   return <Outlet />
 }
 
+/**
+ * Get redirect path based on user role
+ */
 function getRoleBasedRedirect(role) {
   switch (role) {
     case "ROLE_JOB_SEEKER":

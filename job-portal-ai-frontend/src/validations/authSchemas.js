@@ -1,5 +1,6 @@
-import { z } from "zod"
+﻿import { z } from "zod"
 
+// Login Schema
 export const loginSchema = z.object({
   email: z
     .string()
@@ -11,6 +12,7 @@ export const loginSchema = z.object({
     .min(8, "Password must be at least 8 characters"),
 })
 
+// Register Schema
 export const registerSchema = z
   .object({
     fullName: z
@@ -30,7 +32,9 @@ export const registerSchema = z
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number"
       ),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    confirmPassword: z
+      .string()
+      .min(1, "Please confirm your password"),
     role: z.enum(["ROLE_JOB_SEEKER", "ROLE_EMPLOYER"], {
       required_error: "Please select a role",
     }),
@@ -40,6 +44,7 @@ export const registerSchema = z
     path: ["confirmPassword"],
   })
 
+// Forgot Password Schema
 export const forgotPasswordSchema = z.object({
   email: z
     .string()
@@ -47,6 +52,7 @@ export const forgotPasswordSchema = z.object({
     .email("Please enter a valid email address"),
 })
 
+// Reset Password Schema
 export const resetPasswordSchema = z
   .object({
     password: z
@@ -57,7 +63,9 @@ export const resetPasswordSchema = z
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number"
       ),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
+    confirmPassword: z
+      .string()
+      .min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

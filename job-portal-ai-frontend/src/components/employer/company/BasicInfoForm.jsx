@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+﻿import { useState, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -36,6 +36,7 @@ export default function BasicInfoForm({ company, isActionLoading }) {
     registrationNumber: "",
   })
 
+  // Sync form when company loads
   useEffect(() => {
     if (company) {
       setForm({
@@ -75,6 +76,7 @@ export default function BasicInfoForm({ company, isActionLoading }) {
       companyType:        form.companyType || undefined,
       industryType:       form.industryType || undefined,
       registrationNumber: form.registrationNumber.trim() || undefined,
+      // Preserve existing social links
       socialLinks: (company.socialLinks || []).map(sl => ({ platform: sl.platform, url: sl.url })),
     }
     dispatch(updateCompany({ id: company.id, ...payload }))
@@ -85,6 +87,8 @@ export default function BasicInfoForm({ company, isActionLoading }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+
+      {/* ── Identity ──────────────────────────────────────────────────── */}
       <section className="space-y-4">
         <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">
           Identity
@@ -115,6 +119,7 @@ export default function BasicInfoForm({ company, isActionLoading }) {
         </div>
       </section>
 
+      {/* ── Contact & Web ─────────────────────────────────────────────── */}
       <section className="space-y-4">
         <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">
           Contact & Web
@@ -135,6 +140,7 @@ export default function BasicInfoForm({ company, isActionLoading }) {
         </div>
       </section>
 
+      {/* ── Company Details ───────────────────────────────────────────── */}
       <section className="space-y-4">
         <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">
           Company Details
@@ -142,7 +148,7 @@ export default function BasicInfoForm({ company, isActionLoading }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-600">Company Size <span className="text-red-500">*</span></Label>
-            <Select value={form.companySize} onValueChange={setSelect("companySize")}>
+            <Select value={form.companySize} onValueChange={setSelect("companySize")} required>
               <SelectTrigger className="border-slate-200 text-sm w-full"><SelectValue placeholder="Select size" /></SelectTrigger>
               <SelectContent>
                 {COMPANY_SIZES.map(s => <SelectItem key={s} value={s}>{fmt(s)}</SelectItem>)}
@@ -151,7 +157,7 @@ export default function BasicInfoForm({ company, isActionLoading }) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-600">Company Type <span className="text-red-500">*</span></Label>
-            <Select value={form.companyType} onValueChange={setSelect("companyType")}>
+            <Select value={form.companyType} onValueChange={setSelect("companyType")} required>
               <SelectTrigger className="border-slate-200 text-sm w-full"><SelectValue placeholder="Select type" /></SelectTrigger>
               <SelectContent>
                 {COMPANY_TYPES.map(t => <SelectItem key={t} value={t}>{fmt(t)}</SelectItem>)}
@@ -160,7 +166,7 @@ export default function BasicInfoForm({ company, isActionLoading }) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-600">Industry <span className="text-red-500">*</span></Label>
-            <Select value={form.industryType} onValueChange={setSelect("industryType")}>
+            <Select value={form.industryType} onValueChange={setSelect("industryType")} required>
               <SelectTrigger className="border-slate-200 text-sm w-full"><SelectValue placeholder="Select industry" /></SelectTrigger>
               <SelectContent className="max-h-60">
                 {INDUSTRY_TYPES.map(i => <SelectItem key={i} value={i}>{fmt(i)}</SelectItem>)}
@@ -171,7 +177,9 @@ export default function BasicInfoForm({ company, isActionLoading }) {
             <Label className="text-xs font-semibold text-slate-600">Founded Year</Label>
             <Input type="number" min={1800} max={2100} value={form.foundedYear} onChange={set("foundedYear")} placeholder="2015" className="border-slate-200" />
           </div>
+         
         </div>
+        
       </section>
 
       <div className="flex justify-end pt-2">

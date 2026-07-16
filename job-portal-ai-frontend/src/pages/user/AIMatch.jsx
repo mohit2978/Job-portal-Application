@@ -15,6 +15,8 @@ import { fetchMyResumes, fetchResumeById } from "@/store/resume/resumeThunk"
 import { getCareerFeedback } from "@/store/ai/aiThunk"
 import api from "@/store/api"
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function serializeResume(resume) {
   const lines = []
   const pi = resume.personalInfo
@@ -22,7 +24,7 @@ function serializeResume(resume) {
     lines.push(`Name: ${pi.fullName || ""}`)
     lines.push(`Email: ${pi.email || ""}`)
     if (pi.location) lines.push(`Location: ${pi.location}`)
-    if (pi.linkedIn) lines.push(`LinkedIn: ${pi.linkedIn}`)
+    if (pi.linkedIn)  lines.push(`LinkedIn: ${pi.linkedIn}`)
   }
   if (resume.summary) lines.push(`\nSummary:\n${resume.summary}`)
   if (resume.workExperiences?.length) {
@@ -68,9 +70,12 @@ function strengthColor(score) {
   return "text-red-500"
 }
 
+// ── Loading Skeleton ──────────────────────────────────────────────────────────
+
 function MatchSkeleton() {
   return (
     <div className="space-y-6">
+      {/* Strength card */}
       <Card><CardContent className="p-5 space-y-3">
         <div className="flex justify-between items-center">
           <Skeleton className="h-4 w-32" />
@@ -79,6 +84,8 @@ function MatchSkeleton() {
         <Skeleton className="h-2 w-full" />
         <Skeleton className="h-3 w-3/4" />
       </CardContent></Card>
+
+      {/* Role groups */}
       {[1, 2, 3].map((i) => (
         <div key={i} className="space-y-3">
           <div className="flex items-center gap-3">
@@ -105,19 +112,23 @@ function MatchSkeleton() {
   )
 }
 
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
 export default function AIMatch() {
   const dispatch = useDispatch()
   const { resumes, isLoading: resumesLoading } = useSelector((s) => s.resume)
 
-  const [selectedId, setSelectedId] = useState(null)
-  const [matchCache, setMatchCache] = useState({})
-  const [isMatching, setIsMatching] = useState(false)
-  const [matchError, setMatchError] = useState(null)
+  const [selectedId, setSelectedId]     = useState(null)   // string id
+  const [matchCache, setMatchCache]     = useState({})      // { [id]: { feedback, jobGroups } }
+  const [isMatching, setIsMatching]     = useState(false)
+  const [matchError, setMatchError]     = useState(null)
 
+  // Fetch resume list on mount if not already loaded
   useEffect(() => {
     if (resumes.length === 0) dispatch(fetchMyResumes())
   }, [dispatch]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Pre-select default (or first) resume once list is available
   useEffect(() => {
     if (resumes.length > 0 && !selectedId) {
       const def = resumes.find((r) => r.isDefault) || resumes[0]
@@ -125,9 +136,10 @@ export default function AIMatch() {
     }
   }, [resumes]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Kick off matching when selected resume changes
   useEffect(() => {
     if (!selectedId) return
-    if (matchCache[selectedId]) return
+    if (matchCache[selectedId]) return   // already cached
     runMatch(selectedId)
   }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -135,17 +147,22 @@ export default function AIMatch() {
     setIsMatching(true)
     setMatchError(null)
     try {
+      // 1. Fetch full resume with all sections
       const resumeAction = await dispatch(fetchResumeById(id))
       if (resumeAction.meta.requestStatus !== "fulfilled") {
         throw new Error("Could not load resume details")
       }
       const fullResume = resumeAction.payload?.data ?? resumeAction.payload
+
+      // 2. Serialize → career feedback
       const resumeContent = serializeResume(fullResume)
       const fbAction = await dispatch(getCareerFeedback({ resumeContent }))
       if (fbAction.meta.requestStatus !== "fulfilled") {
         throw new Error("AI analysis failed — please try again")
       }
       const feedback = fbAction.payload
+
+      // 3. Search real job listings for each AI-suggested role (parallel)
       const jobGroups = await Promise.all(
         (feedback.targetJobs || []).map(async (tj) => {
           try {
@@ -157,6 +174,7 @@ export default function AIMatch() {
           }
         })
       )
+
       setMatchCache((prev) => ({ ...prev, [id]: { feedback, jobGroups } }))
     } catch (err) {
       setMatchError(err.message || "Something went wrong")
@@ -169,6 +187,7 @@ export default function AIMatch() {
   const selectedResume = resumes.find((r) => String(r.id) === selectedId)
   const isLoading      = resumesLoading || isMatching
 
+  // ── Empty: no resumes ────────────────────────────────────────────────────────
   if (!resumesLoading && resumes.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -192,6 +211,7 @@ export default function AIMatch() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -202,6 +222,8 @@ export default function AIMatch() {
               AI analyzes your resume and surfaces the roles and listings that fit you best
             </p>
           </div>
+
+          {/* Resume switcher */}
           {resumes.length > 0 && (
             <div className="flex items-center gap-2 shrink-0">
               <span className="text-sm text-slate-500 hidden sm:block">Resume:</span>
@@ -230,6 +252,7 @@ export default function AIMatch() {
           )}
         </div>
 
+        {/* Matching for label */}
         {selectedResume && (
           <div className="flex items-center gap-2 text-xs text-slate-400 mb-6">
             <Brain className="h-3.5 w-3.5" />
@@ -243,6 +266,7 @@ export default function AIMatch() {
           </div>
         )}
 
+        {/* Error */}
         {matchError && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-center justify-between">
             <p className="text-sm text-red-700">{matchError}</p>
@@ -252,11 +276,14 @@ export default function AIMatch() {
           </div>
         )}
 
+        {/* Loading */}
         {isLoading && !current && <MatchSkeleton />}
 
+        {/* Results */}
         {!isLoading && current && (
           <div className="space-y-8">
 
+            {/* Profile Strength */}
             <Card className="border-slate-200">
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-center justify-between">
@@ -273,6 +300,7 @@ export default function AIMatch() {
               </CardContent>
             </Card>
 
+            {/* Target Roles + Real Jobs */}
             {current.jobGroups.length === 0 ? (
               <div className="text-center py-16 text-slate-400">
                 <Target className="h-10 w-10 mx-auto mb-3 opacity-30" />
@@ -282,6 +310,8 @@ export default function AIMatch() {
               <div className="space-y-10">
                 {current.jobGroups.map((group, i) => (
                   <section key={i}>
+
+                    {/* Role header */}
                     <div className="flex flex-wrap items-center gap-3 mb-4">
                       <h2 className="text-base font-bold text-slate-900">{group.jobTitle}</h2>
                       <Badge
@@ -294,9 +324,13 @@ export default function AIMatch() {
                         <span className="text-xs text-slate-400 hidden md:block">{group.reason}</span>
                       )}
                     </div>
+
+                    {/* Reason on mobile */}
                     {group.reason && (
                       <p className="text-xs text-slate-400 mb-4 md:hidden">{group.reason}</p>
                     )}
+
+                    {/* Real job listings */}
                     {group.jobs.length > 0 ? (
                       <>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -305,7 +339,12 @@ export default function AIMatch() {
                           ))}
                         </div>
                         <div className="mt-3 flex justify-end">
-                          <Button variant="ghost" size="sm" className="text-xs text-brand gap-1" asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs text-brand gap-1"
+                            asChild
+                          >
                             <Link to={`/jobs?q=${encodeURIComponent(group.jobTitle)}`}>
                               See all {group.jobTitle} jobs
                               <ChevronRight className="h-3.5 w-3.5" />

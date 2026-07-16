@@ -1,50 +1,110 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { fetchAllUsers, suspendUser, activateUser, deleteUser, changeUserRole } from "./adminUserThunk"
+﻿import { createSlice } from "@reduxjs/toolkit"
+import {
+  fetchAllUsers,
+  suspendUser,
+  activateUser,
+  deleteUser,
+  changeUserRole,
+} from "./adminUserThunk"
 
+const initialState = {
+  users: [],
+  isLoading: false,
+  isActionLoading: false,
+  error: null,
+  actionError: null,
+}
+
+// Helper: replace a user in the list by id
 function replaceUser(users, updated) {
-  return users.map(u => u.id === updated.id ? updated : u)
+  return users.map((u) => (u.id === updated.id ? updated : u))
 }
 
 const adminUserSlice = createSlice({
   name: "adminUser",
-  initialState: {
-    users: [],
-    isLoading: false,
-    isActionLoading: false,
-    error: null,
-    actionError: null,
-  },
+  initialState,
   reducers: {
     clearErrors(state) {
       state.error = null
       state.actionError = null
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
+    // ── fetchAllUsers ────────────────────────────────────────────────────────
     builder
-      .addCase(fetchAllUsers.pending,   s => { s.isLoading = true; s.error = null })
-      .addCase(fetchAllUsers.fulfilled, (s, { payload }) => { s.isLoading = false; s.users = payload })
-      .addCase(fetchAllUsers.rejected,  (s, { payload }) => { s.isLoading = false; s.error = payload })
+      .addCase(fetchAllUsers.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, { payload }) => {
+        state.isLoading = false
+        state.users = payload
+      })
+      .addCase(fetchAllUsers.rejected, (state, { payload }) => {
+        state.isLoading = false
+        state.error = payload
+      })
 
+    // ── suspendUser ──────────────────────────────────────────────────────────
     builder
-      .addCase(suspendUser.pending,   s => { s.isActionLoading = true; s.actionError = null })
-      .addCase(suspendUser.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.users = replaceUser(s.users, payload) })
-      .addCase(suspendUser.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(suspendUser.pending, (state) => {
+        state.isActionLoading = true
+        state.actionError = null
+      })
+      .addCase(suspendUser.fulfilled, (state, { payload }) => {
+        state.isActionLoading = false
+        state.users = replaceUser(state.users, payload)
+      })
+      .addCase(suspendUser.rejected, (state, { payload }) => {
+        state.isActionLoading = false
+        state.actionError = payload
+      })
 
+    // ── activateUser ─────────────────────────────────────────────────────────
     builder
-      .addCase(activateUser.pending,   s => { s.isActionLoading = true; s.actionError = null })
-      .addCase(activateUser.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.users = replaceUser(s.users, payload) })
-      .addCase(activateUser.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(activateUser.pending, (state) => {
+        state.isActionLoading = true
+        state.actionError = null
+      })
+      .addCase(activateUser.fulfilled, (state, { payload }) => {
+        state.isActionLoading = false
+        state.users = replaceUser(state.users, payload)
+      })
+      .addCase(activateUser.rejected, (state, { payload }) => {
+        state.isActionLoading = false
+        state.actionError = payload
+      })
 
+    // ── deleteUser ───────────────────────────────────────────────────────────
     builder
-      .addCase(deleteUser.pending,   s => { s.isActionLoading = true; s.actionError = null })
-      .addCase(deleteUser.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.users = replaceUser(s.users, payload) })
-      .addCase(deleteUser.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(deleteUser.pending, (state) => {
+        state.isActionLoading = true
+        state.actionError = null
+      })
+      .addCase(deleteUser.fulfilled, (state, { payload }) => {
+        state.isActionLoading = false
+        // Mark as deleted in place (status = DELETED) instead of removing from list
+        state.users = replaceUser(state.users, payload)
+      })
+      .addCase(deleteUser.rejected, (state, { payload }) => {
+        state.isActionLoading = false
+        state.actionError = payload
+      })
 
+    // ── changeUserRole ───────────────────────────────────────────────────────
     builder
-      .addCase(changeUserRole.pending,   s => { s.isActionLoading = true; s.actionError = null })
-      .addCase(changeUserRole.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.users = replaceUser(s.users, payload) })
-      .addCase(changeUserRole.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(changeUserRole.pending, (state) => {
+        state.isActionLoading = true
+        state.actionError = null
+      })
+      .addCase(changeUserRole.fulfilled, (state, { payload }) => {
+        state.isActionLoading = false
+        state.users = replaceUser(state.users, payload)
+      })
+      .addCase(changeUserRole.rejected, (state, { payload }) => {
+        state.isActionLoading = false
+        state.actionError = payload
+      })
   },
 })
 

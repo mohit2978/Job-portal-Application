@@ -1,5 +1,6 @@
-import { useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,17 +15,13 @@ import {
   Eye, AlertCircle, Loader2, TrendingUp, BookOpen, MinusCircle,
 } from "lucide-react"
 import AIMatchBadge from "@/components/user/jobs/AIMatchBadge"
-import rawJobs from "@/data/jobs.json"
-import SKILLS from "@/data/jobSkills.json"
-import TAGS from "@/data/jobTags.json"
-
-// Resolve jobs: add id (1-based), resolve skillIds → skill objects, resolve tagIds → tag objects
-const JOBS = rawJobs.map((job, i) => ({
-  ...job,
-  id: i + 1,
-  skills: (job.skillIds ?? []).map(id => SKILLS[id - 1]).filter(Boolean),
-  tags:   (job.tagIds   ?? []).map(id => TAGS[id - 1]).filter(Boolean),
-}))
+import { fetchJobById } from "@/store/job/jobThunk"
+import { saveJob, unsaveJob } from "@/store/savedJob/savedJobThunk"
+import { analyzeSkillsGap } from "@/store/ai/aiThunk"
+import { clearSkillsGap } from "@/store/ai/aiSlice"
+import { fetchMyApplications } from "@/store/application/applicationThunk"
+import { fetchMyResumes } from "@/store/resume/resumeThunk"
+import { toast } from "sonner"
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -59,11 +56,11 @@ function labelJobType(v) {
 }
 
 const STATUS_COLORS = {
-  OPEN:    "bg-green-100 text-green-700",
-  DRAFT:   "bg-yellow-100 text-yellow-700",
-  CLOSED:  "bg-slate-100 text-slate-600",
+  OPEN: "bg-green-100 text-green-700",
+  DRAFT: "bg-yellow-100 text-yellow-700",
+  CLOSED: "bg-slate-100 text-slate-600",
   EXPIRED: "bg-red-100 text-red-600",
-  FILLED:  "bg-blue-100 text-blue-700",
+  FILLED: "bg-blue-100 text-blue-700",
 }
 
 // ── Skills Gap Card ────────────────────────────────────────────────────────────
@@ -299,21 +296,45 @@ function LoadingSkeleton() {
 export default function JobDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-
-  const job = JOBS.find(j => j.id === Number(id))
+  const dispatch = useDispatch()
+  const { currentJob: job, isLoading, error } = useSelector((s) => s.job)
+  const { savedJobMap, isActionLoading } = useSelector((s) => s.savedJob)
+  const { skillsGap, isAnalyzingSkillsGap } = useSelector((s) => s.ai)
+  const myApplications = useSelector((s) => s.application.myApplications)
+  const resumes = useSelector((s) => s.resume.resumes)
 
   const [selectedResumeId, setSelectedResumeId] = useState("")
   const [skillsGapVisible, setSkillsGapVisible] = useState(false)
 
-  const isLoading = false
-  const hasApplied = false
-  const isSaved = false
-  const isActionLoading = false
-  const resumes = []
-  const skillsGap = null
-  const isAnalyzingSkillsGap = false
+  useEffect(() => {
+    dispatch(fetchJobById(id))
+  }, [dispatch, id])
 
-  const handleSaveToggle = () => {}
+  useEffect(() => { dispatch(fetchMyApplications()) }, [dispatch])
+  useEffect(() => { dispatch(fetchMyResumes()) }, [dispatch])
+
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
+
+  const hasApplied = job
+    ? myApplications.some(a => a.jobId === job.id && a.status !== "WITHDRAWN")
+    : false
+
+  const isSaved = job ? !!savedJobMap[job.id] : false
+  const savedJobId = job ? savedJobMap[job.id] : null
+
+  const handleSaveToggle = async () => {
+    if (isSaved) {
+      const result = await dispatch(unsaveJob(savedJobId))
+      if (!result.error) toast.success("Job removed from saved list")
+      else toast.error(result.payload)
+    } else {
+      const result = await dispatch(saveJob({ jobId: job.id, companyId: job.company?.id ?? job.companyId }))
+      if (!result.error) toast.success("Job saved!")
+      else toast.error(result.payload)
+    }
+  }
 
   if (isLoading || !job) return <LoadingSkeleton />
 
@@ -329,11 +350,11 @@ export default function JobDetails() {
         ? `From ${fmtSalary(job.minSalary, job.currency)}`
         : null
 
-  const respList = toList(job.responsibilities)
-  const reqList  = toList(job.requirements)
-  const benList  = toList(job.benefits)
+  const respList  = toList(job.responsibilities)
+  const reqList   = toList(job.requirements)
+  const benList   = toList(job.benefits)
 
-  const handleApply = () => navigate(`/jobs/${id}/apply`)
+  const handleApply = () => navigate(`/apply/${id}`)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -422,8 +443,19 @@ export default function JobDetails() {
             setSelectedResumeId={setSelectedResumeId}
             skillsGap={skillsGapVisible ? skillsGap : null}
             isAnalyzing={isAnalyzingSkillsGap}
-            onAnalyze={() => {}}
-            onClear={() => { setSkillsGapVisible(false) }}
+            onAnalyze={() => {
+              const resume = resumes.find(r => r.id.toString() === selectedResumeId)
+              const candidateSkills = resume?.skills?.map(s => s.skillName).filter(Boolean) ?? []
+              const requiredSkills = skills.map(s => s.skillName ?? s.name).filter(Boolean)
+              dispatch(clearSkillsGap())
+              setSkillsGapVisible(true)
+              dispatch(analyzeSkillsGap({
+                jobTitle: job.title,
+                candidateSkills,
+                requiredSkills,
+              })).unwrap().catch(err => toast.error(err || "Failed to analyze skills gap"))
+            }}
+            onClear={() => { dispatch(clearSkillsGap()); setSkillsGapVisible(false) }}
           />
 
           {/* Description */}
@@ -519,7 +551,7 @@ export default function JobDetails() {
                   <Bookmark className={`h-4 w-4 mr-2 ${isSaved ? "fill-current text-brand" : ""}`} />
                   {isSaved ? "Saved" : "Save"}
                 </Button>
-                <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(window.location.href) }}>
+                <Button variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success("Link copied!") }}>
                   <Share2 className="h-4 w-4" />
                 </Button>
               </div>

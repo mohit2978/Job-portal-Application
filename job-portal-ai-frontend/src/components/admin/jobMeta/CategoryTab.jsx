@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+﻿import { useMemo, useState } from "react"
 import { useDispatch } from "react-redux"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Plus, Search, MoreHorizontal, Pencil, Trash2, FolderTree, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -38,6 +39,7 @@ export default function CategoryTab({ categories, isLoading, isActionLoading }) 
   const [editTarget, setEditTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
 
+  // Root categories for parent selector
   const rootCategories = useMemo(
     () => categories.filter((c) => !c.parentId),
     [categories]
@@ -88,6 +90,7 @@ export default function CategoryTab({ categories, isLoading, isActionLoading }) 
 
   return (
     <div className="space-y-4">
+      {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
@@ -108,6 +111,7 @@ export default function CategoryTab({ categories, isLoading, isActionLoading }) 
         </div>
       </div>
 
+      {/* Table */}
       <div className="rounded-xl border border-slate-200 overflow-hidden bg-white shadow-sm">
         <Table>
           <TableHeader>
@@ -174,14 +178,20 @@ export default function CategoryTab({ categories, isLoading, isActionLoading }) 
                     )}
                   </TableCell>
                   <TableCell>
-                    <span className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                      cat.active === false ? "bg-slate-100 text-slate-500" : "bg-emerald-50 text-emerald-700"
-                    )}>
-                      <span className={cn(
-                        "h-1.5 w-1.5 rounded-full",
-                        cat.active === false ? "bg-slate-400" : "bg-emerald-500"
-                      )} />
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                        cat.active === false
+                          ? "bg-slate-100 text-slate-500"
+                          : "bg-emerald-50 text-emerald-700"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "h-1.5 w-1.5 rounded-full",
+                          cat.active === false ? "bg-slate-400" : "bg-emerald-500"
+                        )}
+                      />
                       {cat.active === false ? "Inactive" : "Active"}
                     </span>
                   </TableCell>
@@ -217,6 +227,7 @@ export default function CategoryTab({ categories, isLoading, isActionLoading }) 
         </Table>
       </div>
 
+      {/* Form Dialog */}
       <CategoryFormDialog
         open={formOpen}
         onClose={() => { setFormOpen(false); setEditTarget(null) }}
@@ -226,6 +237,7 @@ export default function CategoryTab({ categories, isLoading, isActionLoading }) 
         rootCategories={rootCategories}
       />
 
+      {/* Delete Dialog */}
       <MetaDeleteConfirmDialog
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}

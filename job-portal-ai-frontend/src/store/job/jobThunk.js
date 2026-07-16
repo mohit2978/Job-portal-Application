@@ -1,5 +1,9 @@
-import { createAsyncThunk } from "@reduxjs/toolkit"
+﻿import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
+
+// ── Public: search + filter all OPEN jobs ────────────────────────────────────
+// Params: keyword, location, minSalary, maxSalary, jobType, workMode,
+//         experienceLevel, categoryId, companyId, skillIds, tagIds
 
 export const fetchJobs = createAsyncThunk(
   "job/fetchJobs",
@@ -9,18 +13,24 @@ export const fetchJobs = createAsyncThunk(
         Object.entries(params).filter(([, v]) => v !== null && v !== undefined && v !== "")
       )
       const { data } = await api.get("/api/jobs", { params: clean })
+      console.log("fetch jobs ",data)
       return data
     } catch (err) {
+      console.log("fetch job error ", err)
       return rejectWithValue(err.response?.data?.message || "Failed to fetch jobs")
     }
   }
 )
+
+// ── Employer: fetch own jobs ─────────────────────────────────────────────────
+// Uses X-User-Id injected by gateway — no ID param needed
 
 export const fetchMyJobs = createAsyncThunk(
   "job/fetchMy",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/api/jobs/my")
+      console.log("fetch my jobs", data)
       return data
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Failed to fetch jobs")
@@ -28,17 +38,22 @@ export const fetchMyJobs = createAsyncThunk(
   }
 )
 
+// ── Fetch single job (full detail) ───────────────────────────────────────────
+
 export const fetchJobById = createAsyncThunk(
   "job/fetchById",
   async (id, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/api/jobs/${id}`)
+      console.log("job id id ", data)
       return data
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Failed to fetch job")
     }
   }
 )
+
+// ── Create job (saves as DRAFT) ──────────────────────────────────────────────
 
 export const createJob = createAsyncThunk(
   "job/create",
@@ -52,6 +67,8 @@ export const createJob = createAsyncThunk(
   }
 )
 
+// ── Update job ───────────────────────────────────────────────────────────────
+
 export const updateJob = createAsyncThunk(
   "job/update",
   async ({ id, ...payload }, { rejectWithValue }) => {
@@ -63,6 +80,8 @@ export const updateJob = createAsyncThunk(
     }
   }
 )
+
+// ── Publish job (DRAFT → OPEN) ───────────────────────────────────────────────
 
 export const publishJob = createAsyncThunk(
   "job/publish",
@@ -76,6 +95,8 @@ export const publishJob = createAsyncThunk(
   }
 )
 
+// ── Close job (OPEN → CLOSED) ────────────────────────────────────────────────
+
 export const closeJob = createAsyncThunk(
   "job/close",
   async (id, { rejectWithValue }) => {
@@ -88,17 +109,22 @@ export const closeJob = createAsyncThunk(
   }
 )
 
+// ── Admin: fetch all jobs regardless of status ───────────────────────────────
+
 export const fetchAllJobsAdmin = createAsyncThunk(
   "job/fetchAllAdmin",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/api/jobs/admin")
+      console.log("jobs",job)
       return data
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Failed to fetch jobs")
     }
   }
 )
+
+// ── Delete job ───────────────────────────────────────────────────────────────
 
 export const deleteJob = createAsyncThunk(
   "job/delete",

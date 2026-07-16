@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+﻿import { useEffect } from "react"
 import { Link, useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { ArrowLeft, AlertCircle } from "lucide-react"
@@ -9,7 +9,7 @@ import { clearCurrentJob } from "@/store/job/jobSlice"
 import JobForm from "@/components/employer/jobs/JobForm"
 
 export default function EditJob() {
-  const { id }   = useParams()
+  const { id } = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { currentJob, isLoading, error } = useSelector(s => s.job)
@@ -19,6 +19,7 @@ export default function EditJob() {
     return () => { dispatch(clearCurrentJob()) }
   }, [id, dispatch])
 
+  // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="space-y-5">
@@ -45,6 +46,7 @@ export default function EditJob() {
     )
   }
 
+  // ── Error ──────────────────────────────────────────────────────────────────
   if (error || (!isLoading && !currentJob)) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -60,6 +62,7 @@ export default function EditJob() {
     )
   }
 
+  // ── Form ───────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-5">
       <div>

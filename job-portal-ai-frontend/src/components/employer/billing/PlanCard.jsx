@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+﻿import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Sparkles } from "lucide-react"
@@ -9,19 +9,19 @@ export default function PlanCard({
   billingCycle = "monthly",
   currentPlan = false,
   onSelectPlan,
-  highlighted = false,
+  highlighted = false
 }) {
   const { name, monthlyPrice, yearlyPrice, features, popular, description } = plan
 
-  const price        = billingCycle === "monthly" ? monthlyPrice : yearlyPrice
+  const price = billingCycle === "monthly" ? monthlyPrice : yearlyPrice
   const isEnterprise = name === "Enterprise"
-  const isFree       = name === "Free"
+  const isFree = name === "Free"
 
   return (
     <Card className={cn(
       "relative transition-all duration-300",
       highlighted && "border-2 border-brand shadow-xl scale-105",
-      !highlighted && "hover:shadow-lg"
+      !highlighted && "hover:shadow-lg hover:scale-102"
     )}>
       {popular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -60,6 +60,7 @@ export default function PlanCard({
       </CardHeader>
 
       <CardContent>
+        {/* Features List */}
         <ul className="space-y-3 mb-8">
           {features.map((feature, index) => (
             <li key={index} className="flex items-start gap-3">
@@ -69,8 +70,14 @@ export default function PlanCard({
           ))}
         </ul>
 
+        {/* CTA Button */}
         {currentPlan ? (
-          <Button variant="outline" className="w-full" size="lg" disabled>
+          <Button
+            variant="outline"
+            className="w-full"
+            size="lg"
+            disabled
+          >
             Current Plan
           </Button>
         ) : isEnterprise ? (
@@ -94,7 +101,10 @@ export default function PlanCard({
         ) : (
           <Button
             variant={highlighted ? "default" : "outline"}
-            className={cn("w-full", highlighted && "bg-brand hover:bg-brand/90 text-white")}
+            className={cn(
+              "w-full",
+              highlighted && "bg-brand hover:bg-brand/90 text-white"
+            )}
             size="lg"
             onClick={() => onSelectPlan && onSelectPlan(plan)}
           >

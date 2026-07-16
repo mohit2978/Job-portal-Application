@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+﻿import { useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dialog"
 import { fetchCompanyTransactions, fetchInvoiceByTransaction } from "@/store/subscription/subscriptionThunk"
 import { fetchMyCompany } from "@/store/company/companyThunk"
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function fmtDate(d) {
   if (!d) return "—"
@@ -39,11 +41,13 @@ const STATUS_CONFIG = {
   FAILED:  { label: "Failed",  className: "bg-red-50 text-red-600 border-red-200"             },
 }
 
+// ── Invoice Detail Dialog ─────────────────────────────────────────────────────
+
 function InvoiceDialog({ transactionNumber, open, onClose }) {
   const dispatch = useDispatch()
   const [invoice, setInvoice] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [err, setErr]         = useState(null)
+  const [err, setErr] = useState(null)
 
   useEffect(() => {
     if (open && transactionNumber) {
@@ -131,10 +135,10 @@ function InvoiceDialog({ transactionNumber, open, onClose }) {
             {(invoice.companyName || invoice.billingEmail || invoice.billingAddress) && (
               <div className="space-y-1 text-xs text-slate-600">
                 <p className="font-semibold text-slate-700 uppercase tracking-wide text-[10px]">Billed To</p>
-                {invoice.companyName    && <p className="font-medium text-slate-800">{invoice.companyName}</p>}
-                {invoice.billingEmail   && <p>{invoice.billingEmail}</p>}
+                {invoice.companyName && <p className="font-medium text-slate-800">{invoice.companyName}</p>}
+                {invoice.billingEmail && <p>{invoice.billingEmail}</p>}
                 {invoice.billingAddress && <p className="text-slate-400">{invoice.billingAddress}</p>}
-                {invoice.taxId          && <p>Tax ID: {invoice.taxId}</p>}
+                {invoice.taxId && <p>Tax ID: {invoice.taxId}</p>}
               </div>
             )}
           </div>
@@ -144,13 +148,15 @@ function InvoiceDialog({ transactionNumber, open, onClose }) {
   )
 }
 
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
 export default function Invoices() {
   const dispatch = useDispatch()
   const { transactions, isLoading } = useSelector(s => s.subscription)
   const { myCompany } = useSelector(s => s.company)
 
-  const [search, setSearch]             = useState("")
-  const [invoiceDialog, setInvoiceDialog] = useState(null)
+  const [search, setSearch] = useState("")
+  const [invoiceDialog, setInvoiceDialog] = useState(null) // transactionNumber
 
   useEffect(() => {
     if (!myCompany) dispatch(fetchMyCompany())
@@ -170,6 +176,7 @@ export default function Invoices() {
     )
   }, [transactions, search])
 
+  // Stats
   const totalPaid    = useMemo(() => transactions.filter(t => t.status === "SUCCESS").reduce((s, t) => s + (t.amount || 0), 0), [transactions])
   const totalCount   = transactions.length
   const currentYear  = new Date().getFullYear()
@@ -181,6 +188,7 @@ export default function Invoices() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <Link to="/employer/billing" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 mb-3">
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to Billing
@@ -189,11 +197,12 @@ export default function Invoices() {
         <p className="text-sm text-slate-500 mt-1">View and download your payment records</p>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: "Total Paid (All Time)",  value: fmtAmount(totalPaid),     icon: Receipt,   color: "bg-emerald-50 text-emerald-600" },
-          { label: "Total Transactions",     value: totalCount,               icon: CreditCard, color: "bg-blue-50 text-brand" },
-          { label: `Paid in ${currentYear}`, value: fmtAmount(thisYearPaid),  icon: FileText,  color: "bg-violet-50 text-violet-600" },
+          { label: "Total Paid (All Time)", value: fmtAmount(totalPaid), icon: Receipt, color: "bg-emerald-50 text-emerald-600" },
+          { label: "Total Transactions",    value: totalCount,            icon: CreditCard, color: "bg-blue-50 text-brand"   },
+          { label: `Paid in ${currentYear}`, value: fmtAmount(thisYearPaid), icon: FileText, color: "bg-violet-50 text-violet-600" },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex items-center gap-3">
             <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${color}`}>
@@ -207,6 +216,7 @@ export default function Invoices() {
         ))}
       </div>
 
+      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input
@@ -217,6 +227,7 @@ export default function Invoices() {
         />
       </div>
 
+      {/* Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="space-y-3 p-5">

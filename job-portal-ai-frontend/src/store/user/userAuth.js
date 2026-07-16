@@ -1,14 +1,19 @@
-import { createSlice } from "@reduxjs/toolkit"
+﻿import { createSlice } from "@reduxjs/toolkit"
 import {
-  loginUser, registerUser, fetchCurrentUser,
-  updateProfile, forgotPassword, resetPassword,
+  loginUser,
+  registerUser,
+  fetchCurrentUser,
+  updateProfile,
+  forgotPassword,
+  resetPassword,
 } from "./userThunk"
 
+// Initial state
 const initialState = {
   user: null,
   token: localStorage.getItem("accessToken") || null,
   isAuthenticated: false,
-  authStatus: "idle",
+  authStatus: "idle", // 'idle' | 'loading' | 'authenticated' | 'unauthenticated'
   isLoading: false,
   profileSaving: false,
   profileError: null,
@@ -17,10 +22,12 @@ const initialState = {
   resetPasswordSuccess: false,
 }
 
+// Auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    // Logout action
     logout: (state) => {
       state.user = null
       state.token = null
@@ -29,12 +36,21 @@ const authSlice = createSlice({
       state.error = null
       localStorage.removeItem("accessToken")
     },
-    resetError: (state) => { state.error = null },
-    resetForgotPasswordSuccess: (state) => { state.forgotPasswordSuccess = false },
-    resetResetPasswordSuccess: (state) => { state.resetPasswordSuccess = false },
+    // Reset error
+    resetError: (state) => {
+      state.error = null
+    },
+    // Reset forgot password success state
+    resetForgotPasswordSuccess: (state) => {
+      state.forgotPasswordSuccess = false
+    },
+    // Reset reset password success state
+    resetResetPasswordSuccess: (state) => {
+      state.resetPasswordSuccess = false
+    },
   },
   extraReducers: (builder) => {
-
+    // Login User
     builder
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true
@@ -55,6 +71,7 @@ const authSlice = createSlice({
         state.error = action.payload
       })
 
+    // Register User
     builder
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true
@@ -75,6 +92,7 @@ const authSlice = createSlice({
         state.error = action.payload
       })
 
+    // Fetch Current User
     builder
       .addCase(fetchCurrentUser.pending, (state) => {
         state.isLoading = true
@@ -97,6 +115,7 @@ const authSlice = createSlice({
         localStorage.removeItem("accessToken")
       })
 
+    // Update Profile
     builder
       .addCase(updateProfile.pending, (state) => {
         state.profileSaving = true
@@ -111,6 +130,7 @@ const authSlice = createSlice({
         state.profileError = action.payload
       })
 
+    // Forgot Password
     builder
       .addCase(forgotPassword.pending, (state) => {
         state.isLoading = true
@@ -128,6 +148,7 @@ const authSlice = createSlice({
         state.forgotPasswordSuccess = false
       })
 
+    // Reset Password
     builder
       .addCase(resetPassword.pending, (state) => {
         state.isLoading = true
@@ -148,4 +169,5 @@ const authSlice = createSlice({
 })
 
 export const { logout, resetError, resetForgotPasswordSuccess, resetResetPasswordSuccess } = authSlice.actions
+
 export default authSlice.reducer

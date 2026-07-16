@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, Link } from "react-router-dom"
 import { toast } from "sonner"
@@ -19,6 +19,8 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { fetchActiveSubscription, fetchSubscriptionHistory, cancelSubscription } from "@/store/subscription/subscriptionThunk"
 import { fetchMyCompany } from "@/store/company/companyThunk"
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function fmtDate(d) {
   if (!d) return "—"
@@ -42,6 +44,8 @@ const STATUS_CONFIG = {
   CANCELLED: { label: "Cancelled", className: "bg-red-50 text-red-600 border-red-200",             icon: XCircle     },
   PAUSED:    { label: "Paused",    className: "bg-amber-50 text-amber-700 border-amber-200",       icon: Clock       },
 }
+
+// ── Usage Bar ─────────────────────────────────────────────────────────────────
 
 function UsageBar({ label, used, max, icon: Icon, color }) {
   const isUnlimited = max === -1
@@ -77,10 +81,12 @@ function UsageBar({ label, used, max, icon: Icon, color }) {
   )
 }
 
+// ── Cancel Dialog ─────────────────────────────────────────────────────────────
+
 function CancelSubscriptionDialog({ open, onClose, subscriptionId }) {
   const dispatch = useDispatch()
   const { isActionLoading } = useSelector(s => s.subscription)
-  const [reason, setReason]       = useState("")
+  const [reason, setReason] = useState("")
   const [immediate, setImmediate] = useState(false)
 
   const handleCancel = () => {
@@ -137,6 +143,8 @@ function CancelSubscriptionDialog({ open, onClose, subscriptionId }) {
   )
 }
 
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
 export default function BillingOverview() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -157,6 +165,7 @@ export default function BillingOverview() {
     }
   }, [myCompany])
 
+  // ── No company ────────────────────────────────────────────────────────────
   if (!isLoading && !myCompany) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -170,6 +179,7 @@ export default function BillingOverview() {
     )
   }
 
+  // ── Loading ───────────────────────────────────────────────────────────────
   if (isLoading && !sub) {
     return (
       <div className="space-y-5">
@@ -189,11 +199,13 @@ export default function BillingOverview() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Billing & Subscription</h1>
         <p className="text-sm text-slate-500 mt-1">Manage your plan, usage, and payment history</p>
       </div>
 
+      {/* No active subscription */}
       {!sub && (
         <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 p-10 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 mx-auto mb-4">
@@ -209,8 +221,11 @@ export default function BillingOverview() {
         </div>
       )}
 
+      {/* Active subscription */}
       {sub && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+          {/* Plan card */}
           <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
             <div className="flex items-start justify-between">
               <div>
@@ -241,13 +256,15 @@ export default function BillingOverview() {
               </div>
             </div>
 
+            {/* Usage */}
             <div className="space-y-4 border-t border-slate-100 pt-4">
               <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Usage This Period</p>
-              <UsageBar label="Job Postings"  used={sub.jobPostingsUsed}  max={sub.maxJobPostings}  icon={Briefcase} color="text-blue-500" />
-              <UsageBar label="Featured Jobs" used={sub.featuredJobsUsed} max={sub.maxFeaturedJobs} icon={Star}      color="text-violet-500" />
-              <UsageBar label="Resume Views"  used={sub.resumeViewsUsed}  max={sub.maxResumeViews}  icon={Eye}       color="text-indigo-500" />
+              <UsageBar label="Job Postings"   used={sub.jobPostingsUsed}   max={sub.maxJobPostings}   icon={Briefcase} color="text-blue-500" />
+              <UsageBar label="Featured Jobs"  used={sub.featuredJobsUsed}  max={sub.maxFeaturedJobs}  icon={Star}      color="text-violet-500" />
+              <UsageBar label="Resume Views"   used={sub.resumeViewsUsed}   max={sub.maxResumeViews}   icon={Eye}       color="text-indigo-500" />
             </div>
 
+            {/* Cancellation reason */}
             {sub.cancellationReason && (
               <div className="rounded-lg bg-red-50 border border-red-100 p-3 text-sm text-red-700">
                 <p className="font-semibold mb-0.5">Cancellation Reason</p>
@@ -255,6 +272,7 @@ export default function BillingOverview() {
               </div>
             )}
 
+            {/* Actions */}
             <div className="flex gap-3 pt-1 border-t border-slate-100">
               <Link to="/employer/billing/plans" className="flex-1">
                 <Button className="w-full gap-1.5 bg-brand hover:bg-brand/90">
@@ -270,15 +288,17 @@ export default function BillingOverview() {
             </div>
           </div>
 
+          {/* Right sidebar */}
           <div className="space-y-4">
+            {/* Plan limits */}
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Plan Limits</p>
               <div className="space-y-2 text-sm">
                 {[
-                  { label: "Job Postings",  val: fmtLimit(sub.maxJobPostings)  },
+                  { label: "Job Postings", val: fmtLimit(sub.maxJobPostings) },
                   { label: "Featured Jobs", val: fmtLimit(sub.maxFeaturedJobs) },
-                  { label: "Resume Views",  val: fmtLimit(sub.maxResumeViews)  },
-                  { label: "Job Duration",  val: `${sub.jobPostingDurationDays}d` },
+                  { label: "Resume Views", val: fmtLimit(sub.maxResumeViews) },
+                  { label: "Job Duration", val: `${sub.jobPostingDurationDays}d` },
                 ].map(({ label, val }) => (
                   <div key={label} className="flex justify-between">
                     <span className="text-slate-500">{label}</span>
@@ -288,12 +308,13 @@ export default function BillingOverview() {
               </div>
             </div>
 
+            {/* Quick links */}
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-2">
               <p className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-3">Quick Links</p>
               {[
-                { label: "View All Plans",   href: "/employer/billing/plans",    icon: TrendingUp  },
-                { label: "Payment History",  href: "/employer/billing/payment",  icon: CreditCard  },
-                { label: "Invoices",         href: "/employer/billing/invoices", icon: Calendar    },
+                { label: "View All Plans", href: "/employer/billing/plans", icon: TrendingUp },
+                { label: "Payment History", href: "/employer/billing/payment", icon: CreditCard },
+                { label: "Invoices", href: "/employer/billing/invoices", icon: Calendar },
               ].map(({ label, href, icon: Icon }) => (
                 <Link key={href} to={href}>
                   <button className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
@@ -306,6 +327,7 @@ export default function BillingOverview() {
         </div>
       )}
 
+      {/* Subscription History */}
       {subscriptionHistory.length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex items-center gap-2">

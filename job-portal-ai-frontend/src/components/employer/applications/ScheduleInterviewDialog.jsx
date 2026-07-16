@@ -1,4 +1,4 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "sonner"
 import { Loader2, Sparkles, ChevronDown, ChevronUp } from "lucide-react"
@@ -108,6 +108,8 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
         </DialogHeader>
 
         <div className="space-y-4 mt-1 max-h-[75vh] overflow-y-auto pr-1">
+
+          {/* Interview type + round */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-slate-600">
@@ -137,8 +139,9 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
             </div>
           </div>
 
+          {/* AI Questions — shown once a type is selected */}
           {form.interviewType && (
-            <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 space-y-3">
+            <div className="rounded-xl border border-blue-200 bg-linear-to-br from-blue-50 to-indigo-50 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-brand" />
@@ -157,6 +160,7 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
                 </Button>
               </div>
 
+              {/* Questions list */}
               {interviewQuestions?.questions?.length > 0 && (
                 <>
                   <button
@@ -194,6 +198,7 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
             </div>
           )}
 
+          {/* Date / Duration */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-slate-600">
@@ -224,6 +229,7 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
             </div>
           </div>
 
+          {/* Location / Link */}
           {needsLink && (
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-slate-600">Meeting Link</Label>
@@ -260,6 +266,7 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
             </div>
           )}
 
+          {/* Interviewers */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-600">
               Interviewer IDs
@@ -273,6 +280,7 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
             />
           </div>
 
+          {/* Candidate instructions */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-600">Instructions for Candidate</Label>
             <Textarea
@@ -284,6 +292,7 @@ export default function ScheduleInterviewDialog({ open, onClose, applicationId, 
             />
           </div>
 
+          {/* Actions */}
           <div className="flex gap-3 pt-1">
             <Button variant="outline" className="flex-1 border-slate-200" onClick={onClose} disabled={isActionLoading}>
               Cancel

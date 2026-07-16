@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "sonner"
 import {
@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { fetchAllPlans, updatePlanConfig } from "@/store/subscription/subscriptionThunk"
 
+// ── Config ─────────────────────────────────────────────────────────────────────
+
 const PLAN_COLORS = {
   FREE:         { bg: "bg-slate-100",  text: "text-slate-700",  border: "border-slate-200",  ring: "ring-slate-300"  },
   STARTER:      { bg: "bg-blue-50",    text: "text-blue-700",   border: "border-blue-200",   ring: "ring-blue-300"   },
@@ -38,6 +40,8 @@ function fmtLimit(val) {
   return val === -1 ? "Unlimited" : String(val)
 }
 
+// ── Edit Dialog ───────────────────────────────────────────────────────────────
+
 function EditPlanDialog({ plan, open, onClose }) {
   const dispatch = useDispatch()
   const { isActionLoading } = useSelector(s => s.subscription)
@@ -48,24 +52,24 @@ function EditPlanDialog({ plan, open, onClose }) {
   useEffect(() => {
     if (plan) {
       setForm({
-        displayName:            plan.displayName || "",
-        description:            plan.description || "",
-        monthlyPrice:           plan.monthlyPrice ?? 0,
-        yearlyPrice:            plan.yearlyPrice ?? 0,
-        maxJobPostings:         plan.maxJobPostings ?? -1,
-        maxFeaturedJobs:        plan.maxFeaturedJobs ?? -1,
-        maxResumeViews:         plan.maxResumeViews ?? -1,
+        displayName:          plan.displayName || "",
+        description:          plan.description || "",
+        monthlyPrice:         plan.monthlyPrice ?? 0,
+        yearlyPrice:          plan.yearlyPrice ?? 0,
+        maxJobPostings:       plan.maxJobPostings ?? -1,
+        maxFeaturedJobs:      plan.maxFeaturedJobs ?? -1,
+        maxResumeViews:       plan.maxResumeViews ?? -1,
         jobPostingDurationDays: plan.jobPostingDurationDays ?? 30,
-        supportLevel:           plan.supportLevel || "",
-        trialDays:              plan.trialDays ?? 0,
-        popular:                plan.popular ?? false,
-        active:                 plan.active ?? true,
+        supportLevel:         plan.supportLevel || "",
+        trialDays:            plan.trialDays ?? 0,
+        popular:              plan.popular ?? false,
+        active:               plan.active ?? true,
       })
       setFeatures((plan.features || []).map((f, i) => ({ ...f, _key: i })))
     }
   }, [plan])
 
-  const set    = f => e => setForm(p => ({ ...p, [f]: e.target.value }))
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }))
   const setNum = f => e => setForm(p => ({ ...p, [f]: e.target.value === "" ? "" : Number(e.target.value) }))
   const setToggle = f => v => setForm(p => ({ ...p, [f]: v }))
 
@@ -81,13 +85,13 @@ function EditPlanDialog({ plan, open, onClose }) {
   const handleSave = () => {
     const patch = {
       ...form,
-      monthlyPrice:           Number(form.monthlyPrice),
-      yearlyPrice:            Number(form.yearlyPrice),
-      maxJobPostings:         Number(form.maxJobPostings),
-      maxFeaturedJobs:        Number(form.maxFeaturedJobs),
-      maxResumeViews:         Number(form.maxResumeViews),
+      monthlyPrice:         Number(form.monthlyPrice),
+      yearlyPrice:          Number(form.yearlyPrice),
+      maxJobPostings:       Number(form.maxJobPostings),
+      maxFeaturedJobs:      Number(form.maxFeaturedJobs),
+      maxResumeViews:       Number(form.maxResumeViews),
       jobPostingDurationDays: Number(form.jobPostingDurationDays),
-      trialDays:              Number(form.trialDays),
+      trialDays:            Number(form.trialDays),
       features: features.map(({ featureText, highlighted }) => ({ featureText, highlighted })),
     }
     dispatch(updatePlanConfig({ id: plan.id, ...patch }))
@@ -113,6 +117,7 @@ function EditPlanDialog({ plan, open, onClose }) {
         </DialogHeader>
 
         <div className="space-y-5 mt-1">
+          {/* Basic info */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-slate-600">Display Name</Label>
@@ -129,6 +134,7 @@ function EditPlanDialog({ plan, open, onClose }) {
             <Textarea value={form.description} onChange={set("description")} rows={2} className="border-slate-200 resize-none text-sm" />
           </div>
 
+          {/* Pricing */}
           <div className="rounded-lg border border-slate-200 p-4 space-y-3">
             <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Pricing</p>
             <div className="grid grid-cols-2 gap-4">
@@ -147,10 +153,9 @@ function EditPlanDialog({ plan, open, onClose }) {
             </div>
           </div>
 
+          {/* Limits */}
           <div className="rounded-lg border border-slate-200 p-4 space-y-3">
-            <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">
-              Limits <span className="font-normal text-slate-400">(-1 = Unlimited)</span>
-            </p>
+            <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Limits <span className="font-normal text-slate-400">(-1 = Unlimited)</span></p>
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-slate-600">Job Postings</Label>
@@ -171,6 +176,7 @@ function EditPlanDialog({ plan, open, onClose }) {
             </div>
           </div>
 
+          {/* Toggles */}
           <div className="flex gap-6">
             <div className="flex items-center gap-2">
               <Switch checked={form.popular} onCheckedChange={setToggle("popular")} />
@@ -182,6 +188,7 @@ function EditPlanDialog({ plan, open, onClose }) {
             </div>
           </div>
 
+          {/* Features */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Features</p>
@@ -221,6 +228,7 @@ function EditPlanDialog({ plan, open, onClose }) {
             </div>
           </div>
 
+          {/* Actions */}
           <div className="flex gap-3 pt-1">
             <Button variant="outline" className="flex-1 border-slate-200" onClick={onClose} disabled={isActionLoading}>
               Cancel
@@ -236,6 +244,8 @@ function EditPlanDialog({ plan, open, onClose }) {
   )
 }
 
+// ── Plan Card ─────────────────────────────────────────────────────────────────
+
 function PlanCard({ plan, onEdit, onToggleActive, onTogglePopular }) {
   const colors = PLAN_COLORS[plan.plan] || PLAN_COLORS.FREE
 
@@ -249,6 +259,7 @@ function PlanCard({ plan, onEdit, onToggleActive, onTogglePopular }) {
         </div>
       )}
 
+      {/* Header */}
       <div className="flex items-start justify-between pt-1">
         <div>
           <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold ${colors.bg} ${colors.text} mb-1`}>
@@ -264,6 +275,7 @@ function PlanCard({ plan, onEdit, onToggleActive, onTogglePopular }) {
         </div>
       </div>
 
+      {/* Pricing */}
       <div className="space-y-1">
         <div className="flex items-baseline gap-1">
           <span className="text-2xl font-bold text-slate-900">{fmtPrice(plan.monthlyPrice, plan.currency)}</span>
@@ -275,6 +287,7 @@ function PlanCard({ plan, onEdit, onToggleActive, onTogglePopular }) {
         )}
       </div>
 
+      {/* Limits */}
       <div className="space-y-2 text-xs">
         <div className="flex items-center gap-2 text-slate-600">
           <Briefcase className="h-3.5 w-3.5 text-slate-400" />
@@ -294,6 +307,7 @@ function PlanCard({ plan, onEdit, onToggleActive, onTogglePopular }) {
         </div>
       </div>
 
+      {/* Features */}
       {plan.features?.length > 0 && (
         <div className="space-y-1.5 border-t border-slate-100 pt-3">
           {plan.features.slice(0, 5).map((f, i) => (
@@ -308,6 +322,7 @@ function PlanCard({ plan, onEdit, onToggleActive, onTogglePopular }) {
         </div>
       )}
 
+      {/* Actions */}
       <div className="flex gap-2 pt-1 border-t border-slate-100">
         <Button size="sm" variant="outline" className="flex-1 h-8 text-xs gap-1.5 border-slate-200"
           onClick={() => onEdit(plan)}>
@@ -336,18 +351,20 @@ function PlanCard({ plan, onEdit, onToggleActive, onTogglePopular }) {
   )
 }
 
+// ── Main Page ──────────────────────────────────────────────────────────────────
+
 export default function AdminSubscriptions() {
   const dispatch = useDispatch()
   const { plans, isLoading, isActionLoading } = useSelector(s => s.subscription)
 
-  const [editTarget, setEditTarget]     = useState(null)
-  const [toggleConfirm, setToggleConfirm] = useState(null)
+  const [editTarget, setEditTarget] = useState(null)
+  const [toggleConfirm, setToggleConfirm] = useState(null) // { plan, field }
 
   useEffect(() => {
     dispatch(fetchAllPlans())
-  }, [dispatch])
+  }, [])
 
-  const handleToggleActive  = (plan) => setToggleConfirm({ plan, field: "active"  })
+  const handleToggleActive = (plan) => setToggleConfirm({ plan, field: "active" })
   const handleTogglePopular = (plan) => setToggleConfirm({ plan, field: "popular" })
 
   const confirmToggle = () => {
@@ -362,17 +379,19 @@ export default function AdminSubscriptions() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Subscription Plans</h1>
           <p className="text-sm text-slate-500 mt-1">Configure pricing, limits, and features for each plan tier</p>
         </div>
         <Button variant="outline" className="border-slate-200 text-sm gap-2" onClick={() => dispatch(fetchAllPlans())}>
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4 rotate-0 opacity-0 absolute" />}
           Refresh
         </Button>
       </div>
 
+      {/* Plans Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-96 rounded-xl" />)}
@@ -396,6 +415,7 @@ export default function AdminSubscriptions() {
         </div>
       )}
 
+      {/* Summary table */}
       {plans.length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
           <div className="px-5 py-3 border-b border-slate-100 bg-slate-50">
@@ -445,12 +465,14 @@ export default function AdminSubscriptions() {
         </div>
       )}
 
+      {/* Edit Dialog */}
       <EditPlanDialog
         plan={editTarget}
         open={!!editTarget}
         onClose={() => setEditTarget(null)}
       />
 
+      {/* Toggle confirm */}
       <AlertDialog open={!!toggleConfirm} onOpenChange={o => !o && setToggleConfirm(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

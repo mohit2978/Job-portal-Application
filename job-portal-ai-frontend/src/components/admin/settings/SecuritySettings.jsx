@@ -1,46 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Shield, Lock, RefreshCw, AlertTriangle, KeyRound, Save } from "lucide-react"
 
-const AUTH_POLICIES = [
-  {
-    id:      "2fa",
-    label:   "Two-Factor Authentication",
-    desc:    "Require 2FA for all admin accounts",
-    enabled: true,
-  },
-  {
-    id:      "rate_limit",
-    label:   "Login Rate Limiting",
-    desc:    "Lock accounts after too many failed attempts",
-    enabled: true,
-  },
-  {
-    id:      "email_verify",
-    label:   "Email Verification Required",
-    desc:    "New users must verify email before accessing the platform",
-    enabled: true,
-  },
-  {
-    id:      "strong_pwd",
-    label:   "Strong Password Policy",
-    desc:    "Require minimum 8 chars with uppercase, number, and symbol",
-    enabled: true,
-  },
-  {
-    id:      "session_single",
-    label:   "Single Session Per User",
-    desc:    "Invalidate previous sessions on new login",
-    enabled: false,
-  },
-]
-
 export default function SecuritySettings() {
   return (
     <div className="space-y-6">
+      {/* Auth Policies */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -53,7 +21,38 @@ export default function SecuritySettings() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="divide-y divide-slate-100">
-            {AUTH_POLICIES.map((policy) => (
+            {[
+              {
+                id: "2fa",
+                label: "Two-Factor Authentication",
+                desc: "Require 2FA for all admin accounts",
+                enabled: true,
+              },
+              {
+                id: "rate_limit",
+                label: "Login Rate Limiting",
+                desc: "Lock accounts after too many failed attempts",
+                enabled: true,
+              },
+              {
+                id: "email_verify",
+                label: "Email Verification Required",
+                desc: "New users must verify email before accessing the platform",
+                enabled: true,
+              },
+              {
+                id: "strong_pwd",
+                label: "Strong Password Policy",
+                desc: "Require minimum 8 chars with uppercase, number, and symbol",
+                enabled: true,
+              },
+              {
+                id: "session_single",
+                label: "Single Session Per User",
+                desc: "Invalidate previous sessions on new login",
+                enabled: false,
+              },
+            ].map((policy) => (
               <div
                 key={policy.id}
                 className="flex items-center justify-between px-6 py-4 hover:bg-slate-50/50 transition-colors"
@@ -69,6 +68,7 @@ export default function SecuritySettings() {
         </CardContent>
       </Card>
 
+      {/* Token & Session */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -94,6 +94,7 @@ export default function SecuritySettings() {
         </CardContent>
       </Card>
 
+      {/* Danger Zone */}
       <Card className="border-0 shadow-sm border-l-4 border-l-red-400">
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2 text-red-700">
@@ -108,7 +109,9 @@ export default function SecuritySettings() {
           <div className="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-100">
             <div>
               <p className="text-sm font-semibold text-red-900">Invalidate All Sessions</p>
-              <p className="text-xs text-red-600 mt-0.5">Force all users to re-authenticate immediately</p>
+              <p className="text-xs text-red-600 mt-0.5">
+                Force all users to re-authenticate immediately
+              </p>
             </div>
             <Button
               variant="outline"
@@ -122,7 +125,9 @@ export default function SecuritySettings() {
           <div className="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-100">
             <div>
               <p className="text-sm font-semibold text-red-900">Rotate JWT Secret</p>
-              <p className="text-xs text-red-600 mt-0.5">All existing tokens will be invalidated instantly</p>
+              <p className="text-xs text-red-600 mt-0.5">
+                All existing tokens will be invalidated instantly
+              </p>
             </div>
             <Button
               variant="outline"
@@ -137,7 +142,9 @@ export default function SecuritySettings() {
       </Card>
 
       <div className="flex justify-end gap-3">
-        <Button variant="outline" className="border-slate-200 text-slate-600">Cancel</Button>
+        <Button variant="outline" className="border-slate-200 text-slate-600">
+          Cancel
+        </Button>
         <Button className="bg-red-600 hover:bg-red-700 gap-2">
           <Save className="h-4 w-4" />
           Save Changes

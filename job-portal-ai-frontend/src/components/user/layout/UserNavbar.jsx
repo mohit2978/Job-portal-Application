@@ -1,4 +1,4 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Input } from "@/components/ui/input"
@@ -15,18 +15,12 @@ import {
 import { Search, Bell, User, Briefcase, FileText, Sparkles, Settings, LogOut, ScrollText, Bookmark, Target } from "lucide-react"
 import { logout } from "@/store/user/userAuth"
 
-/**
- * UserNavbar Component
- * Renders the top navigation bar for the candidate dashboard, including the search input field,
- * quick links to features (Jobs, AI Tools, AI Match, Resumes, Applications), saved jobs counter,
- * and profile dropdown menu (with profile update, settings, and logout triggers).
- */
 export default function UserNavbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch()
-  const { user } = useSelector((s) => s.auth)
-  const { savedJobs } = useSelector((s) => s.savedJob)
+  const { user } = useSelector((state) => state.auth)
+  const { savedJobs } = useSelector((state) => state.savedJob)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [searchLocation, setSearchLocation] = useState("")
@@ -53,7 +47,7 @@ export default function UserNavbar() {
               <Briefcase className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900">
-              HIREKRO</span>
+              ZOSHIRE</span>
           </Link>
 
           {/* Search Bar */}
@@ -87,7 +81,9 @@ export default function UserNavbar() {
             >
               Jobs
             </Link>
-
+            
+           
+            
             <Link
               to="/ai-tools"
               className={`hidden lg:flex items-center gap-1 text-sm font-medium transition-colors ${
@@ -165,8 +161,8 @@ export default function UserNavbar() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user?.name ?? user?.username ?? "User"}</p>
-                    <p className="text-xs text-slate-500">{user?.email ?? ""}</p>
+                    <p className="text-sm font-medium">{user?.name || "User"}</p>
+                    <p className="text-xs text-slate-500">{user?.email || "user@example.com"}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -181,6 +177,11 @@ export default function UserNavbar() {
                 <DropdownMenuItem onClick={() => navigate("/saved-jobs")}>
                   <Bookmark className="mr-2 h-4 w-4" />
                   Saved Jobs
+                  {savedJobs.length > 0 && (
+                    <span className="ml-auto inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-brand text-white text-[10px] font-bold">
+                      {savedJobs.length}
+                    </span>
+                  )}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/resumes")}>
                   <ScrollText className="mr-2 h-4 w-4" />

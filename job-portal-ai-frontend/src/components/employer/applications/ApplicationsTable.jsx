@@ -46,16 +46,25 @@ function SkeletonRows({ cols }) {
   ))
 }
 
+// ── Component ─────────────────────────────────────────────────────────────────
+
+/**
+ * Reusable applications table.
+ *
+ * Compact mode  (no onUpdateStatus/onToggleStar): used in dashboard — shows a simple "Review" button.
+ * Full mode     (onUpdateStatus + onToggleStar provided): used in Applications page — shows star column + actions dropdown.
+ */
 export default function ApplicationsTable({
   applications = [],
   isLoading = false,
   emptyTitle = "No applications yet",
   emptySubtitle = "Applications will appear here once candidates apply.",
+  // callbacks — presence determines which columns/actions are shown
   onRowClick,
-  onToggleStar,
-  onUpdateStatus,
-  onAIScreen,
-  onSummarizeNotes,
+  onToggleStar,       // full mode: star column
+  onUpdateStatus,     // full mode: dropdown → Update Status
+  onAIScreen,         // full mode: dropdown → AI Screen
+  onSummarizeNotes,   // full mode: dropdown → Summarize Notes
   onMarkRead,
   isActionLoading = false,
 }) {
@@ -114,6 +123,7 @@ export default function ApplicationsTable({
                 )}
                 onClick={() => handleRowClick(app)}
               >
+                {/* Star — full mode only */}
                 {isFullMode && (
                   <TableCell className="pr-0 w-8" onClick={e => e.stopPropagation()}>
                     <button
@@ -129,6 +139,7 @@ export default function ApplicationsTable({
                   </TableCell>
                 )}
 
+                {/* Candidate */}
                 <TableCell>
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-white text-sm font-bold">
@@ -146,6 +157,7 @@ export default function ApplicationsTable({
                   </div>
                 </TableCell>
 
+                {/* Job */}
                 <TableCell>
                   <p className="text-sm text-slate-700 font-medium truncate max-w-[200px]">{jobTitle}</p>
                   {app.job?.city && (
@@ -153,20 +165,24 @@ export default function ApplicationsTable({
                   )}
                 </TableCell>
 
+                {/* Status */}
                 <TableCell>
                   <Badge variant="outline" className={`text-xs font-semibold ${sCfg.className}`}>
                     {sCfg.label}
                   </Badge>
                 </TableCell>
 
+                {/* AI Score */}
                 <TableCell>
                   <AiScoreCircle score={app.screening?.overallScore} />
                 </TableCell>
 
+                {/* Applied */}
                 <TableCell className="text-xs text-slate-400">
                   {fmtDate(app.appliedAt)}
                 </TableCell>
 
+                {/* Actions */}
                 <TableCell className="text-right" onClick={e => e.stopPropagation()}>
                   {isFullMode ? (
                     <DropdownMenu>

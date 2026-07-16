@@ -1,22 +1,24 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Separator } from "@/components/ui/separator"
 import { Mail, Send, Save, CheckCircle } from "lucide-react"
 
 const emailTemplates = [
-  { id: "welcome",             label: "Welcome Email",              enabled: true  },
-  { id: "application_received",label: "Application Received",       enabled: true  },
-  { id: "application_status",  label: "Application Status Update",  enabled: true  },
-  { id: "job_match",           label: "New Job Match",              enabled: true  },
-  { id: "password_reset",      label: "Password Reset",             enabled: true  },
-  { id: "interview_invite",    label: "Interview Invitation",       enabled: true  },
+  { id: "welcome", label: "Welcome Email", enabled: true },
+  { id: "application_received", label: "Application Received", enabled: true },
+  { id: "application_status", label: "Application Status Update", enabled: true },
+  { id: "job_match", label: "New Job Match", enabled: true },
+  { id: "password_reset", label: "Password Reset", enabled: true },
+  { id: "interview_invite", label: "Interview Invitation", enabled: true },
 ]
 
 export default function EmailSettings() {
   return (
     <div className="space-y-6">
+      {/* SMTP Config */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -31,23 +33,39 @@ export default function EmailSettings() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-slate-700">SMTP Host</Label>
-              <Input defaultValue="smtp.gmail.com" className="h-9 border-slate-200 focus-visible:ring-slate-300" />
+              <Input
+                defaultValue="smtp.gmail.com"
+                className="h-9 border-slate-200 focus-visible:ring-slate-300"
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-slate-700">SMTP Port</Label>
-              <Input defaultValue="587" className="h-9 border-slate-200 focus-visible:ring-slate-300" />
+              <Input
+                defaultValue="587"
+                className="h-9 border-slate-200 focus-visible:ring-slate-300"
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-slate-700">Username / Email</Label>
-              <Input defaultValue="noreply@jobportal.com" className="h-9 border-slate-200 focus-visible:ring-slate-300" />
+              <Input
+                defaultValue="noreply@jobportal.com"
+                className="h-9 border-slate-200 focus-visible:ring-slate-300"
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-slate-700">App Password</Label>
-              <Input type="password" defaultValue="secret_password" className="h-9 border-slate-200 focus-visible:ring-slate-300" />
+              <Input
+                type="password"
+                defaultValue="secret_password"
+                className="h-9 border-slate-200 focus-visible:ring-slate-300"
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-slate-700">From Name</Label>
-              <Input defaultValue="Job Portal Pro" className="h-9 border-slate-200 focus-visible:ring-slate-300" />
+              <Input
+                defaultValue="Job Portal Pro"
+                className="h-9 border-slate-200 focus-visible:ring-slate-300"
+              />
             </div>
           </div>
 
@@ -59,6 +77,7 @@ export default function EmailSettings() {
             <Switch defaultChecked />
           </div>
 
+          {/* Test email */}
           <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
             <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0" />
             <p className="text-sm text-emerald-700 font-medium flex-1">
@@ -76,6 +95,7 @@ export default function EmailSettings() {
         </CardContent>
       </Card>
 
+      {/* Email Templates */}
       <Card className="border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="text-base font-semibold">Email Templates</CardTitle>
@@ -92,7 +112,9 @@ export default function EmailSettings() {
               >
                 <p className="text-sm font-medium text-slate-700">{tmpl.label}</p>
                 <div className="flex items-center gap-3">
-                  <button className="text-xs text-brand hover:text-brand/80 font-medium">Edit</button>
+                  <button className="text-xs text-brand hover:text-brand/80 font-medium">
+                    Edit
+                  </button>
                   <Switch defaultChecked={tmpl.enabled} />
                 </div>
               </div>
@@ -102,7 +124,9 @@ export default function EmailSettings() {
       </Card>
 
       <div className="flex justify-end gap-3">
-        <Button variant="outline" className="border-slate-200 text-slate-600">Cancel</Button>
+        <Button variant="outline" className="border-slate-200 text-slate-600">
+          Cancel
+        </Button>
         <Button className="bg-red-600 hover:bg-red-700 gap-2">
           <Save className="h-4 w-4" />
           Save Configuration

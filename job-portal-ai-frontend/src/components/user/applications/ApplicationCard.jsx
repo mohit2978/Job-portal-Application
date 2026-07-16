@@ -8,6 +8,8 @@ import {
   MapPin, Briefcase, Building2,
 } from "lucide-react"
 
+// ── Status config ─────────────────────────────────────────────────────────────
+
 export const STATUS_CONFIG = {
   PENDING:             { label: "Pending",             color: "bg-blue-100 text-blue-700",    icon: Clock },
   REVIEWING:           { label: "Under Review",        color: "bg-yellow-100 text-yellow-700", icon: AlertCircle },
@@ -52,11 +54,8 @@ function fmtSalary(job) {
   return null
 }
 
-/**
- * ApplicationCard Component
- * Displays a summary of a candidate's job application, including company info, status badge,
- * progress pipeline, applied/updated timestamps, and action buttons to view job details or withdraw.
- */
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function ApplicationCard({ app, onWithdraw }) {
   const cfg = STATUS_CONFIG[app.status] ?? { label: app.status, color: "bg-slate-100 text-slate-600", icon: Clock }
   const StatusIcon = cfg.icon
@@ -74,6 +73,7 @@ export default function ApplicationCard({ app, onWithdraw }) {
       <CardContent className="p-5">
         <div className="flex items-start gap-4">
 
+          {/* Company logo */}
           <div className="h-12 w-12 rounded-xl border bg-slate-50 flex items-center justify-center shrink-0 overflow-hidden">
             {company?.logoUrl ? (
               <img
@@ -87,6 +87,8 @@ export default function ApplicationCard({ app, onWithdraw }) {
           </div>
 
           <div className="flex-1 min-w-0">
+
+            {/* Row 1: Title + status badge */}
             <div className="flex items-start justify-between gap-3 mb-1">
               <div className="min-w-0">
                 <Link
@@ -116,6 +118,7 @@ export default function ApplicationCard({ app, onWithdraw }) {
               </Badge>
             </div>
 
+            {/* Row 2: job meta */}
             {job && (
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 mb-3">
                 {location && (
@@ -141,6 +144,7 @@ export default function ApplicationCard({ app, onWithdraw }) {
               </div>
             )}
 
+            {/* Progress pipeline */}
             {!["REJECTED", "WITHDRAWN"].includes(app.status) && (
               <div className="flex items-center gap-1 mb-3">
                 {PIPELINE.map((s, i) => (
@@ -156,6 +160,7 @@ export default function ApplicationCard({ app, onWithdraw }) {
 
             <Separator className="mb-3" />
 
+            {/* Footer */}
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 text-xs text-slate-400">
                 <span className="flex items-center gap-1">

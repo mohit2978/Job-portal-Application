@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit"
+﻿import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
 
 export const fetchAllUsers = createAsyncThunk(
@@ -8,7 +8,9 @@ export const fetchAllUsers = createAsyncThunk(
       const { data } = await api.get("/api/users")
       return data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch users.")
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch users."
+      )
     }
   }
 )
@@ -20,7 +22,9 @@ export const suspendUser = createAsyncThunk(
       const { data } = await api.patch(`/api/users/${id}/suspend`)
       return data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to suspend user.")
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to suspend user."
+      )
     }
   }
 )
@@ -32,7 +36,9 @@ export const activateUser = createAsyncThunk(
       const { data } = await api.patch(`/api/users/${id}/activate`)
       return data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to activate user.")
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to activate user."
+      )
     }
   }
 )
@@ -44,7 +50,9 @@ export const deleteUser = createAsyncThunk(
       const { data } = await api.delete(`/api/users/${id}`)
       return data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to delete user.")
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete user."
+      )
     }
   }
 )
@@ -53,10 +61,14 @@ export const changeUserRole = createAsyncThunk(
   "adminUser/changeRole",
   async ({ id, role }, { rejectWithValue }) => {
     try {
-      const { data } = await api.patch(`/api/users/${id}/role`, null, { params: { role } })
+      const { data } = await api.patch(`/api/users/${id}/role`, null, {
+        params: { role },
+      })
       return data
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to change user role.")
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to change user role."
+      )
     }
   }
 )

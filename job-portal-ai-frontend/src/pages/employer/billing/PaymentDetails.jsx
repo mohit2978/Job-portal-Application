@@ -1,4 +1,4 @@
-import { useState } from "react"
+﻿import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -6,8 +6,12 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import PaymentMethodCard from "@/components/employer/billing/PaymentMethodCard"
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter,
-  DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Building2, Mail, MapPin, CreditCard } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -21,14 +25,14 @@ const paymentMethod = {
 }
 
 const billingInfo = {
-  companyName:  "Tech Corp Inc.",
+  companyName: "Tech Corp Inc.",
   billingEmail: "billing@techcorp.com",
-  address:      "123 Business Street",
-  city:         "San Francisco",
-  state:        "CA",
-  zipCode:      "94102",
-  country:      "United States",
-  taxId:        "12-3456789",
+  address: "123 Business Street",
+  city: "San Francisco",
+  state: "CA",
+  zipCode: "94102",
+  country: "United States",
+  taxId: "12-3456789",
 }
 
 export default function PaymentDetails() {
@@ -38,6 +42,7 @@ export default function PaymentDetails() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Header */}
       <div>
         <Link
           to="/employer/billing"
@@ -53,11 +58,13 @@ export default function PaymentDetails() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Payment Method */}
         <PaymentMethodCard
           paymentMethod={paymentMethod}
           onUpdate={() => setShowUpdatePaymentModal(true)}
         />
 
+        {/* Billing Settings */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Billing Settings</CardTitle>
@@ -88,6 +95,7 @@ export default function PaymentDetails() {
         </Card>
       </div>
 
+      {/* Billing Information */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -142,17 +150,24 @@ export default function PaymentDetails() {
         </CardContent>
       </Card>
 
+      {/* Update Payment Method Modal */}
       <Dialog open={showUpdatePaymentModal} onOpenChange={setShowUpdatePaymentModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Update Payment Method</DialogTitle>
-            <DialogDescription>Enter your new credit card details</DialogDescription>
+            <DialogDescription>
+              Enter your new credit card details
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="cardNumber">Card Number</Label>
-              <Input id="cardNumber" placeholder="1234 5678 9012 3456" maxLength="19" />
+              <Input
+                id="cardNumber"
+                placeholder="1234 5678 9012 3456"
+                maxLength="19"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -173,17 +188,24 @@ export default function PaymentDetails() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowUpdatePaymentModal(false)}>Cancel</Button>
-            <Button onClick={() => setShowUpdatePaymentModal(false)}>Update Card</Button>
+            <Button variant="outline" onClick={() => setShowUpdatePaymentModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setShowUpdatePaymentModal(false)}>
+              Update Card
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
+      {/* Update Billing Info Modal */}
       <Dialog open={showUpdateBillingModal} onOpenChange={setShowUpdateBillingModal}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Update Billing Information</DialogTitle>
-            <DialogDescription>Update your company and billing address details</DialogDescription>
+            <DialogDescription>
+              Update your company and billing address details
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -231,8 +253,12 @@ export default function PaymentDetails() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowUpdateBillingModal(false)}>Cancel</Button>
-            <Button onClick={() => setShowUpdateBillingModal(false)}>Save Changes</Button>
+            <Button variant="outline" onClick={() => setShowUpdateBillingModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setShowUpdateBillingModal(false)}>
+              Save Changes
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -27,9 +27,12 @@ export default function SavedJobs() {
     else toast.error(result.payload)
   }
 
+  console.log("saved jobs",savedJobs)
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Saved Jobs</h1>
@@ -43,6 +46,7 @@ export default function SavedJobs() {
         </Button>
       </div>
 
+      {/* Loading skeletons */}
       {isLoading && (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
@@ -66,6 +70,7 @@ export default function SavedJobs() {
         </div>
       )}
 
+      {/* Empty state */}
       {!isLoading && savedJobs.length === 0 && (
         <div className="text-center py-20">
           <div className="h-16 w-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
@@ -79,6 +84,7 @@ export default function SavedJobs() {
         </div>
       )}
 
+      {/* Job list */}
       {!isLoading && savedJobs.length > 0 && (
         <div className="space-y-4">
           {savedJobs.map((sj) => (

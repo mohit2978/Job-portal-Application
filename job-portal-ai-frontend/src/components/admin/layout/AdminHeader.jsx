@@ -1,17 +1,31 @@
-import { useNavigate } from "react-router-dom"
+﻿import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { logout } from "@/store/user/userAuth"
 import {
-  Menu, Search, Bell, ChevronDown, User, Settings, LogOut,
-  UserPlus, Briefcase, AlertTriangle, CheckCircle, Building2,
+  Menu,
+  Search,
+  Bell,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  UserPlus,
+  Briefcase,
+  AlertTriangle,
+  CheckCircle,
+  Building2,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
 const notifications = [
@@ -63,7 +77,7 @@ const notifications = [
 ]
 
 export default function AdminHeader({ onMenuClick }) {
-  const { user } = useSelector(s => s.auth)
+  const { user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -76,6 +90,7 @@ export default function AdminHeader({ onMenuClick }) {
 
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-slate-200 bg-white px-4 lg:px-6">
+      {/* Mobile hamburger */}
       <Button
         variant="ghost"
         size="icon"
@@ -85,6 +100,7 @@ export default function AdminHeader({ onMenuClick }) {
         <Menu className="h-5 w-5" />
       </Button>
 
+      {/* Search bar */}
       <div className="flex-1 max-w-md hidden md:block">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -96,7 +112,10 @@ export default function AdminHeader({ onMenuClick }) {
         </div>
       </div>
 
+      {/* Right side actions */}
       <div className="flex items-center gap-2 ml-auto">
+
+        {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900">
@@ -109,7 +128,9 @@ export default function AdminHeader({ onMenuClick }) {
           <DropdownMenuContent align="end" className="w-80">
             <DropdownMenuLabel className="flex items-center justify-between py-3">
               <span className="font-semibold">Notifications</span>
-              <span className="text-xs font-normal text-slate-400">{notifications.length} unread</span>
+              <span className="text-xs font-normal text-slate-400">
+                {notifications.length} unread
+              </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="max-h-72 overflow-y-auto">
@@ -118,11 +139,15 @@ export default function AdminHeader({ onMenuClick }) {
                 return (
                   <div key={n.id}>
                     <div className="flex items-start gap-3 px-3 py-3 hover:bg-slate-50 cursor-pointer transition-colors">
-                      <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.iconBg}`}>
+                      <div
+                        className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.iconBg}`}
+                      >
                         <Icon className={`h-3.5 w-3.5 ${n.iconColor}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 leading-tight">{n.title}</p>
+                        <p className="text-sm font-semibold text-slate-900 leading-tight">
+                          {n.title}
+                        </p>
                         <p className="text-xs text-slate-500 mt-0.5 truncate">{n.desc}</p>
                         <p className="text-[11px] text-slate-400 mt-1">{n.time}</p>
                       </div>
@@ -141,6 +166,7 @@ export default function AdminHeader({ onMenuClick }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
+        {/* Profile dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2 px-2 hover:bg-slate-100">
@@ -161,7 +187,9 @@ export default function AdminHeader({ onMenuClick }) {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               <div>
-                <p className="font-semibold text-slate-900">{user?.firstName} {user?.lastName}</p>
+                <p className="font-semibold text-slate-900">
+                  {user?.firstName} {user?.lastName}
+                </p>
                 <p className="text-xs text-slate-500 font-normal mt-0.5">{user?.email}</p>
               </div>
             </DropdownMenuLabel>

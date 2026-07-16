@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react"
+﻿import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import {
-  Save, Send, Loader2, Briefcase, MapPin,
+  Save, Send, ArrowLeft, Loader2, Briefcase, MapPin,
   DollarSign, Settings, Tag, Layers, Sparkles,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -18,25 +18,23 @@ import {
 } from "@/components/ui/select"
 import { createJob, updateJob, publishJob } from "@/store/job/jobThunk"
 import { fetchCategories, fetchSkills, fetchTags } from "@/store/jobMeta/jobMetaThunk"
-import {
-  generateJobDescription, generateJobRequirements, suggestSalary, recommendJobSkills,
-  generateJobResponsibilities, generateJobBenefits, recommendJobTags,
-} from "@/store/ai/aiThunk"
-import {
-  clearJobDescription, clearJobRequirements, clearSalarySuggestion, clearRecommendedSkills,
-  clearJobResponsibilities, clearJobBenefits, clearRecommendedTags,
-} from "@/store/ai/aiSlice"
+import { generateJobDescription, generateJobRequirements, suggestSalary, recommendJobSkills, generateJobResponsibilities, generateJobBenefits, recommendJobTags } from "@/store/ai/aiThunk"
+import { clearJobDescription, clearJobRequirements, clearSalarySuggestion, clearRecommendedSkills, clearJobResponsibilities, clearJobBenefits, clearRecommendedTags } from "@/store/ai/aiSlice"
 import MultiSelect from "./MultiSelect"
 
-const JOB_TYPES      = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE", "REMOTE"]
-const WORK_MODES     = ["REMOTE", "HYBRID", "ON_SITE"]
-const EXP_LEVELS     = ["ENTRY_LEVEL", "JUNIOR", "MID_LEVEL", "SENIOR_LEVEL", "LEAD", "EXECUTIVE"]
-const SALARY_PERIODS = ["HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY"]
-const CURRENCIES     = ["USD", "INR", "EUR", "GBP", "CAD", "AUD", "SGD"]
+// ── Enum constants ─────────────────────────────────────────────────────────────
+
+const JOB_TYPES        = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE", "REMOTE"]
+const WORK_MODES       = ["REMOTE", "HYBRID", "ON_SITE"]
+const EXP_LEVELS       = ["ENTRY_LEVEL", "JUNIOR", "MID_LEVEL", "SENIOR_LEVEL", "LEAD", "EXECUTIVE"]
+const SALARY_PERIODS   = ["HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY"]
+const CURRENCIES       = ["USD", "INR", "EUR", "GBP", "CAD", "AUD", "SGD"]
 
 function fmt(val) {
   return val.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
 }
+
+// ── Empty form ─────────────────────────────────────────────────────────────────
 
 const EMPTY = {
   title: "", description: "", requirements: "", responsibilities: "", benefits: "",
@@ -49,6 +47,8 @@ const EMPTY = {
   openings: 1,
   applicationDeadline: "", expiresAt: "",
 }
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
 function buildPayload(form) {
   return {
@@ -80,6 +80,8 @@ function buildPayload(form) {
   }
 }
 
+// ── Section wrapper ────────────────────────────────────────────────────────────
+
 function Section({ icon: Icon, title, children }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
@@ -91,6 +93,8 @@ function Section({ icon: Icon, title, children }) {
     </div>
   )
 }
+
+// ── Field helpers ──────────────────────────────────────────────────────────────
 
 function Field({ label, required, children, hint, action }) {
   return (
@@ -123,6 +127,13 @@ function AiButton({ onClick, loading, label, disabled }) {
   )
 }
 
+// ── Main component ─────────────────────────────────────────────────────────────
+
+/**
+ * Props:
+ *   initialJob  — JobResponse for edit mode, null for create
+ *   isEdit      — boolean
+ */
 export default function JobForm({ initialJob = null, isEdit = false }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -137,12 +148,14 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
 
   const [form, setForm] = useState(EMPTY)
 
+  // Fetch meta on mount
   useEffect(() => {
     if (!categories.length) dispatch(fetchCategories())
     if (!skills.length)     dispatch(fetchSkills())
     if (!tags.length)       dispatch(fetchTags())
   }, [])
 
+  // Pre-populate for edit
   useEffect(() => {
     if (initialJob) {
       setForm({
@@ -175,8 +188,10 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
     }
   }, [initialJob])
 
-  const set    = (f) => (e) => setForm(p => ({ ...p, [f]: e.target.value }))
+  const set = (f) => (e) => setForm(p => ({ ...p, [f]: e.target.value }))
   const setVal = (f) => (v) => setForm(p => ({ ...p, [f]: v }))
+
+  // ── AI helpers ───────────────────────────────────────────────────────────────
 
   const selectedSkillNames = (skillOpts) =>
     skillOpts.filter(s => form.skillIds.includes(s.id)).map(s => s.name).join(", ")
@@ -237,6 +252,8 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
     dispatch(recommendJobTags({ title: form.title, description: form.description || undefined }))
   }
 
+  // ── Apply AI results to form ─────────────────────────────────────────────────
+
   useEffect(() => {
     if (!jobDescription) return
     setForm(f => ({ ...f, description: jobDescription.content }))
@@ -247,6 +264,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
   useEffect(() => {
     if (!jobRequirements) return
     const content = jobRequirements.content
+    // Heuristic split: look for a "Responsibilities" heading inside the content
     const splitIdx = content.search(/responsibilities?:/i)
     if (splitIdx > 0) {
       setForm(f => ({
@@ -331,6 +349,8 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
   const canSubmit = form.title.trim() && form.description.trim() &&
                     form.categoryId && form.jobType && form.workMode && form.experienceLevel
 
+  // ── Submit handlers ─────────────────────────────────────────────────────────
+
   const handleSaveDraft = async () => {
     if (!canSubmit) { toast.error("Fill required fields"); return }
     try {
@@ -367,14 +387,25 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
     }
   }
 
+  // ── Category options ────────────────────────────────────────────────────────
   const categoryOptions = categories.map(c => ({ id: c.id, name: c.name }))
   const skillOptions    = skills.map(s => ({ id: s.id, name: s.name }))
   const tagOptions      = tags.map(t => ({ id: t.id, name: t.name }))
 
+
+
+
+
+  console.log("categories",categories, "skill",skills, "tags", tags)
+  // ── Render ──────────────────────────────────────────────────────────────────
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+      {/* ── Left: main form ─────────────────────────────────────────────────── */}
       <div className="xl:col-span-2 space-y-5">
 
+        {/* Job Details */}
         <Section icon={Briefcase} title="Job Details">
           <Field label="Job Title" required>
             <Input
@@ -466,6 +497,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
           </Field>
         </Section>
 
+        {/* Classification */}
         <Section icon={Layers} title="Classification">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Category" required>
@@ -530,6 +562,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
           </Field>
         </Section>
 
+        {/* Skills & Tags */}
         <Section icon={Tag} title="Skills & Tags">
           <Field
             label="Required Skills"
@@ -571,6 +604,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
           </Field>
         </Section>
 
+        {/* Location */}
         <Section icon={MapPin} title="Location">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="City">
@@ -593,6 +627,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
           </Field>
         </Section>
 
+        {/* Salary */}
         <Section icon={DollarSign} title="Salary & Compensation">
           <div className="flex items-center justify-between rounded-lg bg-violet-50 border border-violet-100 px-3 py-2">
             <p className="text-xs text-violet-700">
@@ -657,6 +692,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
           </div>
         </Section>
 
+        {/* Posting Settings */}
         <Section icon={Settings} title="Posting Settings">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Application Deadline" hint="Last date to apply">
@@ -679,8 +715,11 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
         </Section>
       </div>
 
+      {/* ── Right: action sidebar ────────────────────────────────────────────── */}
       <div className="space-y-4">
         <div className="sticky top-6 space-y-4">
+
+          {/* Publish card */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
             <h3 className="text-sm font-semibold text-slate-800">
               {isEdit ? "Save Changes" : "Publish Job"}
@@ -723,6 +762,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
             </div>
           </div>
 
+          {/* Checklist */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 className="text-sm font-semibold text-slate-800 mb-3">Completion Checklist</h3>
             <ul className="space-y-2">
@@ -742,11 +782,17 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
                     {done ? "✓" : "○"}
                   </span>
                   <span className={done ? "text-slate-700" : "text-slate-400"}>{label}</span>
+                  {!done && label === "Title" || !done && label === "Description" || !done && label === "Category" ||
+                   !done && label === "Job Type" || !done && label === "Work Mode" || !done && label === "Experience Level"
+                    ? <span className="ml-auto text-red-400 font-medium">Required</span>
+                    : null
+                  }
                 </li>
               ))}
             </ul>
           </div>
 
+          {/* Tips */}
           <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-5 space-y-2">
             <h3 className="text-xs font-semibold text-blue-800 uppercase tracking-wide">Pro Tips</h3>
             <ul className="space-y-1.5 text-xs text-blue-700">

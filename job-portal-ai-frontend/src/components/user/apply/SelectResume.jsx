@@ -1,9 +1,13 @@
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
+import { Skeleton } from "@/components/ui/skeleton"
 import { FileText, Eye } from "lucide-react"
+import { fetchMyResumes } from "@/store/resume/resumeThunk"
 
 const TEMPLATE_COLORS = {
   PROFESSIONAL: "bg-slate-800 text-white",
@@ -13,13 +17,14 @@ const TEMPLATE_COLORS = {
   CREATIVE:     "bg-violet-600 text-white",
 }
 
-/**
- * SelectResume Component
- * Allows candidates to select one of their saved resumes to submit with their application.
- * Links to the resume creator if no resumes exist, and provides a preview option.
- */
-export default function SelectResume({ selectedResume, setSelectedResume, resumes }) {
+export default function SelectResume({ selectedResume, setSelectedResume }) {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const { resumes, isLoading } = useSelector((s) => s.resume)
+
+  useEffect(() => {
+    dispatch(fetchMyResumes())
+  }, [dispatch])
 
   return (
     <div className="space-y-6">
@@ -28,19 +33,31 @@ export default function SelectResume({ selectedResume, setSelectedResume, resume
         <p className="text-slate-600">Choose a resume from your saved resumes</p>
       </div>
 
-      {resumes.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-lg" />
+          ))}
+        </div>
+      ) : resumes.length === 0 ? (
         <div className="text-center py-12 text-slate-500">
           <FileText className="h-10 w-10 mx-auto mb-3 text-slate-300" />
           <p className="font-medium">No resumes found</p>
           <p className="text-sm mt-1">
-            <button className="text-blue-600 hover:underline" onClick={() => navigate("/resumes")}>
+            <button
+              className="text-blue-600 hover:underline"
+              onClick={() => navigate("/resumes")}
+            >
               Create a resume
             </button>{" "}
             before applying.
           </p>
         </div>
       ) : (
-        <RadioGroup value={selectedResume} onValueChange={setSelectedResume}>
+        <RadioGroup
+          value={selectedResume}
+          onValueChange={setSelectedResume}
+        >
           <div className="space-y-3">
             {resumes.map((resume) => (
               <Card

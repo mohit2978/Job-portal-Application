@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent } from "@/components/ui/card"
@@ -20,6 +20,7 @@ const TAB_STATUSES = {
   hired:       ["HIRED"],
   rejected:    ["REJECTED", "WITHDRAWN"],
 }
+
 
 function LoadingSkeleton() {
   return (
@@ -57,6 +58,8 @@ function StatCard({ label, value, icon, color }) {
     </Card>
   )
 }
+
+// ── Main page ──────────────────────────────────────────────────────────────────
 
 export default function Applications() {
   const dispatch = useDispatch()
@@ -100,6 +103,7 @@ export default function Applications() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
           <FileText className="h-6 w-6 text-brand" />
@@ -108,6 +112,7 @@ export default function Applications() {
         <p className="text-slate-500 text-sm mt-1">Track and manage your job applications</p>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         <StatCard label="Total Applied"   value={stats.total}       icon={Briefcase}    color="text-brand bg-blue-50" />
         <StatCard label="Active"          value={stats.active}      icon={TrendingUp}   color="text-indigo-600 bg-indigo-50" />
@@ -115,6 +120,7 @@ export default function Applications() {
         <StatCard label="Hired"           value={stats.hired}       icon={Users}        color="text-green-600 bg-green-50" />
       </div>
 
+      {/* Tabs */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="all">All ({apps.length})</TabsTrigger>
@@ -152,6 +158,7 @@ export default function Applications() {
         </TabsContent>
       </Tabs>
 
+      {/* Withdraw confirmation */}
       <AlertDialog open={!!withdrawTarget} onOpenChange={(o) => { if (!o) setWithdrawTarget(null) }}>
         <AlertDialogContent>
           <AlertDialogHeader>

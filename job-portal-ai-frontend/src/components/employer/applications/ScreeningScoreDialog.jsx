@@ -44,6 +44,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
         )}
 
         <div className="space-y-5 mt-1">
+          {/* Not yet screened */}
           {!screening && (
             <div className="flex flex-col items-center gap-3 py-10 text-center">
               <Clock className="h-8 w-8 text-slate-400" />
@@ -54,6 +55,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
             </div>
           )}
 
+          {/* Stale warning */}
           {screening?.isStale && (
             <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
               <AlertCircle className="h-3.5 w-3.5 shrink-0" />
@@ -61,8 +63,10 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
             </div>
           )}
 
+          {/* Results */}
           {screening && (
             <>
+              {/* Score + shortlist status */}
               <div className={`flex items-center justify-between gap-4 p-5 rounded-xl ${scoreBg(screening.overallScore)}`}>
                 <div className="text-center">
                   <p className={`text-5xl font-extrabold ${scoreColor(screening.overallScore)}`}>
@@ -78,6 +82,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
                 })()}
               </div>
 
+              {/* Score breakdown */}
               {(screening.skillsMatchScore != null || screening.experienceMatchScore != null || screening.educationMatchScore != null) && (
                 <div className="grid grid-cols-3 gap-3">
                   {[
@@ -93,6 +98,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
                 </div>
               )}
 
+              {/* Summary */}
               {screening.summary && (
                 <p className="text-sm text-slate-700 bg-slate-50 rounded-lg p-3 border border-slate-200">
                   {screening.summary}
@@ -100,6 +106,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Matched skills */}
                 {screening.matchedSkills?.length > 0 && (
                   <div>
                     <p className="text-xs font-semibold text-green-700 mb-2 flex items-center gap-1">
@@ -113,6 +120,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
                   </div>
                 )}
 
+                {/* Missing skills */}
                 {screening.missingSkills?.length > 0 && (
                   <div>
                     <p className="text-xs font-semibold text-red-600 mb-2 flex items-center gap-1">
@@ -127,6 +135,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
                 )}
               </div>
 
+              {/* Strengths */}
               {screening.strengths?.length > 0 && (
                 <div>
                   <p className="text-xs font-semibold text-slate-700 mb-2 flex items-center gap-1">
@@ -142,6 +151,7 @@ export default function ScreeningScoreDialog({ open, onClose, application, job }
                 </div>
               )}
 
+              {/* Concerns */}
               {screening.concerns?.length > 0 && (
                 <div>
                   <p className="text-xs font-semibold text-slate-700 mb-2 flex items-center gap-1">

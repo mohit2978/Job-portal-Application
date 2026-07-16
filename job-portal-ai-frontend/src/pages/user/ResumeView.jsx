@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+﻿import { useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
@@ -52,6 +52,7 @@ function ProfessionalTemplate({ resume }) {
   const pi = resume.personalInfo ?? {}
   return (
     <div className="font-sans text-[13px] text-slate-800 px-12 py-10 min-h-[1056px] bg-white">
+      {/* Header */}
       <div className="text-center mb-1">
         {pi.profileImage && (
           <div className="flex justify-center mb-3">
@@ -217,6 +218,7 @@ function ClassicTemplate({ resume }) {
   const pi = resume.personalInfo ?? {}
   return (
     <div className="font-serif text-[13px] text-slate-800 min-h-[1056px] bg-[#fdfaf5]">
+      {/* Dark header */}
       <div className="bg-[#1f2937] text-white px-12 py-8 text-center">
         {pi.profileImage && (
           <div className="flex justify-center mb-3">
@@ -360,7 +362,9 @@ function ModernTemplate({ resume }) {
   const initials = [(pi.firstName?.[0] ?? ""), (pi.lastName?.[0] ?? "")].join("")
   return (
     <div className="font-sans text-[12px] text-slate-800 min-h-[1056px] flex">
+      {/* Sidebar */}
       <div className="w-[34%] bg-[#1e3a8a] text-white p-7 flex flex-col">
+        {/* Avatar */}
         <div className="h-20 w-20 rounded-full bg-blue-300/20 border-2 border-blue-300 flex items-center justify-center mx-auto mb-4 text-xl font-bold text-blue-100 overflow-hidden">
           {pi.profileImage
             ? <img src={pi.profileImage} alt={fullName(pi)} className="h-full w-full object-cover" />
@@ -369,6 +373,7 @@ function ModernTemplate({ resume }) {
         <h1 className="text-[15px] font-bold text-center leading-tight">{fullName(pi)}</h1>
         {pi.headline && <p className="text-blue-300 text-[11px] text-center mt-1">{pi.headline}</p>}
 
+        {/* Contact */}
         <ModernSectionTitle title="Contact" light />
         <div className="space-y-1.5 text-[11px] text-blue-100">
           {pi.email        && <div className="flex items-start gap-1.5"><Mail className="h-3 w-3 mt-0.5 shrink-0" /><span className="break-all">{pi.email}</span></div>}
@@ -379,6 +384,7 @@ function ModernTemplate({ resume }) {
           {pi.portfolioUrl && <div className="flex items-center gap-1.5"><Globe className="h-3 w-3 shrink-0" /><a href={pi.portfolioUrl} target="_blank" rel="noreferrer" className="hover:text-white break-all">Portfolio</a></div>}
         </div>
 
+        {/* Skills */}
         {resume.skills?.length > 0 && (<>
           <ModernSectionTitle title="Skills" light />
           <div className="space-y-1.5">
@@ -403,6 +409,7 @@ function ModernTemplate({ resume }) {
           </div>
         </>)}
 
+        {/* Languages */}
         {resume.languages?.length > 0 && (<>
           <ModernSectionTitle title="Languages" light />
           <div className="space-y-1 text-[11px]">
@@ -415,6 +422,7 @@ function ModernTemplate({ resume }) {
           </div>
         </>)}
 
+        {/* Certifications */}
         {resume.certifications?.length > 0 && (<>
           <ModernSectionTitle title="Certifications" light />
           <div className="space-y-2 text-[11px] text-blue-100">
@@ -427,6 +435,7 @@ function ModernTemplate({ resume }) {
           </div>
         </>)}
 
+        {/* Awards */}
         {resume.awards?.length > 0 && (<>
           <ModernSectionTitle title="Awards" light />
           <div className="space-y-2 text-[11px] text-blue-100">
@@ -440,6 +449,7 @@ function ModernTemplate({ resume }) {
         </>)}
       </div>
 
+      {/* Main content */}
       <div className="flex-1 p-8">
         {resume.summary && (<>
           <ModernSectionTitle title="Profile" />
@@ -533,6 +543,7 @@ function MinimalTemplate({ resume }) {
   const pi = resume.personalInfo ?? {}
   return (
     <div className="font-sans text-[13px] text-slate-800 px-14 py-12 min-h-[1056px] bg-white">
+      {/* Header */}
       <div className="mb-1 flex items-start justify-between gap-6">
         <div>
           <h1 className="text-[26px] font-bold tracking-tight text-slate-900">{fullName(pi)}</h1>
@@ -551,7 +562,10 @@ function MinimalTemplate({ resume }) {
         )}
       </div>
 
-      {resume.summary && (<><MinSection title="About" /><p className="text-slate-600 leading-relaxed">{resume.summary}</p></>)}
+      {resume.summary && (<>
+        <MinSection title="About" />
+        <p className="text-slate-600 leading-relaxed">{resume.summary}</p>
+      </>)}
 
       {resume.workExperiences?.length > 0 && (<>
         <MinSection title="Experience" />
@@ -564,7 +578,9 @@ function MinimalTemplate({ resume }) {
               </div>
               {loc(w.city, w.country) && <div className="text-slate-400 text-[11px]">{loc(w.city, w.country)}</div>}
               {w.description && <p className="text-slate-600 mt-1.5 leading-relaxed">{w.description}</p>}
-              {w.technologies?.length > 0 && <p className="text-[11px] text-slate-400 mt-1">{w.technologies.join(" · ")}</p>}
+              {w.technologies?.length > 0 && (
+                <p className="text-[11px] text-slate-400 mt-1">{w.technologies.join(" · ")}</p>
+              )}
             </div>
           ))}
         </div>
@@ -588,7 +604,10 @@ function MinimalTemplate({ resume }) {
         </div>
       </>)}
 
-      {resume.skills?.length > 0 && (<><MinSection title="Skills" /><p className="text-slate-600">{resume.skills.map((s) => s.skillName).join(" · ")}</p></>)}
+      {resume.skills?.length > 0 && (<>
+        <MinSection title="Skills" />
+        <p className="text-slate-600">{resume.skills.map((s) => s.skillName).join(" · ")}</p>
+      </>)}
 
       {resume.projects?.length > 0 && (<>
         <MinSection title="Projects" />
@@ -603,7 +622,9 @@ function MinimalTemplate({ resume }) {
                 <span className="text-[11px] text-slate-400">{fmtRange(p.startDate, p.endDate, p.isOngoing)}</span>
               </div>
               {p.description && <p className="text-slate-600 mt-0.5 leading-relaxed">{p.description}</p>}
-              {p.technologies?.length > 0 && <p className="text-[11px] text-slate-400 mt-0.5">{p.technologies.join(" · ")}</p>}
+              {p.technologies?.length > 0 && (
+                <p className="text-[11px] text-slate-400 mt-0.5">{p.technologies.join(" · ")}</p>
+              )}
             </div>
           ))}
         </div>
@@ -660,21 +681,22 @@ function CreativeTemplate({ resume }) {
   const pi = resume.personalInfo ?? {}
   return (
     <div className="font-sans text-[13px] text-slate-800 min-h-[1056px] bg-[#f5f3ff]">
+      {/* Purple gradient header */}
       <div className="bg-linear-to-br from-[#7c3aed] to-[#4f46e5] text-white px-12 py-10 relative overflow-hidden">
         <div className="absolute -top-12 -right-12 h-48 w-48 rounded-full bg-white/10" />
         <div className="absolute -bottom-6 -left-6 h-28 w-28 rounded-full bg-white/5" />
         <div className="relative flex items-start justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold">{fullName(pi)}</h1>
-            {pi.headline && <p className="text-purple-200 mt-1 text-base">{pi.headline}</p>}
-            <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-3 text-sm text-purple-200">
-              {pi.email        && <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 shrink-0" />{pi.email}</span>}
-              {pi.phone        && <span className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 shrink-0" />{pi.phone}</span>}
-              {(pi.city||pi.country) && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 shrink-0" />{loc(pi.city, pi.country)}</span>}
-              {pi.linkedinUrl  && <a href={pi.linkedinUrl}  target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white"><LinkedInLogoIcon className="h-3.5 w-3.5 shrink-0" />LinkedIn</a>}
-              {pi.githubUrl    && <a href={pi.githubUrl}    target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white"><GitHubLogoIcon className="h-3.5 w-3.5 shrink-0" />GitHub</a>}
-              {pi.portfolioUrl && <a href={pi.portfolioUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white"><Globe className="h-3.5 w-3.5 shrink-0" />Portfolio</a>}
-            </div>
+          <h1 className="text-3xl font-bold">{fullName(pi)}</h1>
+          {pi.headline && <p className="text-purple-200 mt-1 text-base">{pi.headline}</p>}
+          <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-3 text-sm text-purple-200">
+            {pi.email        && <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 shrink-0" />{pi.email}</span>}
+            {pi.phone        && <span className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 shrink-0" />{pi.phone}</span>}
+            {(pi.city||pi.country) && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 shrink-0" />{loc(pi.city, pi.country)}</span>}
+            {pi.linkedinUrl  && <a href={pi.linkedinUrl}  target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white"><LinkedInLogoIcon className="h-3.5 w-3.5 shrink-0" />LinkedIn</a>}
+            {pi.githubUrl    && <a href={pi.githubUrl}    target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white"><GitHubLogoIcon className="h-3.5 w-3.5 shrink-0" />GitHub</a>}
+            {pi.portfolioUrl && <a href={pi.portfolioUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white"><Globe className="h-3.5 w-3.5 shrink-0" />Portfolio</a>}
+          </div>
           </div>
           {pi.profileImage && (
             <img src={pi.profileImage} alt={fullName(pi)} className="h-24 w-24 rounded-full object-cover border-4 border-white/30 shrink-0" />
@@ -683,6 +705,7 @@ function CreativeTemplate({ resume }) {
       </div>
 
       <div className="px-12 py-6">
+        {/* Summary highlight */}
         {resume.summary && (
           <div className="bg-violet-100 border-l-4 border-[#7c3aed] rounded-r-lg p-4 mt-2">
             <p className="font-semibold text-[#7c3aed] text-[10px] uppercase tracking-wider mb-1">Profile</p>
@@ -769,6 +792,7 @@ function CreativeTemplate({ resume }) {
           </div>
         </>)}
 
+        {/* Bottom row: Certs + Awards + Languages */}
         {(resume.certifications?.length > 0 || resume.awards?.length > 0 || resume.languages?.length > 0) && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-2">
             {resume.certifications?.length > 0 && (
@@ -878,6 +902,7 @@ export default function ResumeView() {
 
   return (
     <div className="min-h-screen bg-slate-100 print:bg-white">
+      {/* Action bar — hidden when printing */}
       <div className="bg-white border-b px-6 py-3 flex items-center justify-between sticky top-0 z-10 print:hidden">
         <Button variant="ghost" size="sm" onClick={() => navigate("/resumes")}>
           <ArrowLeft className="h-4 w-4 mr-1.5" />
@@ -896,6 +921,7 @@ export default function ResumeView() {
         </div>
       </div>
 
+      {/* Resume paper */}
       <div className="max-w-4xl mx-auto my-8 shadow-2xl rounded-lg overflow-hidden print:shadow-none print:my-0 print:max-w-full print:rounded-none">
         <TemplateComp resume={resume} />
       </div>

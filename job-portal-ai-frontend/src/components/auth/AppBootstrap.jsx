@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchCurrentUser } from "@/store/user/userThunk"
 
 /**
- * AppBootstrap Component
- * Initializer component that boots up the application. It checks for a local accessToken,
- * fetches the profile of the current authenticated user if a token exists, and delays
- * application rendering until user authentication status is resolved.
+ * AppBootstrap - Initializes authentication on app load
+ * Checks for accessToken and fetches current user if exists
  */
 export default function AppBootstrap({ children }) {
   const dispatch = useDispatch()
@@ -16,12 +14,23 @@ export default function AppBootstrap({ children }) {
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem("accessToken")
-      if (token) await dispatch(fetchCurrentUser())
+
+      if (token) {
+        // Token exists, fetch current user
+        await dispatch(fetchCurrentUser())
+      }
+
+      // Mark initialization as complete
       setIsInitialized(true)
     }
-    if (!isInitialized) initializeAuth()
+
+    // Only initialize once
+    if (!isInitialized) {
+      initializeAuth()
+    }
   }, [dispatch, isInitialized])
 
+  // Show loading screen only while initializing
   if (!isInitialized || authStatus === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">

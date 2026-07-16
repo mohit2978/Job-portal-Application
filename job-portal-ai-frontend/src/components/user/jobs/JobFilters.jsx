@@ -1,43 +1,60 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Slider } from "@/components/ui/slider"
-import { SlidersHorizontal, X } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { X, SlidersHorizontal } from "lucide-react"
 
-const JOB_TYPES  = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE"]
-const WORK_MODES = ["REMOTE", "HYBRID", "ON_SITE"]
-const EXP_LEVELS = ["ENTRY_LEVEL", "JUNIOR", "MID_LEVEL", "SENIOR_LEVEL", "LEAD", "EXECUTIVE"]
+// ── Enum options matching backend ─────────────────────────────────────────────
 
-function label(v) {
-  return v.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+const JOB_TYPES = [
+  { value: "FULL_TIME",   label: "Full-time" },
+  { value: "PART_TIME",   label: "Part-time" },
+  { value: "CONTRACT",    label: "Contract" },
+  { value: "INTERNSHIP",  label: "Internship" },
+  { value: "FREELANCE",   label: "Freelance" },
+  { value: "REMOTE",      label: "Remote" },
+]
+
+const WORK_MODES = [
+  { value: "REMOTE",  label: "Remote" },
+  { value: "HYBRID",  label: "Hybrid" },
+  { value: "ON_SITE", label: "On-site" },
+]
+
+const EXP_LEVELS = [
+  { value: "ENTRY_LEVEL",   label: "Entry Level",  sub: "0–1 yr" },
+  { value: "JUNIOR",        label: "Junior",       sub: "1–3 yrs" },
+  { value: "MID_LEVEL",     label: "Mid Level",    sub: "3–5 yrs" },
+  { value: "SENIOR_LEVEL",  label: "Senior",       sub: "5–8 yrs" },
+  { value: "LEAD",          label: "Lead",         sub: "8+ yrs" },
+  { value: "EXECUTIVE",     label: "Executive",    sub: "C-level" },
+]
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function toggle(arr, val) {
+  return arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val]
 }
 
 function fmtSalary(n) {
-  if (n >= 1000) return `$${Math.round(n / 1000)}k`
+  if (n >= 100000) return `$${Math.round(n / 1000)}k`
+  if (n >= 1000)   return `$${(n / 1000).toFixed(0)}k`
   return `$${n}`
 }
 
-/**
- * JobFilters Component
- * Renders a sticky filter sidebar that permits applicants to filter job listings by job type,
- * work mode, experience level, and a dynamic salary range slider. Supports batch-resetting.
- */
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function JobFilters({ filters, setFilters, onReset }) {
   const { jobTypes, workModes, expLevels, minSalary, maxSalary } = filters
 
   const activeCount =
     jobTypes.length + workModes.length + expLevels.length +
-    (minSalary > 0 ? 1 : 0) + (maxSalary < 200000 ? 1 : 0)
+    (minSalary > 0 ? 1 : 0) + (maxSalary < 500000 ? 1 : 0)
 
-  function toggle(key, value) {
-    setFilters(prev => ({
-      ...prev,
-      [key]: prev[key].includes(value)
-        ? prev[key].filter(v => v !== value)
-        : [...prev[key], value],
-    }))
-  }
+  const update = (key, val) => setFilters((f) => ({ ...f, [key]: val }))
 
   return (
     <Card className="sticky top-20 border-slate-200">
@@ -46,6 +63,11 @@ export default function JobFilters({ filters, setFilters, onReset }) {
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4 text-slate-500" />
             <CardTitle className="text-base">Filters</CardTitle>
+            {activeCount > 0 && (
+              <Badge className="bg-brand text-white text-xs px-1.5 py-0.5 h-5">
+                {activeCount}
+              </Badge>
+            )}
           </div>
           {activeCount > 0 && (
             <Button variant="ghost" size="sm" onClick={onReset} className="h-7 text-xs text-slate-500 hover:text-red-600">
@@ -54,37 +76,23 @@ export default function JobFilters({ filters, setFilters, onReset }) {
             </Button>
           )}
         </div>
-
-        {/* Active filter name badges */}
-        {activeCount > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {[
-              ...jobTypes.map(v  => ({ key: "jobTypes",  value: v })),
-              ...workModes.map(v => ({ key: "workModes", value: v })),
-              ...expLevels.map(v => ({ key: "expLevels", value: v })),
-            ].map(({ key, value }) => (
-              <Badge key={`${key}-${value}`} className="bg-green-100 text-green-700 gap-1 pr-1 text-xs font-medium">
-                {label(value)}
-                <button onClick={() => toggle(key, value)} className="rounded-full hover:bg-green-200 p-0.5">
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-        )}
       </CardHeader>
 
       <CardContent className="space-y-5 pt-0">
 
         {/* Job Type */}
         <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Job Type</p>
+          <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Job Type</h4>
           <div className="space-y-2">
-            {JOB_TYPES.map(v => (
-              <label key={v} className="flex items-center gap-2.5 cursor-pointer group">
-                <input type="checkbox" checked={jobTypes.includes(v)}
-                  onChange={() => toggle("jobTypes", v)} className="rounded accent-green-500" />
-                <span className="text-sm text-slate-700 group-hover:text-slate-900">{label(v)}</span>
+            {JOB_TYPES.map(({ value, label }) => (
+              <label key={value} className="flex items-center gap-2.5 cursor-pointer group">
+                <Checkbox
+                  id={`jt-${value}`}
+                  checked={jobTypes.includes(value)}
+                  onCheckedChange={() => update("jobTypes", toggle(jobTypes, value))}
+                  className="data-[state=checked]:bg-brand data-[state=checked]:border-brand"
+                />
+                <span className="text-sm text-slate-700 group-hover:text-slate-900">{label}</span>
               </label>
             ))}
           </div>
@@ -94,13 +102,17 @@ export default function JobFilters({ filters, setFilters, onReset }) {
 
         {/* Work Mode */}
         <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Work Mode</p>
+          <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Work Mode</h4>
           <div className="space-y-2">
-            {WORK_MODES.map(v => (
-              <label key={v} className="flex items-center gap-2.5 cursor-pointer group">
-                <input type="checkbox" checked={workModes.includes(v)}
-                  onChange={() => toggle("workModes", v)} className="rounded accent-green-500" />
-                <span className="text-sm text-slate-700 group-hover:text-slate-900">{label(v)}</span>
+            {WORK_MODES.map(({ value, label }) => (
+              <label key={value} className="flex items-center gap-2.5 cursor-pointer group">
+                <Checkbox
+                  id={`wm-${value}`}
+                  checked={workModes.includes(value)}
+                  onCheckedChange={() => update("workModes", toggle(workModes, value))}
+                  className="data-[state=checked]:bg-brand data-[state=checked]:border-brand"
+                />
+                <span className="text-sm text-slate-700 group-hover:text-slate-900">{label}</span>
               </label>
             ))}
           </div>
@@ -110,13 +122,20 @@ export default function JobFilters({ filters, setFilters, onReset }) {
 
         {/* Experience Level */}
         <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Experience Level</p>
+          <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Experience Level</h4>
           <div className="space-y-2">
-            {EXP_LEVELS.map(v => (
-              <label key={v} className="flex items-center gap-2.5 cursor-pointer group">
-                <input type="checkbox" checked={expLevels.includes(v)}
-                  onChange={() => toggle("expLevels", v)} className="rounded accent-green-500" />
-                <span className="text-sm text-slate-700 group-hover:text-slate-900">{label(v)}</span>
+            {EXP_LEVELS.map(({ value, label, sub }) => (
+              <label key={value} className="flex items-center gap-2.5 cursor-pointer group">
+                <Checkbox
+                  id={`el-${value}`}
+                  checked={expLevels.includes(value)}
+                  onCheckedChange={() => update("expLevels", toggle(expLevels, value))}
+                  className="data-[state=checked]:bg-brand data-[state=checked]:border-brand"
+                />
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm text-slate-700 group-hover:text-slate-900">{label}</span>
+                  <span className="text-xs text-slate-400">{sub}</span>
+                </div>
               </label>
             ))}
           </div>
@@ -127,22 +146,22 @@ export default function JobFilters({ filters, setFilters, onReset }) {
         {/* Salary Range */}
         <div>
           <div className="flex items-center justify-between mb-2.5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Salary Range</p>
-            <span className="text-xs text-green-600 font-medium">
+            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Salary Range</h4>
+            <span className="text-xs text-brand font-medium">
               {fmtSalary(minSalary)} – {fmtSalary(maxSalary)}
             </span>
           </div>
           <Slider
             min={0}
-            max={200000}
+            max={500000}
             step={10000}
             value={[minSalary, maxSalary]}
-            onValueChange={([min, max]) => setFilters(f => ({ ...f, minSalary: min, maxSalary: max }))}
-            className="w-full [&_[data-slot=slider-range]]:bg-green-500"
+            onValueChange={([min, max]) => setFilters((f) => ({ ...f, minSalary: min, maxSalary: max }))}
+            className="w-full"
           />
           <div className="flex justify-between text-xs text-slate-400 mt-1.5">
             <span>$0</span>
-            <span>$200k+</span>
+            <span>$500k+</span>
           </div>
         </div>
 

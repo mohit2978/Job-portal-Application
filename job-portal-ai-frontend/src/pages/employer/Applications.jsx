@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+﻿import { useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -23,6 +23,8 @@ import UpdateStatusDialog from "@/components/employer/applications/UpdateStatusD
 import ApplicationsTable from "@/components/employer/applications/ApplicationsTable"
 import { cn } from "@/lib/utils"
 
+// ── Config ─────────────────────────────────────────────────────────────────────
+
 const STATUS_FILTERS = ["ALL", "PENDING", "REVIEWING", "SHORTLISTED", "INTERVIEW_SCHEDULED", "HIRED", "REJECTED"]
 
 const AI_SHORTLIST_FILTERS = [
@@ -37,6 +39,7 @@ const AI_SHORTLIST_FILTERS = [
 function fmt(val) {
   return (val || "").replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
 }
+
 
 function StatCard({ label, value, icon: Icon, color, subLabel }) {
   return (
@@ -53,6 +56,9 @@ function StatCard({ label, value, icon: Icon, color, subLabel }) {
   )
 }
 
+
+// ── Main page ──────────────────────────────────────────────────────────────────
+
 export default function Applications() {
   const dispatch  = useDispatch()
   const navigate  = useNavigate()
@@ -62,19 +68,22 @@ export default function Applications() {
   const { myJobs }    = useSelector(s => s.job)
   const { notesSummary, isSummarizingNotes } = useSelector(s => s.ai)
 
+  // Filters
   const [search, setSearch]         = useState("")
   const [statusFilter, setStatus]   = useState("ALL")
   const [jobFilter, setJobFilter]   = useState("")
-  const [starredOnly, setStarred]   = useState(false)
-  const [unreadOnly, setUnread]     = useState(false)
-  const [aiFilter, setAiFilter]     = useState("ALL")
-  const [sortBy, setSortBy]         = useState("DEFAULT")
+  const [starredOnly, setStarred]         = useState(false)
+  const [unreadOnly, setUnread]           = useState(false)
+  const [aiFilter, setAiFilter]           = useState("ALL")
+  const [sortBy, setSortBy]               = useState("DEFAULT")
 
-  const [statusDialog, setStatusDialog]   = useState(null)
+  // Dialog state
+  const [statusDialog, setStatusDialog]   = useState(null)           // { id, currentStatus }
   const [notesDialogOpen, setNotesDialog] = useState(false)
 
+  // ── Bootstrap ────────────────────────────────────────────────────────────────
   useEffect(() => {
-    dispatch(fetchMyCompany())
+     dispatch(fetchMyCompany())
     dispatch(fetchMyJobs())
   }, [])
 
@@ -91,14 +100,17 @@ export default function Applications() {
     }
   }, [myCompany, statusFilter, jobFilter, starredOnly, unreadOnly, aiFilter, sortBy])
 
+
+  // ── Stats ────────────────────────────────────────────────────────────────────
   const stats = useMemo(() => ({
-    total:           applications.length,
-    pending:         applications.filter(a => a.status === "PENDING").length,
-    shortlisted:     applications.filter(a => a.status === "SHORTLISTED").length,
-    unread:          applications.filter(a => !a.isRead).length,
+    total:          applications.length,
+    pending:        applications.filter(a => a.status === "PENDING").length,
+    shortlisted:    applications.filter(a => a.status === "SHORTLISTED").length,
+    unread:         applications.filter(a => !a.isRead).length,
     autoShortlisted: applications.filter(a => a.aiShortlistStatus === "AUTO_SHORTLISTED").length,
   }), [applications])
 
+  // ── Client-side search ────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     if (!search.trim()) return applications
     const q = search.toLowerCase()
@@ -109,6 +121,7 @@ export default function Applications() {
     )
   }, [applications, search])
 
+  // ── Actions ───────────────────────────────────────────────────────────────────
   const handleToggleStar = (e, id) => {
     e.stopPropagation()
     dispatch(toggleStar(id)).unwrap().catch(err => toast.error(err))
@@ -138,6 +151,7 @@ export default function Applications() {
     }
   }
 
+  // ── No company guard ──────────────────────────────────────────────────────────
   if (!isLoading && !myCompany) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -155,21 +169,26 @@ export default function Applications() {
 
   return (
     <div className="space-y-6">
+
+      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Applications</h1>
         <p className="text-sm text-slate-500 mt-1">Review and manage all candidate applications</p>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total"            value={stats.total}           icon={Users}    color="bg-blue-50 text-brand" />
-        <StatCard label="Pending"          value={stats.pending}         icon={Clock}    color="bg-amber-50 text-amber-600" />
-        <StatCard label="Auto Shortlisted" value={stats.autoShortlisted} icon={Sparkles} color="bg-green-50 text-green-600"
-          subLabel="AI score >= 90" />
-        <StatCard label="Unread"           value={stats.unread}          icon={Mail}     color="bg-red-50 text-red-500"
+        <StatCard label="Total"            value={stats.total}           icon={Users}        color="bg-blue-50 text-brand" />
+        <StatCard label="Pending"          value={stats.pending}         icon={Clock}        color="bg-amber-50 text-amber-600" />
+        <StatCard label="Auto Shortlisted" value={stats.autoShortlisted} icon={Sparkles}     color="bg-green-50 text-green-600"
+          subLabel="AI score ≥ 90" />
+        <StatCard label="Unread"           value={stats.unread}          icon={Mail}         color="bg-red-50 text-red-500"
           subLabel={stats.unread > 0 ? "need attention" : "all caught up"} />
       </div>
 
+      {/* Filter bar */}
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
+        {/* Row 1: search + job select + AI shortlist + sort — all in one line */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -215,6 +234,7 @@ export default function Applications() {
           </Select>
         </div>
 
+        {/* Row 2: status tabs + toggles */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex gap-1.5 flex-wrap flex-1">
             {STATUS_FILTERS.map(s => (
@@ -254,6 +274,7 @@ export default function Applications() {
         </div>
       </div>
 
+      {/* Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <ApplicationsTable
           applications={filtered}
@@ -270,6 +291,7 @@ export default function Applications() {
         />
       </div>
 
+      {/* Update Status Dialog */}
       {statusDialog && (
         <UpdateStatusDialog
           open={!!statusDialog}
@@ -279,6 +301,7 @@ export default function Applications() {
         />
       )}
 
+      {/* Notes Summary Dialog */}
       <Dialog open={notesDialogOpen} onOpenChange={o => { if (!o) { setNotesDialog(false); dispatch(clearNotesSummary()) } }}>
         <DialogContent className="max-w-md">
           <DialogHeader>

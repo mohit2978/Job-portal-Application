@@ -1,29 +1,40 @@
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+﻿import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
-  DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Eye, Ban, Trash2, Shield, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const roleConfig = {
-  ROLE_JOB_SEEKER: { label: "Job Seeker", className: "bg-blue-50 text-blue-700 border-blue-200"   },
-  ROLE_EMPLOYER:   { label: "Employer",   className: "bg-purple-50 text-purple-700 border-purple-200" },
-  ROLE_ADMIN:      { label: "Admin",      className: "bg-red-50 text-red-700 border-red-200"       },
+  ROLE_JOB_SEEKER: { label: "Job Seeker", className: "bg-blue-50 text-blue-700 border-blue-200" },
+  ROLE_EMPLOYER: { label: "Employer", className: "bg-purple-50 text-purple-700 border-purple-200" },
+  ROLE_ADMIN: { label: "Admin", className: "bg-red-50 text-red-700 border-red-200" },
 }
 
 const statusConfig = {
-  ACTIVE:    { label: "Active",    dot: "bg-emerald-500", text: "text-emerald-700", bg: "bg-emerald-50" },
-  INACTIVE:  { label: "Inactive",  dot: "bg-slate-400",   text: "text-slate-500",   bg: "bg-slate-100"  },
-  SUSPENDED: { label: "Suspended", dot: "bg-amber-500",   text: "text-amber-700",   bg: "bg-amber-50"   },
-  DELETED:   { label: "Deleted",   dot: "bg-red-500",     text: "text-red-700",     bg: "bg-red-50"     },
+  ACTIVE: { label: "Active", dot: "bg-emerald-500", text: "text-emerald-700", bg: "bg-emerald-50" },
+  INACTIVE: { label: "Inactive", dot: "bg-slate-400", text: "text-slate-500", bg: "bg-slate-100" },
+  SUSPENDED: { label: "Suspended", dot: "bg-amber-500", text: "text-amber-700", bg: "bg-amber-50" },
+  DELETED: { label: "Deleted", dot: "bg-red-500", text: "text-red-700", bg: "bg-red-50" },
 }
 
 const avatarColors = [
@@ -64,21 +75,28 @@ function SkeletonRow() {
   )
 }
 
-const HEADER_CLASSES = "text-[11px] font-bold text-slate-500 uppercase tracking-wider"
-
-export default function UserTable({ users, isLoading, isActionLoading, onSuspend, onActivate, onDelete, onChangeRole, onViewDetail }) {
+export default function UserTable({
+  users,
+  isLoading,
+  isActionLoading,
+  onSuspend,
+  onActivate,
+  onDelete,
+  onChangeRole,
+  onViewDetail,
+}) {
   if (isLoading) {
     return (
       <div className="rounded-xl border border-slate-200 overflow-hidden bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50 hover:bg-slate-50 border-slate-200">
-              <TableHead className={`${HEADER_CLASSES} w-10 pl-6`}>#</TableHead>
-              <TableHead className={HEADER_CLASSES}>User</TableHead>
-              <TableHead className={HEADER_CLASSES}>Role</TableHead>
-              <TableHead className={HEADER_CLASSES}>Status</TableHead>
-              <TableHead className={HEADER_CLASSES}>Provider</TableHead>
-              <TableHead className={HEADER_CLASSES}>Joined</TableHead>
+              <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider w-10 pl-6">#</TableHead>
+              <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">User</TableHead>
+              <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Role</TableHead>
+              <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Status</TableHead>
+              <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Provider</TableHead>
+              <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Joined</TableHead>
               <TableHead className="w-12 pr-4" />
             </TableRow>
           </TableHeader>
@@ -103,49 +121,67 @@ export default function UserTable({ users, isLoading, isActionLoading, onSuspend
       <Table>
         <TableHeader>
           <TableRow className="bg-slate-50 hover:bg-slate-50 border-slate-200">
-            <TableHead className={`${HEADER_CLASSES} w-10 pl-6`}>#</TableHead>
-            <TableHead className={HEADER_CLASSES}>User</TableHead>
-            <TableHead className={HEADER_CLASSES}>Role</TableHead>
-            <TableHead className={HEADER_CLASSES}>Status</TableHead>
-            <TableHead className={HEADER_CLASSES}>Provider</TableHead>
-            <TableHead className={HEADER_CLASSES}>Joined</TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider w-10 pl-6">#</TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">User</TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Role</TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Status</TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Provider</TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Joined</TableHead>
             <TableHead className="w-12 pr-4" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.map((user, index) => {
-            const role        = roleConfig[user.role]   || roleConfig.ROLE_JOB_SEEKER
-            const status      = statusConfig[user.status] || statusConfig.ACTIVE
-            const initials    = getInitials(user.fullName)
+            const role = roleConfig[user.role] || roleConfig.ROLE_JOB_SEEKER
+            const status = statusConfig[user.status] || statusConfig.ACTIVE
+            const initials = getInitials(user.fullName)
             const avatarColor = avatarColors[index % avatarColors.length]
-            const joinedAt    = user.createdAt
-              ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+            const joinedAt = user.createdAt
+              ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
               : "—"
 
             return (
               <TableRow key={user.id} className="group hover:bg-slate-50/50 border-slate-100">
-                <TableCell className="text-sm text-slate-400 font-medium pl-6">{index + 1}</TableCell>
+                <TableCell className="text-sm text-slate-400 font-medium pl-6">
+                  {index + 1}
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9 shrink-0">
                       {user.profileImage && <AvatarImage src={user.profileImage} alt={user.fullName} />}
-                      <AvatarFallback className={`bg-gradient-to-br ${avatarColor} text-white text-xs font-bold`}>
+                      <AvatarFallback
+                        className={`bg-gradient-to-br ${avatarColor} text-white text-xs font-bold`}
+                      >
                         {initials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 leading-tight">{user.fullName || "—"}</p>
+                      <p className="text-sm font-semibold text-slate-900 leading-tight">
+                        {user.fullName || "—"}
+                      </p>
                       <p className="text-xs text-slate-400 truncate max-w-[200px]">{user.email}</p>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline" className={cn("text-xs font-semibold px-2 py-0.5 border", role.className)}>
+                  <Badge
+                    variant="outline"
+                    className={cn("text-xs font-semibold px-2 py-0.5 border", role.className)}
+                  >
                     {role.label}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <div className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold", status.bg)}>
+                  <div
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                      status.bg
+                    )}
+                  >
                     <div className={cn("h-1.5 w-1.5 rounded-full shrink-0", status.dot)} />
                     <span className={status.text}>{status.label}</span>
                   </div>
@@ -156,7 +192,9 @@ export default function UserTable({ users, isLoading, isActionLoading, onSuspend
                       <span className="inline-flex items-center gap-1">
                         <span className="font-black text-[11px]">G</span> Google
                       </span>
-                    ) : "Local"}
+                    ) : (
+                      "Local"
+                    )}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -175,18 +213,21 @@ export default function UserTable({ users, isLoading, isActionLoading, onSuspend
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuLabel className="text-xs text-slate-500 font-normal">Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel className="text-xs text-slate-500 font-normal">
+                        Actions
+                      </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => onViewDetail?.(user)}>
                         <Eye className="h-3.5 w-3.5 mr-2" /> View Profile
                       </DropdownMenuItem>
 
+                      {/* Change Role sub-menu */}
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                           <Shield className="h-3.5 w-3.5 mr-2" /> Change Role
                         </DropdownMenuSubTrigger>
                         <DropdownMenuSubContent>
-                          {["ROLE_JOB_SEEKER", "ROLE_EMPLOYER", "ROLE_ADMIN"].map(r => (
+                          {["ROLE_JOB_SEEKER", "ROLE_EMPLOYER", "ROLE_ADMIN"].map((r) => (
                             <DropdownMenuItem
                               key={r}
                               disabled={user.role === r}

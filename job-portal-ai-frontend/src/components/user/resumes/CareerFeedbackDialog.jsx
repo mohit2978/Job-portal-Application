@@ -13,8 +13,12 @@ import {
 import { getCareerFeedback } from "@/store/ai/aiThunk"
 import { clearCareerFeedback } from "@/store/ai/aiSlice"
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Convert a resume object to a flat text block for the AI prompt */
 function serializeResume(resume) {
   const lines = []
+
   const pi = resume.personalInfo
   if (pi) {
     lines.push(`Name: ${pi.fullName || ""}`)
@@ -24,7 +28,9 @@ function serializeResume(resume) {
     if (pi.linkedIn) lines.push(`LinkedIn: ${pi.linkedIn}`)
     if (pi.github)   lines.push(`GitHub: ${pi.github}`)
   }
+
   if (resume.summary) lines.push(`\nSummary:\n${resume.summary}`)
+
   if (resume.workExperiences?.length) {
     lines.push("\nWork Experience:")
     resume.workExperiences.forEach((w) => {
@@ -32,20 +38,24 @@ function serializeResume(resume) {
       if (w.description) lines.push(`    ${w.description}`)
     })
   }
+
   if (resume.educations?.length) {
     lines.push("\nEducation:")
     resume.educations.forEach((e) => {
       lines.push(`  - ${e.degree || ""} in ${e.fieldOfStudy || ""} from ${e.institutionName || ""} (${e.startYear || ""} – ${e.endYear || ""})`)
     })
   }
+
   if (resume.skills?.length) {
     const skillNames = resume.skills.map((s) => (typeof s === "string" ? s : s.skillName || s.name || ""))
     lines.push(`\nSkills: ${skillNames.filter(Boolean).join(", ")}`)
   }
+
   if (resume.certifications?.length) {
     lines.push("\nCertifications:")
     resume.certifications.forEach((c) => lines.push(`  - ${c.name} (${c.issuer || ""})`))
   }
+
   if (resume.projects?.length) {
     lines.push("\nProjects:")
     resume.projects.forEach((p) => {
@@ -53,6 +63,7 @@ function serializeResume(resume) {
       if (p.description) lines.push(`    ${p.description}`)
     })
   }
+
   return lines.join("\n")
 }
 
@@ -74,15 +85,13 @@ function strengthColor(score) {
   return "text-red-500"
 }
 
-/**
- * CareerFeedbackDialog Component
- * Renders a dialog window that displays AI-generated review feedback for a user's resume,
- * including visual progress scores (e.g. ATS formatting, grammar, clarity) and key improvement tips.
- */
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function CareerFeedbackDialog({ open, onClose, resume }) {
   const dispatch = useDispatch()
   const { careerFeedback, isGettingCareerFeedback, error } = useSelector((s) => s.ai)
 
+  // Trigger AI call when dialog opens
   useEffect(() => {
     if (!open || !resume) return
     dispatch(clearCareerFeedback())
@@ -108,6 +117,7 @@ export default function CareerFeedbackDialog({ open, onClose, resume }) {
           </DialogDescription>
         </DialogHeader>
 
+        {/* Loading */}
         {isGettingCareerFeedback && (
           <div className="flex flex-col items-center justify-center py-20 gap-3 text-slate-500">
             <Loader2 className="h-8 w-8 animate-spin text-brand" />
@@ -115,16 +125,19 @@ export default function CareerFeedbackDialog({ open, onClose, resume }) {
           </div>
         )}
 
+        {/* Error */}
         {!isGettingCareerFeedback && error && (
           <div className="mx-6 my-8 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
             {error}
           </div>
         )}
 
+        {/* Results */}
         {!isGettingCareerFeedback && fb && (
           <ScrollArea className="max-h-[75vh]">
             <div className="px-6 py-5 space-y-6">
 
+              {/* Profile Strength */}
               <div className="rounded-xl border border-slate-200 p-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold text-slate-700">Profile Strength</p>
@@ -138,6 +151,7 @@ export default function CareerFeedbackDialog({ open, onClose, resume }) {
                 )}
               </div>
 
+              {/* Tabs */}
               <Tabs defaultValue="shortlisting">
                 <TabsList className="w-full grid grid-cols-3">
                   <TabsTrigger value="shortlisting" className="text-xs gap-1">
@@ -154,6 +168,7 @@ export default function CareerFeedbackDialog({ open, onClose, resume }) {
                   </TabsTrigger>
                 </TabsList>
 
+                {/* Why not shortlisted */}
                 <TabsContent value="shortlisting" className="mt-4 space-y-2">
                   <p className="text-xs text-slate-500 mb-3">
                     These are the likely reasons recruiters are skipping your profile:
@@ -168,6 +183,7 @@ export default function CareerFeedbackDialog({ open, onClose, resume }) {
                   ))}
                 </TabsContent>
 
+                {/* Improvements */}
                 <TabsContent value="improvements" className="mt-4 space-y-3">
                   <p className="text-xs text-slate-500 mb-3">
                     Prioritized actions to make your resume more competitive:
@@ -194,6 +210,7 @@ export default function CareerFeedbackDialog({ open, onClose, resume }) {
                   ))}
                 </TabsContent>
 
+                {/* Target Jobs */}
                 <TabsContent value="targets" className="mt-4 space-y-3">
                   <p className="text-xs text-slate-500 mb-3">
                     Based on your current skills and experience, focus on these roles:

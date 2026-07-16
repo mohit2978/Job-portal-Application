@@ -1,5 +1,7 @@
-import { createAsyncThunk } from "@reduxjs/toolkit"
+﻿import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
+
+// ── Plan Config (admin) ───────────────────────────────────────────────────────
 
 export const fetchAllPlans = createAsyncThunk(
   "subscription/fetchAllPlans",
@@ -36,6 +38,8 @@ export const updatePlanConfig = createAsyncThunk(
     }
   }
 )
+
+// ── Company Subscription (employer) ──────────────────────────────────────────
 
 export const fetchActiveSubscription = createAsyncThunk(
   "subscription/fetchActive",
@@ -76,6 +80,8 @@ export const cancelSubscription = createAsyncThunk(
     }
   }
 )
+
+// ── Payment ───────────────────────────────────────────────────────────────────
 
 export const createPaymentOrder = createAsyncThunk(
   "subscription/createOrder",

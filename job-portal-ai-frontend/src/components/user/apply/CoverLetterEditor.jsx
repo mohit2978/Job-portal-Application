@@ -1,17 +1,66 @@
+﻿import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Sparkles, Copy, RotateCcw } from "lucide-react"
+import { Sparkles, Copy, RotateCcw, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { generateCoverLetter } from "@/store/ai/aiThunk"
+import { fetchResumeById } from "@/store/resume/resumeThunk"
 
-/**
- * CoverLetterEditor Component
- * Provides an editor block for the user's cover letter, featuring an option to generate
- * a tailored cover letter using AI, an input textarea, copy-to-clipboard functionality,
- * and standard writing tips.
- */
-export default function CoverLetterEditor({ coverLetter, setCoverLetter }) {
+export default function CoverLetterEditor({ coverLetter, setCoverLetter, selectedResumeId }) {
+  const dispatch = useDispatch()
+  const { isGeneratingCoverLetter } = useSelector(s => s.ai)
+  const job           = useSelector(s => s.job.currentJob)
+  const user          = useSelector(s => s.auth.user)
+  const resumes       = useSelector(s => s.resume.resumes)
+  const currentResume = useSelector(s => s.resume.currentResume)
+
+  // Fetch full resume if it's not already in the list
+  useEffect(() => {
+    if (!selectedResumeId || selectedResumeId === "new") return
+    const id = Number(selectedResumeId)
+    if (!resumes.find(r => r.id === id)) {
+      dispatch(fetchResumeById(id))
+    }
+  }, [selectedResumeId, resumes, dispatch])
+
+  const getSelectedResume = () => {
+    if (!selectedResumeId || selectedResumeId === "new") return null
+    const id = Number(selectedResumeId)
+    return resumes.find(r => r.id === id) ?? (currentResume?.id === id ? currentResume : null)
+  }
+
+  const handleGenerateWithAI = async () => {
+    const resume = getSelectedResume()
+
+    const candidateSkills = resume?.skills
+      ?.map(s => s.skillName).filter(Boolean) ?? []
+
+    const candidateExperience = resume?.workExperiences
+      ?.map(e => `${e.jobTitle} at ${e.companyName}${e.isCurrent ? " (current)" : ""}`)
+      .filter(Boolean) ?? []
+
+    const payload = {
+      jobTitle:           job?.title       || "Software Developer",
+      jobDescription:     job?.description || "",
+      candidateName:      user ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || "Candidate" : "Candidate",
+      targetCompanyName:  job?.companyId ? `Company #${job.companyId}` : "",
+      candidateSummary:   resume?.summary || "",
+      candidateSkills,
+      candidateExperience,
+    }
+
+    try {
+      const result = await dispatch(generateCoverLetter(payload)).unwrap()
+      setCoverLetter(result.content)
+      toast.success("Cover letter generated!")
+    } catch (err) {
+      toast.error(err || "Failed to generate cover letter")
+    }
+  }
+
   const handleCopy = () => {
     navigator.clipboard.writeText(coverLetter)
     toast.success("Copied to clipboard!")
@@ -37,12 +86,10 @@ export default function CoverLetterEditor({ coverLetter, setCoverLetter }) {
                 Let our AI analyze the job description and your resume — skills, experience, and
                 summary — to create a personalized cover letter tailored to this position.
               </p>
-              <Button
-                className="gap-2"
-                onClick={() => toast.info("AI features coming soon!")}
-              >
-                <Sparkles className="h-4 w-4" />
-                Generate with AI
+              <Button onClick={handleGenerateWithAI} disabled={isGeneratingCoverLetter} className="gap-2">
+                {isGeneratingCoverLetter
+                  ? <><Loader2 className="h-4 w-4 animate-spin" />Generating...</>
+                  : <><Sparkles className="h-4 w-4" />Generate with AI</>}
               </Button>
             </div>
           </div>
@@ -103,7 +150,7 @@ export default function CoverLetterEditor({ coverLetter, setCoverLetter }) {
               placeholder="Write your cover letter here or click Generate with AI..."
               value={coverLetter}
               onChange={(e) => setCoverLetter(e.target.value)}
-              className="min-h-64 font-mono text-sm"
+              className="min-h-100 font-mono text-sm"
             />
             <div className="flex items-center justify-between text-sm text-slate-600">
               <span>{coverLetter.length} characters</span>

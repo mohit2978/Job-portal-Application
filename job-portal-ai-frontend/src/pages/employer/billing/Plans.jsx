@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "sonner"
 import { ArrowLeft, Check, Star, Loader2, Zap } from "lucide-react"
@@ -14,6 +14,8 @@ import {
 import { fetchActivePlans, createPaymentOrder } from "@/store/subscription/subscriptionThunk"
 import { fetchMyCompany } from "@/store/company/companyThunk"
 import { clearPaymentOrder } from "@/store/subscription/subscriptionSlice"
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function fmtPrice(val, currency = "INR") {
   if (!val && val !== 0) return "Custom"
@@ -31,10 +33,12 @@ const PLAN_RING = {
   ENTERPRISE:   "border-amber-300",
 }
 
+// ── Plan Card ─────────────────────────────────────────────────────────────────
+
 function PlanCard({ plan, billingCycle, isCurrentPlan, onSelect }) {
-  const price        = billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice
+  const price  = billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice
   const isEnterprise = plan.plan === "ENTERPRISE"
-  const border       = isCurrentPlan ? "border-blue-500 ring-2 ring-blue-200" : PLAN_RING[plan.plan] || "border-slate-200"
+  const border = isCurrentPlan ? "border-blue-500 ring-2 ring-blue-200" : PLAN_RING[plan.plan] || "border-slate-200"
 
   return (
     <div className={`relative rounded-xl border-2 ${border} bg-white p-6 flex flex-col`}>
@@ -79,6 +83,7 @@ function PlanCard({ plan, billingCycle, isCurrentPlan, onSelect }) {
         )}
       </div>
 
+      {/* Limits */}
       <div className="space-y-1.5 mb-5 text-xs text-slate-600">
         <div className="flex justify-between">
           <span>Job Postings</span>
@@ -98,6 +103,7 @@ function PlanCard({ plan, billingCycle, isCurrentPlan, onSelect }) {
         </div>
       </div>
 
+      {/* Features */}
       {plan.features?.length > 0 && (
         <div className="space-y-1.5 mb-5 border-t border-slate-100 pt-4 flex-1">
           {plan.features.map((f, i) => (
@@ -125,6 +131,8 @@ function PlanCard({ plan, billingCycle, isCurrentPlan, onSelect }) {
     </div>
   )
 }
+
+// ── Purchase Dialog ───────────────────────────────────────────────────────────
 
 function PurchaseDialog({ open, onClose, plan, billingCycle, companyId }) {
   const dispatch = useDispatch()
@@ -218,13 +226,15 @@ function PurchaseDialog({ open, onClose, plan, billingCycle, companyId }) {
   )
 }
 
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
 export default function Plans() {
   const dispatch = useDispatch()
   const { activePlans, activeSubscription, isLoading } = useSelector(s => s.subscription)
   const { myCompany } = useSelector(s => s.company)
 
   const [billingCycle, setBillingCycle] = useState("monthly")
-  const [selected, setSelected]         = useState(null)
+  const [selected, setSelected] = useState(null) // { plan, billingCycle }
 
   useEffect(() => {
     dispatch(fetchActivePlans())
@@ -241,6 +251,7 @@ export default function Plans() {
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div>
         <Link to="/employer/billing" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 mb-3">
           <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to Billing
@@ -249,6 +260,7 @@ export default function Plans() {
         <p className="text-sm text-slate-500 mt-1">Choose the perfect plan for your hiring needs</p>
       </div>
 
+      {/* Billing cycle toggle */}
       <div className="flex items-center gap-4">
         <Label className={`text-sm font-medium ${billingCycle === "monthly" ? "text-slate-900" : "text-slate-400"}`}>Monthly</Label>
         <Switch
@@ -263,6 +275,7 @@ export default function Plans() {
         )}
       </div>
 
+      {/* Plans grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-[480px] rounded-xl" />)}
@@ -286,6 +299,7 @@ export default function Plans() {
         </div>
       )}
 
+      {/* All plans include */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-4">All plans include</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -307,6 +321,7 @@ export default function Plans() {
         </div>
       </div>
 
+      {/* Purchase dialog */}
       {selected && (
         <PurchaseDialog
           open={!!selected}

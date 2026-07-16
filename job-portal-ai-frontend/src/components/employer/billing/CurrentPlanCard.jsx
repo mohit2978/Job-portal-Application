@@ -1,17 +1,24 @@
-import { Link } from "react-router-dom"
+﻿import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Crown, Calendar, CreditCard, TrendingUp } from "lucide-react"
 
 export default function CurrentPlanCard({ plan }) {
-  const { name, price, billing, nextBillingDate, status, features } = plan
+  const {
+    name,
+    price,
+    billing,
+    nextBillingDate,
+    status,
+    features
+  } = plan
 
   const statusConfig = {
-    active:    { label: "Active",    variant: "success"     },
-    trial:     { label: "Trial",     variant: "warning"     },
-    expired:   { label: "Expired",   variant: "destructive" },
-    cancelled: { label: "Cancelled", variant: "secondary"   },
+    active: { label: "Active", variant: "success" },
+    trial: { label: "Trial", variant: "warning" },
+    expired: { label: "Expired", variant: "destructive" },
+    cancelled: { label: "Cancelled", variant: "secondary" },
   }
 
   const currentStatus = statusConfig[status] || statusConfig.active
@@ -35,32 +42,46 @@ export default function CurrentPlanCard({ plan }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Plan Details */}
         <div className="space-y-4">
           <div className="flex items-baseline gap-2">
             <h3 className="text-3xl font-bold text-slate-900">{name}</h3>
-            {name !== "Free" && <span className="text-slate-500">Plan</span>}
+            {name !== "Free" && (
+              <span className="text-slate-500">Plan</span>
+            )}
           </div>
 
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-slate-900">${price}</span>
-            {billing && <span className="text-slate-600">/ {billing}</span>}
+            <span className="text-4xl font-bold text-slate-900">
+              ${price}
+            </span>
+            {billing && (
+              <span className="text-slate-600">
+                / {billing}
+              </span>
+            )}
           </div>
 
           {nextBillingDate && (
             <div className="flex items-center gap-2 text-sm text-slate-600">
               <Calendar className="h-4 w-4" />
-              <span>Next billing: <span className="font-medium text-slate-900">{nextBillingDate}</span></span>
+              <span>
+                Next billing: <span className="font-medium text-slate-900">{nextBillingDate}</span>
+              </span>
             </div>
           )}
 
           {billing && (
             <div className="flex items-center gap-2 text-sm text-slate-600">
               <CreditCard className="h-4 w-4" />
-              <span>Billing cycle: <span className="font-medium text-slate-900">Monthly</span></span>
+              <span>
+                Billing cycle: <span className="font-medium text-slate-900">Monthly</span>
+              </span>
             </div>
           )}
         </div>
 
+        {/* Features Included */}
         {features && features.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm font-medium text-slate-700">Plan includes:</p>
@@ -75,6 +96,7 @@ export default function CurrentPlanCard({ plan }) {
           </div>
         )}
 
+        {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
           {name !== "Enterprise" && (
             <Link to="/employer/billing/plans" className="flex-1">

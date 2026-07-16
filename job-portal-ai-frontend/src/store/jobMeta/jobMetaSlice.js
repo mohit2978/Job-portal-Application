@@ -1,9 +1,21 @@
-import { createSlice } from "@reduxjs/toolkit"
+﻿import { createSlice } from "@reduxjs/toolkit"
 import {
   fetchCategories, createCategory, updateCategory, deleteCategory,
-  fetchSkills,     createSkill,    updateSkill,    deleteSkill,
-  fetchTags,       createTag,      updateTag,      deleteTag,
+  fetchSkills, createSkill, updateSkill, deleteSkill,
+  fetchTags, createTag, updateTag, deleteTag,
 } from "./jobMetaThunk"
+
+const initialState = {
+  categories: [],
+  skills: [],
+  tags: [],
+  isLoadingCategories: false,
+  isLoadingSkills: false,
+  isLoadingTags: false,
+  isActionLoading: false,
+  error: null,
+  actionError: null,
+}
 
 function replaceById(list, updated) {
   return list.map((item) => (item.id === updated.id ? updated : item))
@@ -11,75 +23,67 @@ function replaceById(list, updated) {
 
 const jobMetaSlice = createSlice({
   name: "jobMeta",
-  initialState: {
-    categories: [],
-    skills: [],
-    tags: [],
-    isLoadingCategories: false,
-    isLoadingSkills: false,
-    isLoadingTags: false,
-    isActionLoading: false,
-    error: null,
-    actionError: null,
-  },
+  initialState,
   reducers: {
-    clearErrors(state) { state.error = null; state.actionError = null },
+    clearErrors(state) {
+      state.error = null
+      state.actionError = null
+    },
   },
   extraReducers: (builder) => {
-
-    // ── Categories ────────────────────────────────────────────────────────────
+    // ── Categories ─────────────────────────────────────────────────────────
     builder
-      .addCase(fetchCategories.pending,   (s) => { s.isLoadingCategories = true; s.error = null })
-      .addCase(fetchCategories.fulfilled, (s, { payload }) => { s.isLoadingCategories = false; s.categories = payload })
-      .addCase(fetchCategories.rejected,  (s, { payload }) => { s.isLoadingCategories = false; s.error = payload })
+      .addCase(fetchCategories.pending, (state) => { state.isLoadingCategories = true; state.error = null })
+      .addCase(fetchCategories.fulfilled, (state, { payload }) => { state.isLoadingCategories = false; state.categories = payload })
+      .addCase(fetchCategories.rejected, (state, { payload }) => { state.isLoadingCategories = false; state.error = payload })
 
-      .addCase(createCategory.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(createCategory.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.categories.unshift(payload) })
-      .addCase(createCategory.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(createCategory.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(createCategory.fulfilled, (state, { payload }) => { state.isActionLoading = false; state.categories.unshift(payload) })
+      .addCase(createCategory.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-      .addCase(updateCategory.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(updateCategory.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.categories = replaceById(s.categories, payload) })
-      .addCase(updateCategory.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(updateCategory.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(updateCategory.fulfilled, (state, { payload }) => { state.isActionLoading = false; state.categories = replaceById(state.categories, payload) })
+      .addCase(updateCategory.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-      .addCase(deleteCategory.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(deleteCategory.fulfilled, (s, { payload: id }) => { s.isActionLoading = false; s.categories = s.categories.filter((c) => c.id !== id) })
-      .addCase(deleteCategory.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(deleteCategory.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(deleteCategory.fulfilled, (state, { payload: id }) => { state.isActionLoading = false; state.categories = state.categories.filter((c) => c.id !== id) })
+      .addCase(deleteCategory.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-    // ── Skills ────────────────────────────────────────────────────────────────
+    // ── Skills ─────────────────────────────────────────────────────────────
     builder
-      .addCase(fetchSkills.pending,   (s) => { s.isLoadingSkills = true; s.error = null })
-      .addCase(fetchSkills.fulfilled, (s, { payload }) => { s.isLoadingSkills = false; s.skills = payload })
-      .addCase(fetchSkills.rejected,  (s, { payload }) => { s.isLoadingSkills = false; s.error = payload })
+      .addCase(fetchSkills.pending, (state) => { state.isLoadingSkills = true; state.error = null })
+      .addCase(fetchSkills.fulfilled, (state, { payload }) => { state.isLoadingSkills = false; state.skills = payload })
+      .addCase(fetchSkills.rejected, (state, { payload }) => { state.isLoadingSkills = false; state.error = payload })
 
-      .addCase(createSkill.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(createSkill.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.skills.unshift(payload) })
-      .addCase(createSkill.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(createSkill.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(createSkill.fulfilled, (state, { payload }) => { state.isActionLoading = false; state.skills.unshift(payload) })
+      .addCase(createSkill.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-      .addCase(updateSkill.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(updateSkill.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.skills = replaceById(s.skills, payload) })
-      .addCase(updateSkill.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(updateSkill.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(updateSkill.fulfilled, (state, { payload }) => { state.isActionLoading = false; state.skills = replaceById(state.skills, payload) })
+      .addCase(updateSkill.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-      .addCase(deleteSkill.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(deleteSkill.fulfilled, (s, { payload: id }) => { s.isActionLoading = false; s.skills = s.skills.filter((sk) => sk.id !== id) })
-      .addCase(deleteSkill.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(deleteSkill.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(deleteSkill.fulfilled, (state, { payload: id }) => { state.isActionLoading = false; state.skills = state.skills.filter((s) => s.id !== id) })
+      .addCase(deleteSkill.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-    // ── Tags ──────────────────────────────────────────────────────────────────
+    // ── Tags ───────────────────────────────────────────────────────────────
     builder
-      .addCase(fetchTags.pending,   (s) => { s.isLoadingTags = true; s.error = null })
-      .addCase(fetchTags.fulfilled, (s, { payload }) => { s.isLoadingTags = false; s.tags = payload })
-      .addCase(fetchTags.rejected,  (s, { payload }) => { s.isLoadingTags = false; s.error = payload })
+      .addCase(fetchTags.pending, (state) => { state.isLoadingTags = true; state.error = null })
+      .addCase(fetchTags.fulfilled, (state, { payload }) => { state.isLoadingTags = false; state.tags = payload })
+      .addCase(fetchTags.rejected, (state, { payload }) => { state.isLoadingTags = false; state.error = payload })
 
-      .addCase(createTag.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(createTag.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.tags.unshift(payload) })
-      .addCase(createTag.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(createTag.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(createTag.fulfilled, (state, { payload }) => { state.isActionLoading = false; state.tags.unshift(payload) })
+      .addCase(createTag.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-      .addCase(updateTag.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(updateTag.fulfilled, (s, { payload }) => { s.isActionLoading = false; s.tags = replaceById(s.tags, payload) })
-      .addCase(updateTag.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(updateTag.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(updateTag.fulfilled, (state, { payload }) => { state.isActionLoading = false; state.tags = replaceById(state.tags, payload) })
+      .addCase(updateTag.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
 
-      .addCase(deleteTag.pending,   (s) => { s.isActionLoading = true; s.actionError = null })
-      .addCase(deleteTag.fulfilled, (s, { payload: id }) => { s.isActionLoading = false; s.tags = s.tags.filter((t) => t.id !== id) })
-      .addCase(deleteTag.rejected,  (s, { payload }) => { s.isActionLoading = false; s.actionError = payload })
+      .addCase(deleteTag.pending, (state) => { state.isActionLoading = true; state.actionError = null })
+      .addCase(deleteTag.fulfilled, (state, { payload: id }) => { state.isActionLoading = false; state.tags = state.tags.filter((t) => t.id !== id) })
+      .addCase(deleteTag.rejected, (state, { payload }) => { state.isActionLoading = false; state.actionError = payload })
   },
 })
 

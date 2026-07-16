@@ -1,5 +1,9 @@
-import { createAsyncThunk } from "@reduxjs/toolkit"
+﻿import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
+
+// ── Employer: fetch all company applications (with optional filters) ──────────
+// filters: { jobId?, status?, source?, isRead?, isStarred?, appliedFrom?, appliedTo?,
+//            aiShortlistStatus?, minAiScore?, sortBy? }
 
 export const fetchCompanyApplications = createAsyncThunk(
   "application/fetchForCompany",
@@ -17,12 +21,16 @@ export const fetchCompanyApplications = createAsyncThunk(
       if (filters.minAiScore != null) params.minAiScore         = filters.minAiScore
       if (filters.sortBy)             params.sortBy             = filters.sortBy
       const { data } = await api.get(`/api/applications/company`, { params })
+      console.log("aplications -- ",data)
       return data
     } catch (err) {
+      console.log("err ",err)
       return rejectWithValue(err.response?.data?.message || "Failed to fetch applications")
     }
   }
 )
+
+// ── Fetch applications for a specific job ─────────────────────────────────────
 
 export const fetchJobApplications = createAsyncThunk(
   "application/fetchForJob",
@@ -36,6 +44,8 @@ export const fetchJobApplications = createAsyncThunk(
   }
 )
 
+// ── Fetch full application detail ─────────────────────────────────────────────
+
 export const fetchApplicationById = createAsyncThunk(
   "application/fetchById",
   async (id, { rejectWithValue }) => {
@@ -47,6 +57,8 @@ export const fetchApplicationById = createAsyncThunk(
     }
   }
 )
+
+// ── Update application status ─────────────────────────────────────────────────
 
 export const updateApplicationStatus = createAsyncThunk(
   "application/updateStatus",
@@ -60,6 +72,8 @@ export const updateApplicationStatus = createAsyncThunk(
   }
 )
 
+// ── Mark application as read ──────────────────────────────────────────────────
+
 export const markAsRead = createAsyncThunk(
   "application/markRead",
   async (id, { rejectWithValue }) => {
@@ -72,6 +86,8 @@ export const markAsRead = createAsyncThunk(
   }
 )
 
+// ── Toggle star ───────────────────────────────────────────────────────────────
+
 export const toggleStar = createAsyncThunk(
   "application/toggleStar",
   async (id, { rejectWithValue }) => {
@@ -83,6 +99,8 @@ export const toggleStar = createAsyncThunk(
     }
   }
 )
+
+// ── Notes ─────────────────────────────────────────────────────────────────────
 
 export const addNote = createAsyncThunk(
   "application/addNote",
@@ -107,6 +125,8 @@ export const deleteNote = createAsyncThunk(
     }
   }
 )
+
+// ── Interviews ────────────────────────────────────────────────────────────────
 
 export const scheduleInterview = createAsyncThunk(
   "application/scheduleInterview",
@@ -151,17 +171,22 @@ export const cancelInterview = createAsyncThunk(
   }
 )
 
+// ── Candidate: fetch own applications ─────────────────────────────────────────
+
 export const fetchMyApplications = createAsyncThunk(
   "application/fetchMy",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/api/applications/my")
+      console.log("my applications --- ",data)
       return data
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Failed to fetch applications")
     }
   }
 )
+
+// ── Candidate: withdraw application ──────────────────────────────────────────
 
 export const withdrawApplication = createAsyncThunk(
   "application/withdraw",
@@ -175,6 +200,8 @@ export const withdrawApplication = createAsyncThunk(
   }
 )
 
+// ── Candidate: submit application ─────────────────────────────────────────────
+
 export const submitApplication = createAsyncThunk(
   "application/submit",
   async (payload, { rejectWithValue }) => {
@@ -182,6 +209,7 @@ export const submitApplication = createAsyncThunk(
       const { data } = await api.post("/api/applications", payload)
       return data
     } catch (err) {
+      console.log("err",err)
       return rejectWithValue(err.response?.data?.message || "Failed to submit application")
     }
   }

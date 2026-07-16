@@ -1,15 +1,15 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom"
+﻿import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useSelector } from "react-redux"
 
 /**
- * ProtectedRoute Component
- * Router guard component that restricts access to authenticated users.
- * Redirects unauthenticated users back to the `/login` route and stores their intended landing location.
+ * ProtectedRoute - Guards routes that require authentication
+ * Redirects to login if user is not authenticated
  */
-export default function ProtectedRoute() {
+export default function ProtectedRoute({ children }) {
   const location = useLocation()
   const { isAuthenticated, authStatus } = useSelector((state) => state.auth)
 
+  // Show loading state while checking authentication
   if (authStatus === "loading" || authStatus === "idle") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -21,7 +21,8 @@ export default function ProtectedRoute() {
     )
   }
 
-  if (!isAuthenticated) {
+  // Redirect to login if not authenticated
+  if (!isAuthenticated || authStatus === "unauthenticated") {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 

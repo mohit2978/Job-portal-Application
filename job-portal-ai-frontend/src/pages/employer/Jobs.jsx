@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react"
+﻿import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "sonner"
 import {
-  PlusCircle, Search, Briefcase, Edit2, Send,
+  PlusCircle, Search, Briefcase, Eye, Edit2, Send,
   XCircle, Trash2, MoreHorizontal, MapPin, Users,
-  Clock, TrendingUp,
+  Clock, TrendingUp, Filter,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,6 +23,8 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { fetchMyJobs, publishJob, closeJob, deleteJob } from "@/store/job/jobThunk"
+
+// ── Config ─────────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG = {
   OPEN:    { label: "Open",    className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
@@ -43,9 +45,20 @@ function fmtDate(dt) {
   return new Date(dt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
 }
 
+function fmtSalary(job) {
+  if (job.salaryDisclosed === false) return "Competitive"
+  if (!job.minSalary && !job.maxSalary) return "—"
+  const cur = job.currency || "USD"
+  const fmt = (n) => new Intl.NumberFormat("en-US", { style: "currency", currency: cur, maximumFractionDigits: 0 }).format(n)
+  if (job.minSalary && job.maxSalary) return `${fmt(job.minSalary)} – ${fmt(job.maxSalary)}`
+  return fmt(job.minSalary || job.maxSalary)
+}
+
+// ── Stat card ──────────────────────────────────────────────────────────────────
+
 function StatCard({ label, value, icon: Icon, color }) {
   return (
-    <div className="rounded-xl border p-4 bg-white shadow-sm flex items-center gap-3">
+    <div className={`rounded-xl border p-4 bg-white shadow-sm flex items-center gap-3`}>
       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${color}`}>
         <Icon className="h-5 w-5" />
       </div>
@@ -57,6 +70,8 @@ function StatCard({ label, value, icon: Icon, color }) {
   )
 }
 
+// ── Skeleton rows ──────────────────────────────────────────────────────────────
+
 function SkeletonRows() {
   return Array.from({ length: 5 }).map((_, i) => (
     <TableRow key={i}>
@@ -67,12 +82,14 @@ function SkeletonRows() {
   ))
 }
 
+// ── Main component ─────────────────────────────────────────────────────────────
+
 export default function Jobs() {
   const dispatch  = useDispatch()
   const navigate  = useNavigate()
   const { myJobs, isLoading, isActionLoading } = useSelector(s => s.job)
 
-  const [search, setSearch]             = useState("")
+  const [search, setSearch]           = useState("")
   const [statusFilter, setStatusFilter] = useState("ALL")
   const [deleteTarget, setDeleteTarget] = useState(null)
 
@@ -80,13 +97,17 @@ export default function Jobs() {
     dispatch(fetchMyJobs())
   }, [dispatch])
 
+  // ── Stats ──────────────────────────────────────────────────────────────────
+
   const stats = useMemo(() => ({
-    total:    myJobs.length,
-    open:     myJobs.filter(j => j.status === "OPEN").length,
-    draft:    myJobs.filter(j => j.status === "DRAFT").length,
-    closed:   myJobs.filter(j => j.status === "CLOSED" || j.status === "EXPIRED").length,
+    total:   myJobs.length,
+    open:    myJobs.filter(j => j.status === "OPEN").length,
+    draft:   myJobs.filter(j => j.status === "DRAFT").length,
+    closed:  myJobs.filter(j => j.status === "CLOSED" || j.status === "EXPIRED").length,
     appTotal: myJobs.reduce((acc, j) => acc + (j.applicationCount || 0), 0),
   }), [myJobs])
+
+  // ── Filtered list ──────────────────────────────────────────────────────────
 
   const filtered = useMemo(() => {
     return myJobs.filter(j => {
@@ -96,6 +117,8 @@ export default function Jobs() {
       return matchesSearch && matchesStatus
     })
   }, [myJobs, search, statusFilter])
+
+  // ── Actions ────────────────────────────────────────────────────────────────
 
   const handlePublish = (id) => {
     dispatch(publishJob(id)).unwrap()
@@ -115,8 +138,12 @@ export default function Jobs() {
       .catch(err => { toast.error(err); setDeleteTarget(null) })
   }
 
+  // ── Render ─────────────────────────────────────────────────────────────────
+
   return (
     <div className="space-y-6">
+
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Job Postings</h1>
@@ -129,13 +156,15 @@ export default function Jobs() {
         </Link>
       </div>
 
+      {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Jobs"       value={stats.total}    icon={Briefcase}  color="bg-blue-50 text-brand" />
-        <StatCard label="Active (Open)"    value={stats.open}     icon={TrendingUp} color="bg-emerald-50 text-emerald-600" />
-        <StatCard label="Drafts"           value={stats.draft}    icon={Clock}      color="bg-amber-50 text-amber-600" />
+        <StatCard label="Total Jobs"      value={stats.total}    icon={Briefcase}   color="bg-blue-50 text-brand" />
+        <StatCard label="Active (Open)"   value={stats.open}     icon={TrendingUp}  color="bg-emerald-50 text-emerald-600" />
+        <StatCard label="Drafts"          value={stats.draft}    icon={Clock}       color="bg-amber-50 text-amber-600" />
         <StatCard label="Total Applicants" value={stats.appTotal} icon={Users}      color="bg-violet-50 text-violet-600" />
       </div>
 
+      {/* Filter bar */}
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -170,6 +199,7 @@ export default function Jobs() {
         </div>
       </div>
 
+      {/* Jobs table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
@@ -209,7 +239,7 @@ export default function Jobs() {
               </TableRow>
             ) : (
               filtered.map(job => {
-                const sCfg     = STATUS_CONFIG[job.status] || STATUS_CONFIG.DRAFT
+                const sCfg = STATUS_CONFIG[job.status] || STATUS_CONFIG.DRAFT
                 const location = [job.city, job.country].filter(Boolean).join(", ")
                 return (
                   <TableRow key={job.id} className="hover:bg-slate-50/50">
@@ -321,6 +351,7 @@ export default function Jobs() {
         </Table>
       </div>
 
+      {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={o => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

@@ -1,29 +1,38 @@
-import { Link, NavLink, useNavigate } from "react-router-dom"
+﻿import { Link, NavLink, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { cn } from "@/lib/utils"
 import { logout } from "@/store/user/userAuth"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import {
-  LayoutDashboard, Users, Briefcase, Settings, Shield,
-  ChevronLeft, ChevronRight, LogOut, Building2, Layers, CreditCard,
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  Settings,
+  Shield,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+  Building2,
+  Layers,
+  CreditCard,
 } from "lucide-react"
 
 const navigation = [
   {
     title: "Overview",
     items: [
-      { name: "Dashboard",    href: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     ],
   },
   {
     title: "Management",
     items: [
-      { name: "Users",         href: "/admin/users",         icon: Users       },
-      { name: "Jobs",          href: "/admin/jobs",          icon: Briefcase   },
-      { name: "Companies",     href: "/admin/companies",     icon: Building2   },
-      { name: "Job Metadata",  href: "/admin/job-meta",      icon: Layers      },
-      { name: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard  },
+      { name: "Users", href: "/admin/users", icon: Users },
+      { name: "Jobs", href: "/admin/jobs", icon: Briefcase },
+      { name: "Companies", href: "/admin/companies", icon: Building2 },
+      { name: "Job Metadata", href: "/admin/job-meta", icon: Layers },
+      { name: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
     ],
   },
   {
@@ -34,7 +43,13 @@ const navigation = [
   },
 ]
 
-export default function AdminSidebar({ collapsed, setCollapsed, mobileMenuOpen, setMobileMenuOpen }) {
+export default function AdminSidebar({
+  collapsed,
+  setCollapsed,
+  mobileMenuOpen,
+  setMobileMenuOpen,
+}) {
+  const { user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -48,10 +63,12 @@ export default function AdminSidebar({ collapsed, setCollapsed, mobileMenuOpen, 
       className={cn(
         "relative flex flex-col bg-slate-950 transition-all duration-300 shrink-0",
         collapsed ? "w-16" : "w-64",
+        // Mobile: off-canvas, Desktop: always visible
         "fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
     >
+      {/* Brand Logo */}
       <div className="flex h-16 items-center justify-between border-b border-white/5 px-4 shrink-0">
         {!collapsed ? (
           <Link to="/admin/dashboard" className="flex items-center gap-2.5 min-w-0">
@@ -72,19 +89,26 @@ export default function AdminSidebar({ collapsed, setCollapsed, mobileMenuOpen, 
         )}
       </div>
 
+      {/* Collapse Toggle — desktop only */}
       <Button
         variant="ghost"
         size="icon"
         onClick={() => setCollapsed(!collapsed)}
         className="hidden lg:flex absolute -right-3 top-18 z-10 h-6 w-6 rounded-full border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white shadow-md"
       >
-        {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+        {collapsed ? (
+          <ChevronRight className="h-3 w-3" />
+        ) : (
+          <ChevronLeft className="h-3 w-3" />
+        )}
       </Button>
 
+      {/* Navigation */}
       <ScrollArea className="flex-1">
         <nav className={cn("py-4 space-y-5", collapsed ? "px-2" : "px-3")}>
-          {navigation.map(section => (
+          {navigation.map((section) => (
             <div key={section.title}>
+              {/* Section label */}
               {!collapsed ? (
                 <h3 className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-600">
                   {section.title}
@@ -93,8 +117,9 @@ export default function AdminSidebar({ collapsed, setCollapsed, mobileMenuOpen, 
                 <div className="border-t border-white/5 mb-2" />
               )}
 
+              {/* Nav items */}
               <div className="space-y-0.5">
-                {section.items.map(item => {
+                {section.items.map((item) => {
                   const Icon = item.icon
                   return (
                     <NavLink
@@ -123,6 +148,7 @@ export default function AdminSidebar({ collapsed, setCollapsed, mobileMenuOpen, 
         </nav>
       </ScrollArea>
 
+      {/* Logout */}
       <div className={cn("border-t border-white/5 p-3", collapsed && "flex justify-center")}>
         <button
           onClick={handleLogout}

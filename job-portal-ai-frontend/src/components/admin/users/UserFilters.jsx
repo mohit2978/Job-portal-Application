@@ -1,23 +1,29 @@
-import { Input } from "@/components/ui/input"
+﻿import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { Search, Download } from "lucide-react"
 
 export default function UserFilters({ onSearch, onRoleFilter, onStatusFilter }) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
+      {/* Search */}
       <div className="relative w-full sm:max-w-xs">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
         <Input
           placeholder="Search by name or email..."
           className="pl-9 h-9 bg-white border-slate-200 text-sm rounded-lg"
-          onChange={e => onSearch?.(e.target.value)}
+          onChange={(e) => onSearch?.(e.target.value)}
         />
       </div>
 
-      <Select onValueChange={val => onRoleFilter?.(val)}>
+      {/* Role */}
+      <Select onValueChange={(val) => onRoleFilter?.(val)}>
         <SelectTrigger className="h-9 w-full sm:w-40 bg-white border-slate-200 text-sm rounded-lg">
           <SelectValue placeholder="All Roles" />
         </SelectTrigger>
@@ -29,7 +35,8 @@ export default function UserFilters({ onSearch, onRoleFilter, onStatusFilter }) 
         </SelectContent>
       </Select>
 
-      <Select onValueChange={val => onStatusFilter?.(val)}>
+      {/* Status */}
+      <Select onValueChange={(val) => onStatusFilter?.(val)}>
         <SelectTrigger className="h-9 w-full sm:w-40 bg-white border-slate-200 text-sm rounded-lg">
           <SelectValue placeholder="All Status" />
         </SelectTrigger>
@@ -41,7 +48,12 @@ export default function UserFilters({ onSearch, onRoleFilter, onStatusFilter }) 
         </SelectContent>
       </Select>
 
-      <Button variant="outline" size="sm" className="h-9 border-slate-200 text-slate-600 gap-1.5 ml-auto">
+      {/* Export */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-9 border-slate-200 text-slate-600 gap-1.5 ml-auto"
+      >
         <Download className="h-3.5 w-3.5" />
         Export CSV
       </Button>

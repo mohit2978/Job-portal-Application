@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+﻿import { useState, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { toast } from "sonner"
 import { Plus, Trash2, Save, Loader2, Link2 } from "lucide-react"
@@ -61,6 +61,7 @@ export default function SocialLinksForm({ company, isActionLoading }) {
   const handleSave = () => {
     const valid = links.filter(l => l.platform && l.url.trim())
     const payload = {
+      // Preserve all basic company fields
       name:               company.name,
       tagline:            company.tagline || undefined,
       description:        company.description || undefined,
@@ -82,6 +83,9 @@ export default function SocialLinksForm({ company, isActionLoading }) {
       .catch(err => toast.error(err))
   }
 
+  // Used platforms (for duplicate-warning only — allow repeats, just inform)
+  const usedPlatforms = links.map(l => l.platform).filter(Boolean)
+
   return (
     <div className="space-y-5">
       {links.length === 0 && (
@@ -99,6 +103,7 @@ export default function SocialLinksForm({ company, isActionLoading }) {
 
       {links.map((link, idx) => (
         <div key={idx} className="flex items-end gap-3">
+          {/* Platform select */}
           <div className="w-44 space-y-1.5 shrink-0">
             {idx === 0 && (
               <Label className="text-xs font-semibold text-slate-600">Platform</Label>
@@ -119,6 +124,7 @@ export default function SocialLinksForm({ company, isActionLoading }) {
             </Select>
           </div>
 
+          {/* URL input */}
           <div className="flex-1 space-y-1.5">
             {idx === 0 && (
               <Label className="text-xs font-semibold text-slate-600">URL</Label>
@@ -131,6 +137,7 @@ export default function SocialLinksForm({ company, isActionLoading }) {
             />
           </div>
 
+          {/* Remove */}
           <Button
             type="button"
             size="icon"
@@ -143,6 +150,7 @@ export default function SocialLinksForm({ company, isActionLoading }) {
         </div>
       ))}
 
+      {/* Add row button (when links exist) */}
       {links.length > 0 && (
         <Button
           type="button"
@@ -155,6 +163,7 @@ export default function SocialLinksForm({ company, isActionLoading }) {
         </Button>
       )}
 
+      {/* Save */}
       {links.length > 0 && (
         <div className="flex justify-end pt-2 border-t border-slate-100">
           <Button

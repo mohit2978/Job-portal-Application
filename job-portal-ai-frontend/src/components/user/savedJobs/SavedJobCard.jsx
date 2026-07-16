@@ -12,6 +12,8 @@ import {
 import api from "@/store/api"
 import { cn } from "@/lib/utils"
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function formatSalary(min, max, currency = "USD", disclosed = true) {
   if (!disclosed) return "Competitive salary"
   const fmt = (n) => {
@@ -32,7 +34,8 @@ function formatSalary(min, max, currency = "USD", disclosed = true) {
 
 function timeAgo(dateStr) {
   if (!dateStr) return null
-  const diffDays = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000)
+  const diffMs = Date.now() - new Date(dateStr).getTime()
+  const diffDays = Math.floor(diffMs / 86400000)
   if (diffDays === 0) return "Today"
   if (diffDays === 1) return "Yesterday"
   if (diffDays < 7) return `${diffDays}d ago`
@@ -60,12 +63,8 @@ const WORK_MODE_STYLE = {
   ON_SITE: "bg-slate-100 text-slate-600 border-slate-200",
 }
 
-/**
- * SavedJobCard Component
- * Renders a card displaying details of a candidate's saved job post. Handles its own loading skeleton
- * and fetches detailed job parameters asynchronously based on the passed savedJob.jobId prop.
- * Offers options to unsave the job post or click-through to the full description page.
- */
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function SavedJobCard({ savedJob, onUnsave, unsaving }) {
   const [job, setJob] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -137,6 +136,7 @@ export default function SavedJobCard({ savedJob, onUnsave, unsaving }) {
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
 
+          {/* Company logo */}
           <div className="shrink-0 h-16 w-16 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden">
             {company?.logoUrl ? (
               <img
@@ -149,8 +149,10 @@ export default function SavedJobCard({ savedJob, onUnsave, unsaving }) {
             <Building2 className={cn("h-7 w-7 text-slate-400", company?.logoUrl ? "hidden" : "")} />
           </div>
 
+          {/* Content */}
           <div className="flex-1 min-w-0">
 
+            {/* Title + saved time */}
             <div className="flex items-start justify-between gap-3 mb-1">
               <div className="min-w-0">
                 <h3 className="font-bold text-base text-slate-900 truncate">{job.title}</h3>
@@ -164,7 +166,13 @@ export default function SavedJobCard({ savedJob, onUnsave, unsaving }) {
                   {company?.industryType && (
                     <span className="text-slate-400 text-xs">· {company.industryType.replace(/_/g, " ")}</span>
                   )}
+                  {company?.companySize && (
+                    <span className="text-slate-400 text-xs">· {company.companySize}</span>
+                  )}
                 </div>
+                {company?.tagline && (
+                  <p className="text-xs text-slate-400 italic mt-0.5">{company.tagline}</p>
+                )}
               </div>
               <div className="flex items-center gap-1 shrink-0 text-xs text-slate-400">
                 <Bookmark className="h-3.5 w-3.5 fill-primary text-primary" />
@@ -172,6 +180,7 @@ export default function SavedJobCard({ savedJob, onUnsave, unsaving }) {
               </div>
             </div>
 
+            {/* Meta row */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 my-3">
               <span className="flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -188,6 +197,7 @@ export default function SavedJobCard({ savedJob, onUnsave, unsaving }) {
               )}
             </div>
 
+            {/* Badges */}
             <div className="flex flex-wrap items-center gap-1.5 mb-4">
               {job.jobType && (
                 <Badge variant="outline" className={`text-xs font-medium ${JOB_TYPE_STYLE[job.jobType] ?? ""}`}>
@@ -208,6 +218,7 @@ export default function SavedJobCard({ savedJob, onUnsave, unsaving }) {
 
             <Separator className="mb-4" />
 
+            {/* Actions */}
             <div className="flex items-center gap-2">
               <Button size="sm" className="h-8 text-xs gap-1.5" asChild>
                 <Link to={`/jobs/${job.id}`}>

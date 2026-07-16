@@ -1,70 +1,95 @@
-import { useDispatch } from "react-redux"
+﻿import { useDispatch } from "react-redux"
 import { toast } from "sonner"
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-  MoreHorizontal, Eye, ShieldCheck, Ban, Trash2, Building2, CheckCircle, Globe,
+  MoreHorizontal,
+  Eye,
+  ShieldCheck,
+  Ban,
+  Trash2,
+  Building2,
+  CheckCircle,
+  Globe,
 } from "lucide-react"
 import CompanyStatusBadge from "./CompanyStatusBadge"
-import { verifyCompany, deactivateCompany } from "@/store/company/companyThunk"
+import { verifyCompany, deactivateCompany, deleteCompany } from "@/store/company/companyThunk"
+import { cn } from "@/lib/utils"
 
 const typeLabels = {
-  STARTUP:       "Startup",
-  PRIVATE:       "Private",
+  STARTUP: "Startup",
+  PRIVATE: "Private",
   PUBLIC_LISTED: "Public",
-  GOVERNMENT:    "Govt.",
-  NON_PROFIT:    "Non-Profit",
-  EDUCATIONAL:   "Education",
+  GOVERNMENT: "Govt.",
+  NON_PROFIT: "Non-Profit",
+  EDUCATIONAL: "Education",
   SELF_EMPLOYED: "Self-Employed",
 }
 
 const sizeLabels = {
-  MICRO:      "1–10",
-  SMALL:      "11–50",
-  MEDIUM:     "51–200",
-  LARGE:      "201–1K",
+  MICRO: "1–10",
+  SMALL: "11–50",
+  MEDIUM: "51–200",
+  LARGE: "201–1K",
   ENTERPRISE: "1K+",
 }
 
 const industryCropLabels = {
-  FINANCE_BANKING:          "Finance",
-  RETAIL_ECOMMERCE:         "Retail",
-  MEDIA_ENTERTAINMENT:      "Media",
+  FINANCE_BANKING: "Finance",
+  RETAIL_ECOMMERCE: "Retail",
+  MEDIA_ENTERTAINMENT: "Media",
   TRANSPORTATION_LOGISTICS: "Logistics",
-  ENERGY_UTILITIES:         "Energy",
-  MARKETING_ADVERTISING:    "Marketing",
-  HUMAN_RESOURCES:          "HR",
+  ENERGY_UTILITIES: "Energy",
+  MARKETING_ADVERTISING: "Marketing",
+  HUMAN_RESOURCES: "HR",
 }
 
 function industryLabel(raw) {
   if (!raw) return "—"
   return (
     industryCropLabels[raw] ||
-    raw.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
+    raw
+      .replace(/_/g, " ")
+      .toLowerCase()
+      .replace(/\b\w/g, (c) => c.toUpperCase())
   )
 }
 
 function formatDate(dateStr) {
   if (!dateStr) return "—"
   return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric", month: "short", day: "numeric",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   })
 }
 
+// ── Loading skeleton ─────────────────────────────────────────────────────────
 function TableSkeleton() {
   return (
     <>
       {Array.from({ length: 6 }).map((_, i) => (
         <TableRow key={i} className="border-slate-100">
-          <TableCell className="pl-6"><Skeleton className="h-4 w-4" /></TableCell>
+          <TableCell className="pl-6">
+            <Skeleton className="h-4 w-4" />
+          </TableCell>
           <TableCell>
             <div className="flex items-center gap-3">
               <Skeleton className="h-10 w-10 rounded-xl" />
@@ -86,6 +111,7 @@ function TableSkeleton() {
   )
 }
 
+// ── Main table ───────────────────────────────────────────────────────────────
 export default function CompanyTable({
   companies,
   isLoading,
@@ -114,13 +140,27 @@ export default function CompanyTable({
       <Table>
         <TableHeader>
           <TableRow className="bg-slate-50 hover:bg-slate-50 border-slate-200">
-            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-6 w-10">#</TableHead>
-            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Company</TableHead>
-            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Industry / Type</TableHead>
-            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Size</TableHead>
-            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Status</TableHead>
-            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Verified</TableHead>
-            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Registered</TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-6 w-10">
+              #
+            </TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Company
+            </TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Industry / Type
+            </TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Size
+            </TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Status
+            </TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Verified
+            </TableHead>
+            <TableHead className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Registered
+            </TableHead>
             <TableHead className="w-12 pr-4" />
           </TableRow>
         </TableHeader>
@@ -134,17 +174,27 @@ export default function CompanyTable({
                 <div className="flex flex-col items-center gap-3">
                   <Building2 className="h-10 w-10 text-slate-300" />
                   <p className="text-sm text-slate-500 font-medium">No companies found</p>
-                  <p className="text-xs text-slate-400">Try changing your filters or refreshing</p>
+                  <p className="text-xs text-slate-400">
+                    Try changing your filters or refreshing
+                  </p>
                 </div>
               </TableCell>
             </TableRow>
           ) : (
             companies.map((company, index) => (
-              <TableRow key={company.id} className="group hover:bg-slate-50/50 border-slate-100">
-                <TableCell className="text-sm text-slate-400 font-medium pl-6">{index + 1}</TableCell>
+              <TableRow
+                key={company.id}
+                className="group hover:bg-slate-50/50 border-slate-100"
+              >
+                {/* Index */}
+                <TableCell className="text-sm text-slate-400 font-medium pl-6">
+                  {index + 1}
+                </TableCell>
 
+                {/* Company info */}
                 <TableCell>
                   <div className="flex items-center gap-3">
+                    {/* Logo or placeholder */}
                     {company.logoUrl ? (
                       <img
                         src={company.logoUrl}
@@ -182,15 +232,19 @@ export default function CompanyTable({
                   </div>
                 </TableCell>
 
+                {/* Industry / Type */}
                 <TableCell>
                   <div>
-                    <p className="text-sm font-medium text-slate-700">{industryLabel(company.industryType)}</p>
+                    <p className="text-sm font-medium text-slate-700">
+                      {industryLabel(company.industryType)}
+                    </p>
                     <p className="text-xs text-slate-400 mt-0.5">
                       {typeLabels[company.companyType] || company.companyType || "—"}
                     </p>
                   </div>
                 </TableCell>
 
+                {/* Size */}
                 <TableCell>
                   <span className="text-sm text-slate-600 font-medium">
                     {sizeLabels[company.companySize] || company.companySize || "—"}
@@ -198,10 +252,12 @@ export default function CompanyTable({
                   </span>
                 </TableCell>
 
+                {/* Status */}
                 <TableCell>
                   <CompanyStatusBadge status={company.status} />
                 </TableCell>
 
+                {/* Verified */}
                 <TableCell>
                   {company.verified ? (
                     <div className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
@@ -213,10 +269,12 @@ export default function CompanyTable({
                   )}
                 </TableCell>
 
+                {/* Registered date */}
                 <TableCell>
                   <span className="text-xs text-slate-500">{formatDate(company.createdAt)}</span>
                 </TableCell>
 
+                {/* Actions */}
                 <TableCell className="pr-4">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -230,7 +288,9 @@ export default function CompanyTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuLabel className="text-xs text-slate-500 font-normal">Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel className="text-xs text-slate-500 font-normal">
+                        Actions
+                      </DropdownMenuLabel>
                       <DropdownMenuSeparator />
 
                       <DropdownMenuItem onClick={() => onViewDetail(company)}>
@@ -238,6 +298,7 @@ export default function CompanyTable({
                         View Details
                       </DropdownMenuItem>
 
+                      {/* Show Verify only if not already verified / active */}
                       {company.status !== "ACTIVE" && (
                         <DropdownMenuItem
                           onClick={() => handleVerify(company)}
@@ -248,6 +309,7 @@ export default function CompanyTable({
                         </DropdownMenuItem>
                       )}
 
+                      {/* Show Deactivate only if currently active */}
                       {company.status === "ACTIVE" && (
                         <DropdownMenuItem
                           onClick={() => handleDeactivate(company)}

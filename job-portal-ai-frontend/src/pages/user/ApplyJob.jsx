@@ -1,13 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-
-import rawJobs from "@/data/jobs.json"
-import SKILLS from "@/data/jobSkills.json"
-import TAGS from "@/data/jobTags.json"
-
+import { fetchJobById } from "@/store/job/jobThunk"
+import { submitApplication } from "@/store/application/applicationThunk"
 import ApplySteps from "@/components/user/apply/ApplySteps"
 import SelectResume from "@/components/user/apply/SelectResume"
 import CoverLetterEditor from "@/components/user/apply/CoverLetterEditor"
@@ -15,25 +13,18 @@ import AdditionalDetails from "@/components/user/apply/QuestionForm"
 import ReviewSubmit from "@/components/user/apply/ReviewSubmit"
 import SuccessScreen from "@/components/user/apply/SuccessScreen"
 import JobInfoCard from "@/components/user/apply/JobInfoCard"
-
-const JOBS = rawJobs.map((job, i) => ({
-  ...job,
-  id: i + 1,
-  skills: (job.skillIds ?? []).map(id => SKILLS[id - 1]).filter(Boolean),
-  tags: (job.tagIds ?? []).map(id => TAGS[id - 1]).filter(Boolean),
-}))
-
-const MOCK_RESUMES = [
-  { id: 1, title: "Full Stack Developer Resume", template: "PROFESSIONAL", isDefault: true },
-  { id: 2, title: "Backend Engineer Resume", template: "MODERN", isDefault: false },
-  { id: 3, title: "Frontend Developer Resume", template: "MINIMAL", isDefault: false },
-]
+import ApplyJobSkeleton from "@/components/user/apply/ApplyJobSkeleton"
 
 export default function ApplyJob() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const job = JOBS.find(j => j.id === Number(id))
+  const { currentJob: job, isLoading: jobLoading } = useSelector(s => s.job)
+  const { isActionLoading } = useSelector(s => s.application)
+  const { resumes } = useSelector(s => s.resume)
+
+
 
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedResume, setSelectedResume] = useState("")
@@ -41,9 +32,14 @@ export default function ApplyJob() {
   const [expectedSalary, setExpectedSalary] = useState("")
   const [availableFrom, setAvailableFrom] = useState(null)
 
+  console.log("resumes ", resumes)
+  useEffect(() => {
+    dispatch(fetchJobById(id))
+  }, [dispatch, id])
+
   const handleNext = () => {
     if (currentStep === 1 && !selectedResume) {
-      toast.error("Please select a resume")
+      toast.error("Please select or upload a resume")
       return
     }
     if (currentStep < 4) {
@@ -59,17 +55,31 @@ export default function ApplyJob() {
     }
   }
 
-  const handleSubmit = () => {
-    setCurrentStep(5)
-    toast.success("Application submitted successfully!")
+  const handleSubmit = async () => {
+    try {
+      await dispatch(submitApplication({
+        jobId: Number(id),
+        resumeId: Number(selectedResume) || null,
+        coverLetter: coverLetter.trim() || null,
+        expectedSalary: expectedSalary ? parseFloat(expectedSalary) : null,
+        expectedSalaryCurrency: expectedSalary ? "INR" : null,
+        availableFrom: availableFrom ? availableFrom.toISOString().split("T")[0] : null,
+        source: "DIRECT",
+      })).unwrap()
+
+      setCurrentStep(5)
+      toast.success("Application submitted successfully!")
+    } catch (err) {
+      toast.error(err || "Failed to submit application")
+    }
   }
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1: return <SelectResume selectedResume={selectedResume} setSelectedResume={setSelectedResume} resumes={MOCK_RESUMES} />
-      case 2: return <CoverLetterEditor coverLetter={coverLetter} setCoverLetter={setCoverLetter} />
+      case 1: return <SelectResume selectedResume={selectedResume} setSelectedResume={setSelectedResume} />
+      case 2: return <CoverLetterEditor coverLetter={coverLetter} setCoverLetter={setCoverLetter} selectedResumeId={selectedResume} />
       case 3: return <AdditionalDetails expectedSalary={expectedSalary} setExpectedSalary={setExpectedSalary} availableFrom={availableFrom} setAvailableFrom={setAvailableFrom} />
-      case 4: return <ReviewSubmit resume={selectedResume} resumes={MOCK_RESUMES} coverLetter={coverLetter} expectedSalary={expectedSalary} availableFrom={availableFrom} job={job} />
+      case 4: return <ReviewSubmit resume={selectedResume} resumes={resumes} coverLetter={coverLetter} expectedSalary={expectedSalary} availableFrom={availableFrom} job={job} />
       case 5: return <SuccessScreen job={job} />
       default: return null
     }
@@ -79,12 +89,8 @@ export default function ApplyJob() {
     return <div className="min-h-screen bg-slate-50 py-12">{renderStep()}</div>
   }
 
-  if (!job) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-8 text-center text-slate-500">
-        Job not found.
-      </div>
-    )
+  if (jobLoading || !job) {
+    return <ApplyJobSkeleton />
   }
 
   return (
@@ -112,8 +118,10 @@ export default function ApplyJob() {
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         ) : (
-          <Button onClick={handleSubmit}>
-            Submit Application
+          <Button onClick={handleSubmit} disabled={isActionLoading}>
+            {isActionLoading
+              ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Submitting...</>
+              : "Submit Application"}
           </Button>
         )}
       </div>

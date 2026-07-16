@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Bell, Lock } from "lucide-react"
+import { Bell, Mail, Lock, Globe } from "lucide-react"
 import { toast } from "sonner"
 
 export default function Settings() {
@@ -19,6 +19,7 @@ export default function Settings() {
       </div>
 
       <div className="space-y-6">
+        {/* Notifications */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -53,6 +54,7 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        {/* Privacy */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -79,6 +81,7 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        {/* Save Button */}
         <div className="flex justify-end">
           <Button onClick={handleSave}>Save Changes</Button>
         </div>
