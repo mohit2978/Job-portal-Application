@@ -21,8 +21,11 @@ import com.mohit.job.service.JobService;
 import com.mohit.job.service.JobSkillService;
 import com.mohit.job.service.JobTagService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -32,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobServiceImpl implements JobService {
 
     private final JobRepository jobRepository;
@@ -86,8 +90,12 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "jobs")
     public List<JobResponse> getJobs(JobSearchRequest req) {
-        return jobRepository.findAll(JobSpecification.build(req)).stream()
+        List<Job>res= jobRepository.findAll(JobSpecification.build(req));
+        log.info("Jobs is of length"+res.size());
+        return res.stream()
                 .map(JobMapper::toResponse)
                 .collect(Collectors.toList());
     }

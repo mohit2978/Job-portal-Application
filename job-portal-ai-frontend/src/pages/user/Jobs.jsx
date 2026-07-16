@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react"
+import { useSearchParams } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "sonner"
 import { Card, CardContent } from "@/components/ui/card"
@@ -90,13 +91,16 @@ export default function Jobs() {
   const { jobs, jobsLoading, jobsError } = useSelector((s) => s.job)
   const { isEnhancingSearch } = useSelector((s) => s.ai)
 
+  // ── URL search params (from navbar search bar) ────────────────────────────
+  const [searchParams] = useSearchParams()
+
   // ── Search state ───────────────────────────────────────────────────────────
   const [aiQuery, setAiQuery]                   = useState("")
-  const [aiFiltersApplied, setAiFiltersApplied] = useState(null) // SearchEnhanceResponse
+  const [aiFiltersApplied, setAiFiltersApplied] = useState(null)
 
-  // keyword / location are set by the AI enhance result and drive the API fetch
-  const [keyword, setKeyword]   = useState("")
-  const [location, setLocation] = useState("")
+  // keyword / location — initialised from URL ?q= and ?location=
+  const [keyword, setKeyword]   = useState(() => searchParams.get("q") || "")
+  const [location, setLocation] = useState(() => searchParams.get("location") || "")
 
   // ── Client-side filters & UI ───────────────────────────────────────────────
   const [filters, setFilters]       = useState(DEFAULT_FILTERS)
@@ -105,6 +109,14 @@ export default function Jobs() {
   const [page, setPage]               = useState(1)
 
   useEffect(() => { dispatch(fetchMyApplications()) }, [dispatch])
+
+  // Sync keyword/location when URL params change (navbar search navigates here)
+  useEffect(() => {
+    const q   = searchParams.get("q") || ""
+    const loc = searchParams.get("location") || ""
+    setKeyword(q)
+    setLocation(loc)
+  }, [searchParams])
 
   // Debounced API fetch when keyword / location changes
   const debounceRef = useRef(null)

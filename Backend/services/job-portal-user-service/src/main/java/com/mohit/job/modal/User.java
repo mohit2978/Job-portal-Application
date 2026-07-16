@@ -27,8 +27,10 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false)
     private String phone;
+
     @Column(nullable = false)
     private String profileImage;
 
@@ -45,8 +47,8 @@ public class User {
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(nullable = false,updatable = false)
-    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt=LocalDateTime.now();
 
     private LocalDateTime lastLogin;
 

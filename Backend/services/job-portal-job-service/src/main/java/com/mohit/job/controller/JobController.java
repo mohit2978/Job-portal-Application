@@ -7,12 +7,14 @@ import com.mohit.job.dto.response.JobSummaryResponse;
 import com.mohit.job.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/jobs")
 @RequiredArgsConstructor
@@ -40,6 +42,7 @@ public class JobController {
     // public search with filters
     @GetMapping
     public ResponseEntity<List<JobResponse>> getJobs(@ModelAttribute JobSearchRequest req) {
+        log.info("getting all jobs");
         return ResponseEntity.ok(jobService.getJobs(req));
     }
 

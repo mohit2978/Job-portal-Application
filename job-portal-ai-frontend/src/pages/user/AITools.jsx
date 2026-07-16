@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Sparkles, FileText, PenTool, Target, TrendingUp, Upload, Copy, BrainCircuit, ChevronRight } from "lucide-react"
 import { toast } from "sonner"
 import { fetchMyResumes, fetchResumeById } from "@/store/resume/resumeThunk"
+import { getResumeImprovements } from "@/store/ai/aiThunk"
 import CareerFeedbackDialog from "@/components/user/resumes/CareerFeedbackDialog"
 
 const aiTools = [
@@ -123,29 +124,56 @@ function ToolCard({ tool, onSelect }) {
 }
 
 function ResumeAnalyzer() {
+  const dispatch = useDispatch()
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysis, setAnalysis] = useState(null)
+  const [file, setFile] = useState(null)
+  const [dragOver, setDragOver] = useState(false)
+  const fileInputRef = useRef(null)
 
-  const handleAnalyze = () => {
+  const handleFileDrop = (e) => {
+    e.preventDefault()
+    setDragOver(false)
+    const dropped = e.dataTransfer.files[0]
+    if (dropped) setFile(dropped)
+  }
+
+  const handleFileChange = (e) => {
+    if (e.target.files[0]) setFile(e.target.files[0])
+  }
+
+  const handleAnalyze = async () => {
+    if (!file) {
+      toast.error("Please select a resume file first")
+      return
+    }
     setIsAnalyzing(true)
-    setTimeout(() => {
-      setAnalysis({
-        score: 85,
-        strengths: [
-          "Strong technical skills section with relevant technologies",
-          "Clear and measurable achievements",
-          "Good formatting and structure",
-        ],
-        improvements: [
-          "Add more quantifiable results to work experience",
-          "Include a professional summary at the top",
-          "Add links to portfolio or GitHub projects",
-        ],
-        keywords: ["React", "TypeScript", "Leadership", "Agile"],
-      })
+    try {
+      // Read file as base64
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const base64 = e.target.result.split(",")[1]
+        const result = await dispatch(
+          getResumeImprovements({ resumeText: base64, fileName: file.name })
+        )
+        if (result.payload) {
+          setAnalysis({
+            score: result.payload.score ?? 80,
+            strengths: result.payload.strengths ?? [],
+            improvements: result.payload.improvements ?? [],
+            keywords: result.payload.keywords ?? [],
+          })
+          toast.success("Resume analysis complete!")
+        } else {
+          toast.error(result.error?.message || "Analysis failed")
+        }
+        setIsAnalyzing(false)
+      }
+      reader.readAsDataURL(file)
+    } catch {
+      toast.error("Something went wrong")
       setIsAnalyzing(false)
-      toast.success("Resume analysis complete!")
-    }, 2000)
+    }
   }
 
   return (
@@ -168,11 +196,48 @@ function ResumeAnalyzer() {
 
       <Card>
         <CardContent className="p-6">
-          <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center">
-            <Upload className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-            <h3 className="font-semibold text-slate-900 mb-2">Upload Your Resume</h3>
-            <p className="text-sm text-slate-600 mb-4">PDF, DOC, or DOCX (Max 5MB)</p>
-            <Button onClick={handleAnalyze} disabled={isAnalyzing}>
+          {/* Hidden real file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+
+          {/* Clickable drag-and-drop zone */}
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleFileDrop}
+            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+              ${dragOver ? "border-brand bg-blue-50" : "border-slate-300 hover:border-brand hover:bg-slate-50"}`}
+          >
+            <Upload className={`h-12 w-12 mx-auto mb-4 ${dragOver ? "text-brand" : "text-slate-400"}`} />
+
+            {file ? (
+              <div>
+                <p className="font-semibold text-slate-900 mb-1">{file.name}</p>
+                <p className="text-xs text-slate-500 mb-4">
+                  {(file.size / 1024).toFixed(1)} KB · Click to change
+                </p>
+              </div>
+            ) : (
+              <div>
+                <h3 className="font-semibold text-slate-900 mb-2">
+                  {dragOver ? "Drop your resume here" : "Upload Your Resume"}
+                </h3>
+                <p className="text-sm text-slate-600 mb-4">
+                  Click to browse or drag & drop · PDF, DOC, or DOCX (Max 5MB)
+                </p>
+              </div>
+            )}
+
+            <Button
+              onClick={(e) => { e.stopPropagation(); handleAnalyze() }}
+              disabled={isAnalyzing}
+            >
               {isAnalyzing ? "Analyzing..." : "Analyze Resume"}
             </Button>
           </div>

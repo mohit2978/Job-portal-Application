@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -52,6 +52,7 @@ const STATUS_COLORS = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function JobCard({ job }) {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const { savedJobMap, isActionLoading } = useSelector((s) => s.savedJob)
   const myApplications = useSelector((s) => s.application.myApplications)
@@ -233,7 +234,10 @@ export default function JobCard({ job }) {
                     ) : (
                       <Button
                         size="sm"
-                        onClick={(e) => e.preventDefault()}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          navigate(`/apply/${job.id}`)
+                        }}
                         className="text-xs h-7 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         Quick Apply

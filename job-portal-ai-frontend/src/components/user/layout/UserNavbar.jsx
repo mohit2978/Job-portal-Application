@@ -47,7 +47,7 @@ export default function UserNavbar() {
               <Briefcase className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900">
-              ZOSHIRE</span>
+              HIREKRO</span>
           </Link>
 
           {/* Search Bar */}
@@ -75,20 +75,18 @@ export default function UserNavbar() {
           <div className="flex items-center gap-6">
             <Link
               to="/jobs"
-              className={`hidden lg:block text-sm font-medium transition-colors ${
-                isActive("/jobs") ? "text-brand" : "text-slate-600 hover:text-slate-900"
-              }`}
+              className={`hidden lg:block text-sm font-medium transition-colors ${isActive("/jobs") ? "text-brand" : "text-slate-600 hover:text-slate-900"
+                }`}
             >
               Jobs
             </Link>
-            
-           
-            
+
+
+
             <Link
               to="/ai-tools"
-              className={`hidden lg:flex items-center gap-1 text-sm font-medium transition-colors ${
-                isActive("/ai-tools") ? "text-brand" : "text-slate-600 hover:text-slate-900"
-              }`}
+              className={`hidden lg:flex items-center gap-1 text-sm font-medium transition-colors ${isActive("/ai-tools") ? "text-brand" : "text-slate-600 hover:text-slate-900"
+                }`}
             >
               <Sparkles className="h-4 w-4" />
               AI Tools
@@ -96,9 +94,8 @@ export default function UserNavbar() {
 
             <Link
               to="/ai-match"
-              className={`hidden lg:flex items-center gap-1 text-sm font-medium transition-colors ${
-                isActive("/ai-match") ? "text-brand" : "text-slate-600 hover:text-slate-900"
-              }`}
+              className={`hidden lg:flex items-center gap-1 text-sm font-medium transition-colors ${isActive("/ai-match") ? "text-brand" : "text-slate-600 hover:text-slate-900"
+                }`}
             >
               <Target className="h-4 w-4" />
               AI Match
