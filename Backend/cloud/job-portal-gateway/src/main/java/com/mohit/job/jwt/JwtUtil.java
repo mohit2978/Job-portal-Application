@@ -31,8 +31,11 @@ public class JwtUtil {
     }
 
     public Long extractUserId(String token) {
-
-        return extractAllClaims(token).get("userId", Long.class);
+        Object userIdObj = extractAllClaims(token).get("userId");
+        if (userIdObj instanceof Number) {
+            return ((Number) userIdObj).longValue();
+        }
+        return null;
     }
 
     public boolean isTokenValid(String token) {
