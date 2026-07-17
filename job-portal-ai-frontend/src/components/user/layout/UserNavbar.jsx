@@ -1,4 +1,4 @@
-﻿import { useState } from "react"
+import { useState } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Input } from "@/components/ui/input"
@@ -106,36 +106,31 @@ export default function UserNavbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                    3
-                  </Badge>
+                  {/* Assuming you will map this to a Redux state later. Using an empty array for now as backend API is pending. */}
+                  {[]?.length > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                      {[]}
+                    </Badge>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80">
                 <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <div className="space-y-2 p-2">
-                  <div className="rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
-                    <p className="text-sm font-medium">Application Update</p>
-                    <p className="text-xs text-slate-600 mt-1">
-                      Your application for Senior React Developer has been shortlisted
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">2 hours ago</p>
-                  </div>
-                  <div className="rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
-                    <p className="text-sm font-medium">New Job Match</p>
-                    <p className="text-xs text-slate-600 mt-1">
-                      5 new jobs match your profile
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">5 hours ago</p>
-                  </div>
-                  <div className="rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
-                    <p className="text-sm font-medium">Profile View</p>
-                    <p className="text-xs text-slate-600 mt-1">
-                      Your profile was viewed by TechCorp Inc.
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">1 day ago</p>
-                  </div>
+                <div className="space-y-2 p-2 max-h-[300px] overflow-y-auto">
+                  {[]?.length > 0 ? (
+                    []?.map((notification, index) => (
+                      <div key={index} className="rounded-lg border p-3 hover:bg-slate-50 cursor-pointer">
+                        <p className="text-sm font-medium">{notification.title}</p>
+                        <p className="text-xs text-slate-600 mt-1">{notification.message}</p>
+                        <p className="text-xs text-slate-400 mt-1">{notification.time}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center p-4 text-sm text-slate-500">
+                      No new notifications
+                    </div>
+                  )}
                 </div>
                 <DropdownMenuSeparator />
                 <div className="p-2">
