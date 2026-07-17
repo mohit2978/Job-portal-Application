@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
@@ -20,6 +20,7 @@ import {
   Briefcase,
   Users,
   ArrowRight,
+  Phone,
 } from "lucide-react";
 import { registerUser } from "../../store/user/userThunk";
 import { resetError } from "../../store/user/userAuth";
@@ -161,6 +162,40 @@ export default function Register() {
             <p className="text-xs text-red-600 flex items-center gap-1.5 mt-1.5 animate-in slide-in-from-top-1">
               <AlertCircle className="h-3 w-3" />
               {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        {/* Phone Field */}
+        <div className="space-y-2">
+          <Label
+            htmlFor="phone"
+            className="text-sm font-semibold text-slate-700"
+          >
+            Phone number
+          </Label>
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand transition-colors">
+              <Phone className="h-4 w-4" />
+            </div>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="+91 9876543210"
+              {...register("phone")}
+              className={cn(
+                "pl-10 h-11 transition-all",
+                errors.phone
+                  ? "border-red-300 focus-visible:ring-red-500"
+                  : "focus-visible:ring-brand focus-visible:border-brand"
+              )}
+              disabled={isLoading}
+            />
+          </div>
+          {errors.phone && (
+            <p className="text-xs text-red-600 flex items-center gap-1.5 mt-1.5 animate-in slide-in-from-top-1">
+              <AlertCircle className="h-3 w-3" />
+              {errors.phone.message}
             </p>
           )}
         </div>

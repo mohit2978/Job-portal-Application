@@ -1,4 +1,4 @@
-﻿import { z } from "zod"
+import { z } from "zod"
 
 // Login Schema
 export const loginSchema = z.object({
@@ -24,6 +24,10 @@ export const registerSchema = z
       .string()
       .min(1, "Email is required")
       .email("Please enter a valid email address"),
+    phone: z
+      .string()
+      .min(1, "Phone number is required")
+      .regex(/^\+91\d{10}$/, "Phone number must start with +91 followed by 10 digits"),
     password: z
       .string()
       .min(1, "Password is required")

@@ -1,4 +1,4 @@
-﻿import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
 // Login User
@@ -15,6 +15,12 @@ export const loginUser = createAsyncThunk(
       console.log("Logged in user:", response.data);
       return response.data;
     } catch (error) {
+      if (error.response?.status === 404) {
+        return rejectWithValue("email is wrong !");
+      }
+      if (error.response?.status === 401) {
+        return rejectWithValue("password is wrong !");
+      }
       return rejectWithValue(
         error.response?.data?.message || "Login failed. Please try again."
       );

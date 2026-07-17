@@ -5,8 +5,6 @@ import {
   Navigate,
 } from "react-router-dom"
 import { Toaster } from "sonner"
-import { useEffect } from "react"
-import { useDispatch } from "react-redux"
 
 // Auth Components
 import AppBootstrap from "./components/auth/AppBootstrap"
@@ -64,18 +62,7 @@ import AdminJobMeta from "./pages/admin/JobMeta"
 import AdminSubscriptions from "./pages/admin/Subscriptions"
 import AdminSettings from "./pages/admin/Settings"
 
-import { fetchCurrentUser } from "./store/user/userThunk"
-
 function App() {
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken")
-    if (accessToken) {
-      dispatch(fetchCurrentUser())
-    }
-  }, [])
-
   return (
     <Router>
       <AppBootstrap>

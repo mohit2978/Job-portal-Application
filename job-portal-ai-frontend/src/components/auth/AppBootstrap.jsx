@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { fetchCurrentUser } from "@/store/user/userThunk"
 
@@ -9,7 +9,7 @@ import { fetchCurrentUser } from "@/store/user/userThunk"
 export default function AppBootstrap({ children }) {
   const dispatch = useDispatch()
   const { authStatus } = useSelector((state) => state.auth)
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [isInitializing, setIsInitializing] = useState(true)
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -21,17 +21,14 @@ export default function AppBootstrap({ children }) {
       }
 
       // Mark initialization as complete
-      setIsInitialized(true)
+      setIsInitializing(false)
     }
 
-    // Only initialize once
-    if (!isInitialized) {
-      initializeAuth()
-    }
-  }, [dispatch, isInitialized])
+    initializeAuth()
+  }, [dispatch])
 
   // Show loading screen only while initializing
-  if (!isInitialized || authStatus === "loading") {
+  if (isInitializing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
