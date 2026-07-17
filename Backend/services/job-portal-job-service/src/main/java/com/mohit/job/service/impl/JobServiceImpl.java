@@ -80,11 +80,13 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JobResponse getJobById(Long id) throws Exception {
         return JobMapper.toResponse(getJobEntityById(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JobSummaryResponse getJobSummaryById(Long id) throws Exception {
         return JobMapper.toSummaryResponse(getJobEntityById(id));
     }
