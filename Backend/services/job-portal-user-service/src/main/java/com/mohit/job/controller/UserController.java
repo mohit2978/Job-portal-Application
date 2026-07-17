@@ -1,6 +1,7 @@
 package com.mohit.job.controller;
 
 import com.mohit.job.PayLoad.UpdateUserRequest;
+import com.mohit.job.domain.UserRole;
 import com.mohit.job.dto.response.UserResponse;
 import com.mohit.job.mapper.UserMapper;
 import com.mohit.job.modal.User;
@@ -67,6 +68,13 @@ public class UserController {
     public ResponseEntity<UserResponse> deleteUser(
             @PathVariable Long userId) throws Exception {
         return ResponseEntity.ok(userService.deactivateUser(userId));
+    }
+
+    @PatchMapping("/{userId}/role")
+    public ResponseEntity<UserResponse> changeUserRole(
+            @PathVariable Long userId,
+            @RequestParam UserRole role) throws Exception {
+        return ResponseEntity.ok(userService.changeUserRole(userId, role));
     }
 
 }

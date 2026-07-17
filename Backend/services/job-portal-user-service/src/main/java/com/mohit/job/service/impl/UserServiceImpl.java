@@ -1,6 +1,7 @@
 package com.mohit.job.service.impl;
 
 import com.mohit.job.PayLoad.UpdateUserRequest;
+import com.mohit.job.domain.UserRole;
 import com.mohit.job.domain.UserStatus;
 import com.mohit.job.dto.response.UserResponse;
 import com.mohit.job.mapper.UserMapper;
@@ -78,6 +79,13 @@ public class UserServiceImpl implements UserService {
         user.setUserStatus(UserStatus.DELETED);
         user.setDeletedAt(LocalDateTime.now());
 
+        return UserMapper.toDTO(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse changeUserRole(Long id, UserRole role) throws Exception {
+        User user = getUserById(id);
+        user.setRole(role);
         return UserMapper.toDTO(userRepository.save(user));
     }
 }

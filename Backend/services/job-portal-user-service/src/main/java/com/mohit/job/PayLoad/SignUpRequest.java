@@ -19,6 +19,7 @@ public class SignUpRequest {
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
+    @NotBlank(message = "Phone Number is mandatory")
     private String phone;
 
     @NotNull(message = "Role is mandatory")

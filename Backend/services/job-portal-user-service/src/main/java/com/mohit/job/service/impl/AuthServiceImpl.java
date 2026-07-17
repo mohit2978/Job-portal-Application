@@ -14,6 +14,7 @@ import com.mohit.job.service.AuthService;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -45,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(req.getEmail())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .role(req.getRole())
-                .phone(req.getPhone()==null?"111111":req.getPhone())
+                .phone(req.getPhone())
                 .profileImage("")
                 .userStatus(UserStatus.ACTIVE)
                 .lastLogin(LocalDateTime.now())
@@ -77,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
         AuthResponse authResponse=new AuthResponse();
-        authResponse.setTitle("Welcome Back"+user.getFullName());
+        authResponse.setTitle("Welcome Back, " + user.getFullName());
         authResponse.setMessage("Successful Login");
         authResponse.setJwt(jwt);
         authResponse.setUser(UserMapper.toDTO(user));
@@ -87,11 +89,11 @@ public class AuthServiceImpl implements AuthService {
 
     private Authentication authenticate( String email, String password) throws Exception {
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-        if(userDetails==null){
-            throw new Exception("user not found"+email);
-        }
+        
         if(!passwordEncoder.matches(password,userDetails.getPassword())){
-            throw new Exception("password not match");
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.UNAUTHORIZED, "password is wrong !"
+            );
         }
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }

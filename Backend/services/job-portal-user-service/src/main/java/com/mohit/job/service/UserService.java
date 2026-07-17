@@ -1,6 +1,7 @@
 package com.mohit.job.service;
 
 import com.mohit.job.PayLoad.UpdateUserRequest;
+import com.mohit.job.domain.UserRole;
 import com.mohit.job.dto.response.UserResponse;
 import com.mohit.job.modal.User;
 
@@ -23,5 +24,7 @@ public interface UserService {
     UserResponse activateUser(Long id) throws Exception;
 
     UserResponse deactivateUser(Long id) throws Exception;
+
+    UserResponse changeUserRole(Long id, UserRole role) throws Exception;
 
 }
