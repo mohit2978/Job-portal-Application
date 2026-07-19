@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react"
+import { useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
@@ -49,7 +49,7 @@ function ProSectionTitle({ title }) {
 }
 
 function ProfessionalTemplate({ resume }) {
-  const pi = resume.personalInfo ?? {}
+  const pi = resume ?? {}
   return (
     <div className="font-sans text-[13px] text-slate-800 px-12 py-10 min-h-[1056px] bg-white">
       {/* Header */}
@@ -215,7 +215,7 @@ function ClassicSection({ title }) {
 }
 
 function ClassicTemplate({ resume }) {
-  const pi = resume.personalInfo ?? {}
+  const pi = resume ?? {}
   return (
     <div className="font-serif text-[13px] text-slate-800 min-h-[1056px] bg-[#fdfaf5]">
       {/* Dark header */}
@@ -358,7 +358,7 @@ function ModernSectionTitle({ title, light = false }) {
 }
 
 function ModernTemplate({ resume }) {
-  const pi = resume.personalInfo ?? {}
+  const pi = resume ?? {}
   const initials = [(pi.firstName?.[0] ?? ""), (pi.lastName?.[0] ?? "")].join("")
   return (
     <div className="font-sans text-[12px] text-slate-800 min-h-[1056px] flex">
@@ -540,7 +540,7 @@ function MinSection({ title }) {
 }
 
 function MinimalTemplate({ resume }) {
-  const pi = resume.personalInfo ?? {}
+  const pi = resume ?? {}
   return (
     <div className="font-sans text-[13px] text-slate-800 px-14 py-12 min-h-[1056px] bg-white">
       {/* Header */}
@@ -678,7 +678,7 @@ function CrtSection({ title }) {
 }
 
 function CreativeTemplate({ resume }) {
-  const pi = resume.personalInfo ?? {}
+  const pi = resume ?? {}
   return (
     <div className="font-sans text-[13px] text-slate-800 min-h-[1056px] bg-[#f5f3ff]">
       {/* Purple gradient header */}

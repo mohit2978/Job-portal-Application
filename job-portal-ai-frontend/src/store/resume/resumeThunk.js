@@ -1,11 +1,11 @@
-﻿import { createAsyncThunk } from "@reduxjs/toolkit"
+import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
 
 // ── Resume CRUD ───────────────────────────────────────────────────────────────
 
 export const fetchMyResumes = createAsyncThunk("resume/fetchMy",
   async (_, { rejectWithValue }) => {
-    try { return (await api.get("/api/resumes/my")).data }
+    try { return (await api.get("/api/resumes")).data }
     catch (e) { return rejectWithValue(e.response?.data?.message || "Failed to fetch resumes") }
   }
 )

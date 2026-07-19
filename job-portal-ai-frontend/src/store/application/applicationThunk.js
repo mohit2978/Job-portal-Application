@@ -1,5 +1,6 @@
-﻿import { createAsyncThunk } from "@reduxjs/toolkit"
+import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
+import { unsaveJob } from "../savedJob/savedJobThunk"
 
 // ── Employer: fetch all company applications (with optional filters) ──────────
 // filters: { jobId?, status?, source?, isRead?, isStarred?, appliedFrom?, appliedTo?,
@@ -204,9 +205,15 @@ export const withdrawApplication = createAsyncThunk(
 
 export const submitApplication = createAsyncThunk(
   "application/submit",
-  async (payload, { rejectWithValue }) => {
+  async (payload, { dispatch, getState, rejectWithValue }) => {
     try {
       const { data } = await api.post("/api/applications", payload)
+      // Automatically unsave the job after successfully applying
+      const state = getState()
+      const savedJobId = state.savedJob?.savedJobMap?.[payload.jobId]
+      if (savedJobId) {
+        dispatch(unsaveJob(savedJobId)).catch(() => {})
+      }
       return data
     } catch (err) {
       console.log("err",err)

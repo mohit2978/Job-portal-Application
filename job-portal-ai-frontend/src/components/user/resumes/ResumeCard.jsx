@@ -10,7 +10,7 @@ import { TEMPLATES, TEMPLATE_BADGE_COLORS, TemplateProfessional } from "./Resume
 
 function computeCompletionScore(resume) {
   let score = 0
-  const pi = resume.personalInfo ?? {}
+  const pi = resume ?? {}
   if (pi.firstName || pi.lastName) score += 10
   if (pi.email)                    score += 5
   if (pi.headline)                 score += 5
@@ -60,9 +60,9 @@ export default function ResumeCard({ resume, onSetDefault, onDelete, onFeedback,
 
       <CardContent className="p-4">
         <div className="flex items-start gap-3 mb-2">
-          <div className="h-10 w-10 rounded-full border border-slate-200 bg-slate-100 overflow-hidden flex items-center justify-center shrink-0">
-            {resume.personalInfo?.profileImage
-              ? <img src={resume.personalInfo.profileImage} alt={resume.personalInfo?.firstName ?? "Profile"} className="h-full w-full object-cover" />
+          <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+            {resume.profileImage
+              ? <img src={resume.profileImage} alt={resume.firstName ?? "Profile"} className="h-full w-full object-cover" />
               : <User className="h-5 w-5 text-slate-400" />}
           </div>
           <div className="flex-1 flex items-start justify-between gap-2 min-w-0">

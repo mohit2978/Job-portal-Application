@@ -19,7 +19,7 @@ import { clearCareerFeedback } from "@/store/ai/aiSlice"
 function serializeResume(resume) {
   const lines = []
 
-  const pi = resume.personalInfo
+  const pi = resume ?? {}
   if (pi) {
     lines.push(`Name: ${pi.fullName || ""}`)
     lines.push(`Email: ${pi.email || ""}`)

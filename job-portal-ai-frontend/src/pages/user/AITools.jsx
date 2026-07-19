@@ -154,7 +154,7 @@ function ResumeAnalyzer() {
       reader.onload = async (e) => {
         const base64 = e.target.result.split(",")[1]
         const result = await dispatch(
-          getResumeImprovements({ resumeText: base64, fileName: file.name })
+          getResumeImprovements({ resumeContent: base64, targetJobTitle: "" })
         )
         if (result.payload) {
           setAnalysis({
@@ -273,9 +273,14 @@ function ResumeAnalyzer() {
               <h4 className="font-semibold text-orange-900 mb-3">Suggested Improvements</h4>
               <ul className="space-y-2">
                 {analysis.improvements.map((item, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
-                    <span className="text-orange-600">→</span>
-                    {item}
+                  <li key={index} className="flex flex-col gap-1 text-sm text-slate-700 bg-white p-3 rounded-md border border-orange-100">
+                    <div className="flex items-start gap-2">
+                      <span className="text-orange-600 font-bold mt-0.5">→</span>
+                      <span className="font-semibold">{item.section}</span>
+                      <Badge variant="outline" className="text-xs ml-auto border-orange-200 text-orange-700">{item.priority}</Badge>
+                    </div>
+                    <div className="pl-6 text-slate-500 text-xs italic">Issue: {item.issue}</div>
+                    <div className="pl-6 text-slate-800 font-medium">{item.suggestion}</div>
                   </li>
                 ))}
               </ul>

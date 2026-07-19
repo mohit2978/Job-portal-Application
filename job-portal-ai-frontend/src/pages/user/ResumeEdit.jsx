@@ -1,6 +1,7 @@
-﻿import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
+import api from "@/store/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -205,7 +206,7 @@ function CopyFromMenu({ resumes, onSelect }) {
 // ── Section: Personal Info ────────────────────────────────────────────────────
 
 function PersonalInfoSection({ resumeId, resume, isLoading, dispatch, otherResumes = [] }) {
-  const pi = resume?.personalInfo ?? {}
+  const pi = resume ?? {}
   const [form, setForm] = useState({
     firstName: "", lastName: "", headline: "", email: "", phone: "",
     city: "", country: "", linkedinUrl: "", githubUrl: "", portfolioUrl: "", websiteUrl: "",
@@ -219,7 +220,7 @@ function PersonalInfoSection({ resumeId, resume, isLoading, dispatch, otherResum
   const f = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
   const handleCopyFrom = (src) => {
-    const p = src.personalInfo ?? {}
+    const p = src ?? {}
     setForm({
       firstName: p.firstName ?? "", lastName: p.lastName ?? "",
       headline: p.headline ?? "", email: p.email ?? "", phone: p.phone ?? "",
@@ -325,7 +326,7 @@ function SummarySection({ resumeId, resume, isLoading, dispatch, otherResumes = 
 
   const handleGenerateWithAI = async () => {
     const payload = {
-      targetJobTitle: resume?.personalInfo?.headline || "",
+      targetJobTitle: resume?.headline || "",
       workExperiences: (resume?.workExperiences ?? []).map(e => ({
         jobTitle: e.jobTitle, company: e.companyName, description: e.description || "",
       })),
@@ -541,11 +542,16 @@ function SkillsSection({ resumeId, data=[], isLoading, dispatch, otherResumes=[]
   const openAdd=()=>{setEd(null);setForm(SKILL_DEF);setOpen(true)}
   const openEdit=(item)=>{setEd(item);setForm({...item});setOpen(true)}
   const handleCopyFrom=async(src)=>{
-    const items=src.skills??[]
-    if(!items.length){toast.info(`No skills in "${src.title}"`);return}
-    let n=0
-    for(const{id:_id,displayOrder:_ord,...data}of items){const r=await dispatch(addSkill({resumeId,data}));if(r.meta.requestStatus==="fulfilled")n++}
-    if(n>0)toast.success(`Added ${n} skill${n!==1?"s":""} from "${src.title}"`)
+    try {
+      const { data: fullResume } = await api.get(`/api/resumes/${src.id}`)
+      const items = fullResume.skills ?? []
+      if(!items.length){toast.info(`No skills in "${src.title}"`);return}
+      let n=0
+      for(const{id:_id,displayOrder:_ord,...data}of items){const r=await dispatch(addSkill({resumeId,data}));if(r.meta.requestStatus==="fulfilled")n++}
+      if(n>0)toast.success(`Added ${n} skill${n!==1?"s":""} from "${src.title}"`)
+    } catch (err) {
+      toast.error("Failed to fetch skills from resume")
+    }
   }
   const save=()=>{
     const payload={...form,yearsOfExperience:form.yearsOfExperience?Number(form.yearsOfExperience):null}
@@ -906,7 +912,11 @@ function AiReviewSection({ resume, dispatch }) {
 
   const handleAnalyze = async () => {
     const content = JSON.stringify({
-      personalInfo: resume?.personalInfo,
+      personalInfo: {
+        firstName: resume?.firstName, lastName: resume?.lastName, 
+        headline: resume?.headline, email: resume?.email, 
+        phone: resume?.phone, city: resume?.city, country: resume?.country
+      },
       summary: resume?.summary,
       workExperiences: resume?.workExperiences,
       skills: resume?.skills,
@@ -1117,7 +1127,7 @@ export default function ResumeEdit() {
 
   // Count filled items per section for sidebar indicators
   const counts = {
-    personal:       (resume?.personalInfo?.firstName || resume?.personalInfo?.email) ? 1 : 0,
+    personal:       (resume?.firstName || resume?.email) ? 1 : 0,
     summary:        resume?.summary ? 1 : 0,
     experience:     resume?.workExperiences?.length ?? 0,
     education:      resume?.educations?.length ?? 0,

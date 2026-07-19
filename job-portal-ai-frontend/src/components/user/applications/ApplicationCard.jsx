@@ -92,7 +92,7 @@ export default function ApplicationCard({ app, onWithdraw }) {
             <div className="flex items-start justify-between gap-3 mb-1">
               <div className="min-w-0">
                 <Link
-                  to={`/jobs/${app.jobId}`}
+                  to={`/jobs/${job?.id || app.jobId}`}
                   className="font-semibold text-slate-900 hover:text-primary transition-colors line-clamp-1"
                 >
                   {jobTitle}
@@ -177,7 +177,7 @@ export default function ApplicationCard({ app, onWithdraw }) {
 
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="sm" className="text-xs h-7 px-2" asChild>
-                  <Link to={`/jobs/${app.jobId}`}>
+                  <Link to={`/jobs/${job?.id || app.jobId}`}>
                     <ExternalLink className="h-3.5 w-3.5 mr-1" />
                     View Job
                   </Link>

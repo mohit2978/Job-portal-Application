@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -318,7 +318,7 @@ export default function JobDetails() {
   }, [error])
 
   const hasApplied = job
-    ? myApplications.some(a => a.jobId === job.id && a.status !== "WITHDRAWN")
+    ? myApplications.some(a => (a.jobId === job.id || a.job?.id === job.id) && a.status !== "WITHDRAWN")
     : false
 
   const isSaved = job ? !!savedJobMap[job.id] : false

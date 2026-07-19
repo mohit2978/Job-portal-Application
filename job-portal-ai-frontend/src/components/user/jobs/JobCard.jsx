@@ -59,7 +59,7 @@ export default function JobCard({ job }) {
   const isSaved = !!savedJobMap[job.id]
   const savedJobId = savedJobMap[job.id]
   const hasApplied = myApplications.some(
-    (a) => a.jobId === job.id && a.status !== "WITHDRAWN"
+    (a) => (a.jobId === job.id || a.job?.id === job.id) && a.status !== "WITHDRAWN"
   )
 
   const handleSaveToggle = async (e) => {

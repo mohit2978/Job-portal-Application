@@ -119,7 +119,7 @@ public class RouteConfig {
         return GatewayRouterFunctions.route("ai-service-routes")
                 .route(RequestPredicates.path("/api/ai/**"), HandlerFunctions.http())
                 .filter(LoadBalancerFilterFunctions.lb("job-portal-ai-service"))
-                .filter(CircuitBreakerFilterFunctions.circuitBreaker("defaultCB",
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("aiCB",
                         URI.create("forward:/fallback")))
                 .before(this::jwtAuthFilter)
                 .build();
