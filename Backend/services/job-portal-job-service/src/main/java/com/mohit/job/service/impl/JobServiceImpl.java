@@ -45,6 +45,7 @@ public class JobServiceImpl implements JobService {
     private final CompanyClient companyClient;
 
     @Override
+    @Transactional
     public JobResponse createJob(Long employerId, JobRequest req) throws Exception {
         CompanyResponse company = companyClient.getMyCompany(employerId);
 
@@ -103,6 +104,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponse> getJobsByCompany(Long companyId) {
         return jobRepository.findByCompanyIdAndActiveTrue(companyId).stream()
                 .map(JobMapper::toResponse)
@@ -110,6 +112,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponse> getJobsByEmployer(Long employerId) {
         return jobRepository.findByEmployerId(employerId).stream()
                 .map(JobMapper::toResponse)
@@ -117,6 +120,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponse> getJobsByCategory(Long categoryId) {
         return jobRepository.findByCategory_Id(categoryId).stream()
                 .map(JobMapper::toResponse)
@@ -124,6 +128,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponse> getAllJobsAdmin() {
         return jobRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream()
                 .map(JobMapper::toResponse)
@@ -131,6 +136,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional
     public JobResponse updateJob(Long jobId, Long employerId, JobRequest req) throws Exception {
         Job job = getJobEntityById(jobId);
         assertEmployer(job, employerId);
@@ -162,6 +168,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional
     public JobResponse publishJob(Long jobId, Long employerId) throws Exception {
         Job job = getJobEntityById(jobId);
         assertEmployer(job, employerId);
@@ -174,6 +181,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional
     public JobResponse closeJob(Long jobId, Long employerId) throws Exception {
         Job job = getJobEntityById(jobId);
         assertEmployer(job, employerId);
@@ -184,6 +192,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional
     public void deleteJob(Long jobId, Long employerId) throws Exception {
         Job job = getJobEntityById(jobId);
         assertEmployer(job, employerId);
@@ -191,6 +200,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional
     public void incrementViewCount(Long jobId) throws Exception {
         Job job = getJobEntityById(jobId);
         job.setViewCount(job.getViewCount() + 1);
@@ -198,6 +208,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional
     public void incrementApplicationCount(Long jobId) throws Exception {
         Job job = getJobEntityById(jobId);
         job.setApplicationCount(job.getApplicationCount() + 1);

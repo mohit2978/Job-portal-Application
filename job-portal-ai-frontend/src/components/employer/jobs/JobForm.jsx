@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -26,8 +26,8 @@ import MultiSelect from "./MultiSelect"
 
 const JOB_TYPES        = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE", "REMOTE"]
 const WORK_MODES       = ["REMOTE", "HYBRID", "ON_SITE"]
-const EXP_LEVELS       = ["ENTRY_LEVEL", "JUNIOR", "MID_LEVEL", "SENIOR_LEVEL", "LEAD", "EXECUTIVE"]
-const SALARY_PERIODS   = ["HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY"]
+const EXP_LEVELS       = ["ENTRY", "JUNIOR", "MID", "SENIOR", "LEAD", "MANAGER"]
+const SALARY_PERIODS   = ["HOURLY", "DAILY", "MONTHLY", "YEARLY"]
 const CURRENCIES       = ["USD", "INR", "EUR", "GBP", "CAD", "AUD", "SGD"]
 
 function fmt(val) {
@@ -50,7 +50,7 @@ const EMPTY = {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-function buildPayload(form) {
+function buildPayload(form, companyId) {
   return {
     title:               form.title.trim(),
     description:         form.description.trim(),
@@ -58,6 +58,7 @@ function buildPayload(form) {
     responsibilities:    form.responsibilities.trim() || undefined,
     benefits:            form.benefits.trim() || undefined,
     categoryId:          Number(form.categoryId),
+    companyId:           companyId ? Number(companyId) : undefined,
     skillIds:            form.skillIds.length ? form.skillIds : undefined,
     tagIds:              form.tagIds.length ? form.tagIds : undefined,
     address:             form.address.trim() || undefined,
@@ -138,6 +139,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { isActionLoading } = useSelector(s => s.job)
+  const { myCompany } = useSelector(s => s.company)
   const { categories, skills, tags, isLoadingCategories, isLoadingSkills, isLoadingTags } = useSelector(s => s.jobMeta)
   const {
     jobDescription, jobRequirements, salarySuggestion, recommendedSkills,
@@ -353,13 +355,15 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
 
   const handleSaveDraft = async () => {
     if (!canSubmit) { toast.error("Fill required fields"); return }
+    if (!myCompany?.id) { toast.error("You must set up a company profile first!"); return }
+    
     try {
       if (isEdit) {
-        await dispatch(updateJob({ id: initialJob.id, ...buildPayload(form) })).unwrap()
+        await dispatch(updateJob({ id: initialJob.id, ...buildPayload(form, myCompany.id) })).unwrap()
         toast.success("Job updated")
         navigate("/employer/jobs")
       } else {
-        await dispatch(createJob(buildPayload(form))).unwrap()
+        await dispatch(createJob(buildPayload(form, myCompany.id))).unwrap()
         toast.success("Job saved as draft")
         navigate("/employer/jobs")
       }
@@ -370,12 +374,14 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
 
   const handlePublish = async () => {
     if (!canSubmit) { toast.error("Fill required fields"); return }
+    if (!myCompany?.id) { toast.error("You must set up a company profile first!"); return }
+
     try {
       let job
       if (isEdit) {
-        job = await dispatch(updateJob({ id: initialJob.id, ...buildPayload(form) })).unwrap()
+        job = await dispatch(updateJob({ id: initialJob.id, ...buildPayload(form, myCompany.id) })).unwrap()
       } else {
-        job = await dispatch(createJob(buildPayload(form))).unwrap()
+        job = await dispatch(createJob(buildPayload(form, myCompany.id))).unwrap()
       }
       if (job.status !== "OPEN") {
         await dispatch(publishJob(job.id)).unwrap()

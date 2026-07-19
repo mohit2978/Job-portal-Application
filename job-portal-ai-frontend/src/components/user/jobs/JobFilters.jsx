@@ -1,4 +1,4 @@
-﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
@@ -25,12 +25,12 @@ const WORK_MODES = [
 ]
 
 const EXP_LEVELS = [
-  { value: "ENTRY_LEVEL",   label: "Entry Level",  sub: "0–1 yr" },
+  { value: "ENTRY",   label: "Entry Level",  sub: "0–1 yr" },
   { value: "JUNIOR",        label: "Junior",       sub: "1–3 yrs" },
-  { value: "MID_LEVEL",     label: "Mid Level",    sub: "3–5 yrs" },
-  { value: "SENIOR_LEVEL",  label: "Senior",       sub: "5–8 yrs" },
+  { value: "MID",     label: "Mid Level",    sub: "3–5 yrs" },
+  { value: "SENIOR",  label: "Senior",       sub: "5–8 yrs" },
   { value: "LEAD",          label: "Lead",         sub: "8+ yrs" },
-  { value: "EXECUTIVE",     label: "Executive",    sub: "C-level" },
+  { value: "MANAGER",     label: "Manager",    sub: "C-level" },
 ]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
