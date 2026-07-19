@@ -22,7 +22,7 @@ export const fetchCompanyApplications = createAsyncThunk(
       if (filters.minAiScore != null) params.minAiScore         = filters.minAiScore
       if (filters.sortBy)             params.sortBy             = filters.sortBy
       const { data } = await api.get(`/api/applications/company`, { params })
-      console.log("aplications -- ",data)
+//      console.log("aplications -- ",data)
       return data
     } catch (err) {
       console.log("err ",err)

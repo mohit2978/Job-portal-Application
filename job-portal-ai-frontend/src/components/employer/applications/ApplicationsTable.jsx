@@ -18,7 +18,7 @@ import AiScoreCircle from "@/components/ui/AiScoreCircle"
 
 const STATUS_CONFIG = {
   PENDING:             { label: "Pending",    className: "bg-slate-100 text-slate-600 border-slate-200" },
-  REVIEWING:           { label: "Reviewing",  className: "bg-blue-50 text-blue-700 border-blue-200" },
+  REVIEWED:           { label: "Reviewed",  className: "bg-blue-50 text-blue-700 border-blue-200" },
   SHORTLISTED:         { label: "Shortlisted",className: "bg-indigo-50 text-indigo-700 border-indigo-200" },
   INTERVIEW_SCHEDULED: { label: "Interview",  className: "bg-violet-50 text-violet-700 border-violet-200" },
   REJECTED:            { label: "Rejected",   className: "bg-red-50 text-red-600 border-red-200" },

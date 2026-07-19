@@ -15,7 +15,7 @@ import { updateApplicationStatus } from "@/store/application/applicationThunk"
 
 const STATUSES = [
   { value: "PENDING",              label: "Pending",              color: "text-slate-600" },
-  { value: "REVIEWING",            label: "Reviewing",            color: "text-brand" },
+  { value: "REVIEWED",            label: "Reviewed",            color: "text-brand" },
   { value: "SHORTLISTED",          label: "Shortlisted",          color: "text-indigo-600" },
   { value: "INTERVIEW_SCHEDULED",  label: "Interview Scheduled",  color: "text-violet-600" },
   { value: "REJECTED",             label: "Rejected",             color: "text-red-600" },

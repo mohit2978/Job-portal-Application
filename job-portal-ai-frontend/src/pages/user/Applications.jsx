@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { Card, CardContent } from "@/components/ui/card"
@@ -15,7 +15,7 @@ import { fetchMyApplications, withdrawApplication } from "@/store/application/ap
 import ApplicationCard from "@/components/user/applications/ApplicationCard"
 
 const TAB_STATUSES = {
-  active:      ["PENDING", "REVIEWING", "SHORTLISTED", "INTERVIEW_SCHEDULED"],
+  active:      ["PENDING", "REVIEWED", "SHORTLISTED", "INTERVIEW_SCHEDULED"],
   shortlisted: ["SHORTLISTED", "INTERVIEW_SCHEDULED"],
   hired:       ["HIRED"],
   rejected:    ["REJECTED", "WITHDRAWN"],

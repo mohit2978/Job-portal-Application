@@ -1,11 +1,27 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "sonner"
-import {
-  ArrowLeft, Star, Eye, Calendar, FileText, Trash2,
-  Plus, Send, Clock, CheckCircle2, XCircle, AlertCircle,
-  Download, ChevronRight, Loader2, Video, Phone, Users,
+import { 
+  ArrowLeft, 
+  Briefcase, 
+  MapPin, 
+  DollarSign, 
+  Calendar, 
+  Clock, 
+  CheckCircle2, 
+  XCircle, 
+  Star,
+  Eye,
+  MoreVertical,
+  FileText,
+  Download,
+  AlertCircle,
+  Plus,
+  Trash2,
+  ChevronRight,
+  Send,
+  Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -16,8 +32,14 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { fetchApplicationById } from "@/store/application/applicationThunk"
-import { toggleStar, markAsRead, addNote, deleteNote } from "@/store/application/applicationThunk"
+import { 
+  fetchApplicationById, 
+  updateApplicationStatus, 
+  markAsRead, 
+  toggleStar,
+  addNote,
+  deleteNote
+} from "@/store/application/applicationThunk"
 import { clearCurrentApplication } from "@/store/application/applicationSlice"
 import UpdateStatusDialog from "@/components/employer/applications/UpdateStatusDialog"
 import ScheduleInterviewDialog from "@/components/employer/applications/ScheduleInterviewDialog"
@@ -27,7 +49,7 @@ import { cn } from "@/lib/utils"
 
 const STATUS_CONFIG = {
   PENDING:             { label: "Pending",            className: "bg-slate-100 text-slate-600 border-slate-200",     icon: Clock },
-  REVIEWING:           { label: "Reviewing",          className: "bg-blue-50 text-blue-700 border-blue-200",         icon: Eye },
+  REVIEWED:           { label: "Reviewed",          className: "bg-blue-50 text-blue-700 border-blue-200",         icon: Eye },
   SHORTLISTED:         { label: "Shortlisted",        className: "bg-indigo-50 text-indigo-700 border-indigo-200",   icon: CheckCircle2 },
   INTERVIEW_SCHEDULED: { label: "Interview",          className: "bg-violet-50 text-violet-700 border-violet-200",   icon: Calendar },
   REJECTED:            { label: "Rejected",           className: "bg-red-50 text-red-600 border-red-200",            icon: XCircle },

@@ -1,4 +1,4 @@
-﻿import { createAsyncThunk } from "@reduxjs/toolkit"
+import { createAsyncThunk } from "@reduxjs/toolkit"
 import api from "../api"
 
 // ── Public: search + filter all OPEN jobs ────────────────────────────────────
@@ -28,7 +28,7 @@ export const fetchMyJobs = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/api/jobs/my")
-      console.log("fetch my jobs", data)
+//      console.log("fetch my jobs", data)
       return data
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Failed to fetch jobs")

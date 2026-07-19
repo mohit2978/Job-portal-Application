@@ -1,10 +1,10 @@
-﻿import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit"
 import {
   fetchCompanyApplications, fetchJobApplications, fetchApplicationById,
   fetchMyApplications, submitApplication, withdrawApplication,
   updateApplicationStatus, markAsRead, toggleStar,
   addNote, deleteNote,
-  scheduleInterview, updateInterview, cancelInterview,
+  scheduleInterview, updateInterview, cancelInterview
 } from "./applicationThunk"
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

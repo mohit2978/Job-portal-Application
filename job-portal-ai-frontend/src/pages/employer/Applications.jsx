@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils"
 
 // ── Config ─────────────────────────────────────────────────────────────────────
 
-const STATUS_FILTERS = ["ALL", "PENDING", "REVIEWING", "SHORTLISTED", "INTERVIEW_SCHEDULED", "HIRED", "REJECTED"]
+const STATUS_FILTERS = ["ALL", "PENDING", "REVIEWED", "SHORTLISTED", "INTERVIEW_SCHEDULED", "HIRED", "REJECTED"]
 
 const AI_SHORTLIST_FILTERS = [
   { value: "ALL",                label: "All" },

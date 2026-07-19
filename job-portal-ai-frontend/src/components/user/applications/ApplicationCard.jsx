@@ -12,7 +12,7 @@ import {
 
 export const STATUS_CONFIG = {
   PENDING:             { label: "Pending",             color: "bg-blue-100 text-blue-700",    icon: Clock },
-  REVIEWING:           { label: "Under Review",        color: "bg-yellow-100 text-yellow-700", icon: AlertCircle },
+  REVIEWED:           { label: "Under Review",        color: "bg-yellow-100 text-yellow-700", icon: AlertCircle },
   SHORTLISTED:         { label: "Shortlisted",         color: "bg-purple-100 text-purple-700", icon: CheckCircle2 },
   INTERVIEW_SCHEDULED: { label: "Interview Scheduled", color: "bg-indigo-100 text-indigo-700", icon: CheckCircle2 },
   REJECTED:            { label: "Not Selected",        color: "bg-red-100 text-red-600",       icon: X },
@@ -20,7 +20,7 @@ export const STATUS_CONFIG = {
   WITHDRAWN:           { label: "Withdrawn",           color: "bg-slate-100 text-slate-500",   icon: X },
 }
 
-export const PIPELINE = ["PENDING", "REVIEWING", "SHORTLISTED", "INTERVIEW_SCHEDULED", "HIRED"]
+export const PIPELINE = ["PENDING", "REVIEWED", "SHORTLISTED", "INTERVIEW_SCHEDULED", "HIRED"]
 
 const JOB_TYPE_LABEL = {
   FULL_TIME: "Full-time", PART_TIME: "Part-time", CONTRACT: "Contract",

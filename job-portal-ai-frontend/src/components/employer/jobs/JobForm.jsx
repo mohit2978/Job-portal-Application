@@ -402,7 +402,7 @@ export default function JobForm({ initialJob = null, isEdit = false }) {
 
 
 
-  console.log("categories",categories, "skill",skills, "tags", tags)
+  // console.log("categories",categories, "skill",skills, "tags", tags)
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
