@@ -27,6 +27,7 @@ import com.mohit.job.repository.ApplicationSpecification;
 import com.mohit.job.repository.ApplicationStatusHistoryRepository;
 import com.mohit.job.repository.JobApplicationRepository;
 import com.mohit.job.service.ApplicationService;
+import com.mohit.job.service.AsyncScreeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final CompanyClient companyClient;
     private final UserClient userClient;
     private final ApplicationEventPublisher eventPublisher;
+    private final AsyncScreeningService asyncScreeningService;
 
     @Override
     public ApplicationResponse createApplication(Long candidateId, CreateApplicationRequest req) throws Exception {
@@ -74,7 +76,10 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .changedByUserId(candidateId)
                 .note("Application submitted")
                 .build());
-        // Ai screening runs in background no call back needed
+
+        // Fire AI screening in background — does not block the candidate's response
+        asyncScreeningService.runScreeningAsync(application);
+
         return buildFullResponse(application);
     }
 
