@@ -1,6 +1,7 @@
 package com.mohit.job.mapper;
 
 import com.mohit.job.dto.response.CompanyResponse;
+import com.mohit.job.dto.response.CompanySummaryResponse;
 import com.mohit.job.dto.response.SocialLinkResponse;
 import com.mohit.job.modal.Company;
 import com.mohit.job.modal.SocialLink;
@@ -45,6 +46,19 @@ public class CompanyMapper {
                 .build();
     }
 
+
+    public static CompanySummaryResponse toSummaryResponse(Company company) {
+        return CompanySummaryResponse.builder()
+                .id(company.getId())
+                .name(company.getName())
+                .slug(company.getSlug())
+                .logoUrl(company.getLogoUrl())
+                .tagline(company.getTagLine())
+                .industryType(company.getIndustryType())
+                .companySize(company.getCompanySize())
+                .verified(company.isVerified())
+                .build();
+    }
 
     private static SocialLinkResponse toSocialLinkResponse(SocialLink sl) {
         return SocialLinkResponse.builder()

@@ -91,7 +91,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CompanyResponse getCompanySummaryById(Long id) throws Exception {
-        return null;
+        return CompanyMapper.toResponse(getCompanyEntityById(id));
     }
 
     @Override

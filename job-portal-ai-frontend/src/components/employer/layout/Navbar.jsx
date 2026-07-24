@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { logout } from "@/store/user/userAuth"
 import {
@@ -10,10 +10,6 @@ import {
   Building2,
   Settings,
   LogOut,
-  FileText,
-  BrainCircuit,
-  CalendarCheck,
-  Megaphone,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -28,44 +24,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const notifications = [
-  {
-    id: 1,
-    icon: FileText,
-    title: "New application received",
-    desc: "Alex Chen applied for Senior React Developer",
-    time: "3 min ago",
-    iconColor: "text-brand",
-    iconBg: "bg-blue-50",
-  },
-  {
-    id: 2,
-    icon: BrainCircuit,
-    title: "AI screening complete",
-    desc: "12 candidates auto-shortlisted for Frontend Engineer",
-    time: "25 min ago",
-    iconColor: "text-violet-600",
-    iconBg: "bg-violet-50",
-  },
-  {
-    id: 3,
-    icon: CalendarCheck,
-    title: "Interview scheduled",
-    desc: "Maria Santos — tomorrow at 11:00 AM",
-    time: "1 hr ago",
-    iconColor: "text-emerald-600",
-    iconBg: "bg-emerald-50",
-  },
-  {
-    id: 4,
-    icon: Megaphone,
-    title: "Job posting expiring soon",
-    desc: '"Backend Engineer" expires in 2 days',
-    time: "3 hr ago",
-    iconColor: "text-amber-600",
-    iconBg: "bg-amber-50",
-  },
-]
 
 export default function Navbar({ onMenuClick }) {
   const { user } = useSelector((state) => state.auth)
@@ -118,48 +76,18 @@ export default function Navbar({ onMenuClick }) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative text-slate-600 hover:text-slate-900">
               <Bell className="h-5 w-5" />
-              <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-[10px] flex items-center justify-center bg-brand hover:bg-brand border-2 border-white">
-                {notifications.length}
-              </Badge>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
+          <DropdownMenuContent align="end" className="w-72">
             <DropdownMenuLabel className="flex items-center justify-between py-3">
               <span className="font-semibold">Notifications</span>
-              <span className="text-xs font-normal text-slate-400">
-                {notifications.length} unread
-              </span>
+              <span className="text-xs font-normal text-slate-400">0 unread</span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <div className="max-h-72 overflow-y-auto">
-              {notifications.map((n, i) => {
-                const Icon = n.icon
-                return (
-                  <div key={n.id}>
-                    <div className="flex items-start gap-3 px-3 py-3 hover:bg-slate-50 cursor-pointer transition-colors">
-                      <div
-                        className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${n.iconBg}`}
-                      >
-                        <Icon className={`h-3.5 w-3.5 ${n.iconColor}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 leading-tight">
-                          {n.title}
-                        </p>
-                        <p className="text-xs text-slate-500 mt-0.5 truncate">{n.desc}</p>
-                        <p className="text-[11px] text-slate-400 mt-1">{n.time}</p>
-                      </div>
-                    </div>
-                    {i < notifications.length - 1 && <DropdownMenuSeparator />}
-                  </div>
-                )
-              })}
-            </div>
-            <DropdownMenuSeparator />
-            <div className="p-2">
-              <Button variant="ghost" className="w-full text-xs h-8 text-slate-500 hover:text-slate-900">
-                View All Notifications
-              </Button>
+            <div className="flex flex-col items-center justify-center py-10 text-center text-slate-400">
+              <Bell className="h-8 w-8 mb-2 text-slate-300" />
+              <p className="text-sm font-medium">No notifications yet</p>
+              <p className="text-xs mt-0.5">You're all caught up!</p>
             </div>
           </DropdownMenuContent>
         </DropdownMenu>

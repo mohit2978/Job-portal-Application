@@ -22,7 +22,7 @@ import {
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const JOBS_PER_PAGE = 10
+const JOBS_PER_PAGE = 5
 
 const SORT_OPTIONS = [
   { value: "newest",       label: "Newest first" },

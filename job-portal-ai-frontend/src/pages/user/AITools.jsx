@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Sparkles, FileText, PenTool, Target, TrendingUp, Upload, Copy, BrainCircuit, ChevronRight } from "lucide-react"
 import { toast } from "sonner"
 import { fetchMyResumes, fetchResumeById } from "@/store/resume/resumeThunk"
-import { getResumeImprovements } from "@/store/ai/aiThunk"
+import { getResumeImprovements, parseResumeText } from "@/store/ai/aiThunk"
 import CareerFeedbackDialog from "@/components/user/resumes/CareerFeedbackDialog"
 
 const aiTools = [
@@ -149,25 +149,45 @@ function ResumeAnalyzer() {
     }
     setIsAnalyzing(true)
     try {
-      // Read file as base64
+      // Step 1: Read file as base64
       const reader = new FileReader()
       reader.onload = async (e) => {
-        const base64 = e.target.result.split(",")[1]
-        const result = await dispatch(
-          getResumeImprovements({ resumeContent: base64, targetJobTitle: "" })
-        )
-        if (result.payload) {
+        try {
+          const base64 = e.target.result.split(",")[1]
+
+          // Step 2: Parse the PDF to extract plain text first
+          const parseResult = await dispatch(parseResumeText({ resumeText: base64 })).unwrap()
+
+          // Step 3: Build a plain-text summary from the parsed structure
+          const parsed = parseResult
+          const textContent = [
+            parsed.summary || "",
+            (parsed.workExperiences || []).map(w =>
+              `${w.jobTitle || w.companyName} at ${w.companyName}: ${w.description || ""}`
+            ).join("\n"),
+            "Skills: " + (parsed.skills || []).join(", "),
+            (parsed.educations || []).map(e =>
+              `${e.degree || ""} ${e.field || ""} from ${e.schoolName || ""}`
+            ).join("\n"),
+          ].filter(Boolean).join("\n\n")
+
+          // Step 4: Now send extracted text to improvements
+          const result = await dispatch(
+            getResumeImprovements({ resumeContent: textContent, targetJobTitle: "" })
+          ).unwrap()
+
           setAnalysis({
-            score: result.payload.score ?? 80,
-            strengths: result.payload.strengths ?? [],
-            improvements: result.payload.improvements ?? [],
-            keywords: result.payload.keywords ?? [],
+            score: result.overallScore ?? 80,
+            strengths: result.strengths ?? [],
+            improvements: result.improvements ?? [],
+            keywords: result.keywords ?? [],
           })
           toast.success("Resume analysis complete!")
-        } else {
-          toast.error(result.error?.message || "Analysis failed")
+        } catch (err) {
+          toast.error(err || "Analysis failed")
+        } finally {
+          setIsAnalyzing(false)
         }
-        setIsAnalyzing(false)
       }
       reader.readAsDataURL(file)
     } catch {
@@ -286,18 +306,6 @@ function ResumeAnalyzer() {
               </ul>
             </div>
 
-            <Separator />
-
-            <div>
-              <h4 className="font-semibold text-slate-900 mb-3">Key Skills Detected</h4>
-              <div className="flex flex-wrap gap-2">
-                {analysis.keywords.map((keyword) => (
-                  <Badge key={keyword} variant="secondary">
-                    {keyword}
-                  </Badge>
-                ))}
-              </div>
-            </div>
           </CardContent>
         </Card>
       )}
