@@ -10,6 +10,7 @@ import com.mohit.job.repository.UserRepository;
 import com.mohit.job.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserByEmail(String email) throws Exception {
         User user=userRepository.findByEmail(email);
         if(user==null){
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserById(Long id) throws Exception {
         return userRepository.findById(id).orElseThrow(
                 ()->new Exception("User not found")
@@ -36,11 +39,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getAllUsers() throws Exception {
         return userRepository.findAll();
     }
 
     @Override
+    @Transactional
     public UserResponse updateProfile(String email, UpdateUserRequest req) throws Exception {
         User user=getUserByEmail(email);
         if(req.getFullName()!=null){
@@ -56,6 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse suspendUser(Long id) throws Exception {
         User user=getUserById(id);
         user.setUserStatus(UserStatus.SUSPENDED);
@@ -65,6 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse activateUser(Long id) throws Exception {
         User user=getUserById(id);
         user.setUserStatus(UserStatus.ACTIVE);
@@ -74,6 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse deactivateUser(Long id) throws Exception {
         User user=getUserById(id);
         user.setUserStatus(UserStatus.DELETED);
@@ -83,6 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse changeUserRole(Long id, UserRole role) throws Exception {
         User user = getUserById(id);
         user.setRole(role);

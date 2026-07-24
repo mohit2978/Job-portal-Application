@@ -14,6 +14,7 @@ import com.mohit.job.dto.response.CompanyResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
 
     @Override
+    @Transactional
     public CompanyResponse createCompany(Long ownerId, CompanyRequest req) throws Exception {
 
         if (companyRepository.existsByOwnerId(ownerId)) {
@@ -85,16 +87,19 @@ public class CompanyServiceImpl implements CompanyService {
                 .collect(Collectors.toList());
     }
     @Override
+    @Transactional(readOnly = true)
     public CompanyResponse getCompanyById(Long id) throws Exception {
         return CompanyMapper.toResponse(getCompanyEntityById(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompanyResponse getCompanySummaryById(Long id) throws Exception {
         return CompanyMapper.toResponse(getCompanyEntityById(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompanyResponse getMyCompany(Long ownerId) throws Exception {
         Company company = companyRepository.findByOwnerId(ownerId)
                 .orElseThrow(() -> new Exception("No company found for this account"));
@@ -102,6 +107,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompanyResponse> getAllCompanies(CompanyType companyType, IndustryType industryType, CompanyStatus status) {
         return companyRepository.findByFilters(companyType, industryType, status).stream()
                 .map(CompanyMapper::toResponse)
@@ -109,6 +115,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public CompanyResponse updateCompany(Long companyId, Long ownerId, CompanyRequest req) throws Exception {
         Company company = getCompanyEntityById(companyId);
         assertOwner(company, ownerId);
@@ -146,6 +153,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
     @Override
+    @Transactional
     public CompanyResponse verifyCompany(Long companyId) throws Exception {
         Company company = getCompanyEntityById(companyId);
         company.setVerifiedAt(LocalDateTime.now());
@@ -155,6 +163,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public CompanyResponse deactivateCompany(Long companyId) throws Exception {
         Company company = getCompanyEntityById(companyId);
         company.setActive(false);
@@ -164,6 +173,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public void deleteCompany(Long companyId, Long ownerId) throws Exception {
         Company company = getCompanyEntityById(companyId);
         assertOwner(company, ownerId);
@@ -171,6 +181,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Company getCompanyEntityById(Long id) throws Exception {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new Exception("Company not found with id: " + id));

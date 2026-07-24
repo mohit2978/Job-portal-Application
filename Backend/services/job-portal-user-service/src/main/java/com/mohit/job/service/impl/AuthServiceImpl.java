@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
+    @Transactional
     public AuthResponse signup(SignUpRequest req) throws Exception {
         if(userRepository.existsByEmail(req.getEmail())){
             throw new Exception("Email Already Regsitered"+req.getEmail());
@@ -68,6 +70,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse login(LoginRequest req) throws Exception {
 
         Authentication authentication=authenticate(

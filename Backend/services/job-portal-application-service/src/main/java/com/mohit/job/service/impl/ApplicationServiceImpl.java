@@ -31,6 +31,7 @@ import com.mohit.job.service.AsyncScreeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -53,6 +54,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final AsyncScreeningService asyncScreeningService;
 
     @Override
+    @Transactional
     public ApplicationResponse createApplication(Long candidateId, CreateApplicationRequest req) throws Exception {
         if (applicationRepository.existsByCandidateIdAndJobId(candidateId, req.getJobId())) {
             throw new Exception("You have already applied for this job");
@@ -84,23 +86,27 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ApplicationResponse getApplicationById(Long id) throws Exception {
         return buildFullResponse(getApplicationEntity(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ApplicationResponse> getMyApplications(Long candidateId) {
         return applicationRepository.findByCandidateId(candidateId)
                 .stream().map(this::buildFullResponse).collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ApplicationResponse> getApplicationsForJob(Long jobId) {
         return applicationRepository.findByJobId(jobId)
                 .stream().map(this::buildFullResponse).collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ApplicationResponse> getApplicationsForCompany(Long userId, CompanyApplicationFilterRequest filter) {
         Long companyId = companyClient.getMyCompany(userId).getId();
 
@@ -127,6 +133,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationResponse updateStatus(Long applicationId, Long employerId, UpdateApplicationStatusRequest req) throws Exception {
         JobApplication application = getApplicationEntity(applicationId);
         assertEmployer(application, employerId);
@@ -156,6 +163,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationResponse withdraw(Long applicationId, Long candidateId, WithdrawApplicationRequest req) throws Exception {
         JobApplication application = getApplicationEntity(applicationId);
         assertCandidate(application, candidateId);
@@ -187,6 +195,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationResponse markAsRead(Long applicationId, Long employerId) throws Exception {
         JobApplication application = getApplicationEntity(applicationId);
         assertEmployer(application, employerId);
@@ -195,6 +204,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationResponse toggleStar(Long applicationId, Long employerId) throws Exception {
         JobApplication application = getApplicationEntity(applicationId);
         assertEmployer(application, employerId);
@@ -203,6 +213,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public void deleteApplication(Long applicationId, Long candidateId) throws Exception {
         JobApplication application = getApplicationEntity(applicationId);
         assertCandidate(application, candidateId);
@@ -210,6 +221,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public void markScreeningsStaleForJob(Long jobId) {
         List<Long> applicationIds = applicationRepository.findByJobId(jobId)
                 .stream().map(JobApplication::getId).collect(Collectors.toList());
